@@ -1,0 +1,58 @@
+import { Form, type FormInstance, message } from 'antd';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { AUTH_LOGIN_API } from '@/constants/api';
+import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import { HOME_PATH } from '@/constants/routePath';
+import axios from '@/utils/api';
+
+export type useLoginProps = {
+  isLoading: boolean;
+  form: FormInstance;
+  login: any;
+};
+
+const useLogin = () => {
+  const { useForm } = Form;
+  const [form] = useForm();
+  const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const login = async (values: any) => {
+    setIsLoading(true);
+    const apiURL = AUTH_LOGIN_API;
+    const payload = {
+      username: values.username,
+      password: values.password,
+    };
+    const result = await axios
+      .post(apiURL, payload)
+      .then((response) => {
+        setIsLoading(false);
+        if (response.data) {
+          const { token } = response.data;
+          localStorage.setItem('accessToken', token);
+          navigate(HOME_PATH);
+        }
+      })
+      .catch((e: any) => {
+        if (e?.response?.data?.message) {
+          message.error(e?.response?.data?.message);
+        } else {
+          message.error(DEFAULT_ERROR_MESSAGE);
+        }
+        setIsLoading(false);
+      });
+    return result;
+  };
+
+  return {
+    isLoading,
+    form,
+    login,
+  };
+};
+
+export default useLogin;
