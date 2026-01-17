@@ -24,18 +24,16 @@ const useLogin = () => {
     setIsLoading(true);
     const apiURL = AUTH_LOGIN_API;
     const payload = {
-      username: values.username,
+      email: values.username,
       password: values.password,
     };
     const result = await axios
       .post(apiURL, payload)
       .then((response) => {
         setIsLoading(false);
-        if (response.data) {
-          const { token } = response.data;
-          localStorage.setItem('accessToken', token);
-          navigate(HOME_PATH);
-        }
+        const { token } = response.data;
+        localStorage.setItem('accessToken', token);
+        navigate(HOME_PATH);
       })
       .catch((e: any) => {
         if (e?.response?.data?.message) {

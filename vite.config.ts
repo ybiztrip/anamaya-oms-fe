@@ -10,4 +10,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  // dev only (temporary)
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://54.251.223.242:9988',
+        changeOrigin: true,
+        secure: false,
+        rewrite: path => path.replace(/^\/api/, ""),
+      },
+    },
+  },
 });

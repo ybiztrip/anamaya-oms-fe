@@ -1,15 +1,20 @@
 import { Button, Card, Form, Image, Input, Layout, Row } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
 import AnamayaLogo from '@/assets/anamaya.webp';
-import Background from '@/assets/background.jpg'; // <-- add this
+import Background from '@/assets/background.jpg';
 import { HOME_PATH } from '@/constants/routePath';
+import useAuth from '@/hooks/useAuth';
 
 import useLogin from './hooks/useLogin';
 
 function Login() {
-  const props = useLogin();
-  const { isLoading, form, login } = props;
+  const { isAuthenticated } = useAuth();
+  const { isLoading, form, login } = useLogin();
+
+  if (isAuthenticated()) {
+    return <Navigate to={HOME_PATH} replace />;
+  }
 
   return (
     <Layout>
@@ -32,11 +37,7 @@ function Login() {
             </div>
           </Link>
 
-          <Form
-            layout="vertical"
-            form={form}
-            onFinish={login}
-          >
+          <Form layout="vertical" form={form} onFinish={login}>
             <Form.Item
               name="username"
               label="Username"
