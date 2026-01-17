@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
-import { HOME_PATH, LOGIN_PATH } from '@/constants/routePath';
+import { APPROVAL_PATH, HOME_PATH, LOGIN_PATH } from '@/constants/routePath';
+import ApprovalView from '@/modules/Approval/ApprovalView';
 import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
 
@@ -15,6 +16,14 @@ function App() {
         element={
           <ProtectedRoute>
             <HomeView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={APPROVAL_PATH}
+        element={
+          <ProtectedRoute>
+            <ApprovalView />
           </ProtectedRoute>
         }
       />

@@ -1,4 +1,4 @@
-import { HOME_PATH } from '@/constants/routePath';
+import { APPROVAL_PATH, HOME_PATH } from '@/constants/routePath';
 
 export const menus = [
   {
@@ -14,9 +14,9 @@ export const menus = [
     childs: [],
   },
   {
-    name: 'approve',
-    title: 'Approve',
-    path: HOME_PATH,
+    name: 'approval',
+    title: 'Approval',
+    path: APPROVAL_PATH,
     childs: [],
   },
 ];
