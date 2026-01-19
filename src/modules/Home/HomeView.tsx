@@ -1,14 +1,10 @@
-import { Typography } from 'antd';
+import { Navigate } from 'react-router-dom';
 
-import Layout from '@/components/Layout';
-
-const { Title } = Typography;
+import { CREATE_PATH } from '@/constants/routePath';
 
 function Home() {
   return (
-    <Layout>
-      <Title level={3}>Home</Title>
-    </Layout>
+    <Navigate to={CREATE_PATH} replace />
   );
 }
 export default Home;
