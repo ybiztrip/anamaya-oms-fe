@@ -6,8 +6,8 @@ const useAuth = () => {
   const navigate = useNavigate();
 
   const isAuthenticated = () => {
-    // const token = localStorage.getItem('accessToken');
-    // if (!token) return false;
+    const token = localStorage.getItem('accessToken');
+    if (!token) return false;
     return true;
   };
 

@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import fs from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
 
@@ -10,15 +11,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  // dev only (temporary)
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://54.251.223.242:9988',
-        changeOrigin: true,
-        secure: false,
-        rewrite: path => path.replace(/^\/api/, ""),
-      },
-    },
-  },
+  // server: {
+  //   host: 'localhost',
+  //   port: 5173,
+  //   https: {
+  //     key: fs.readFileSync('./localhost+2-key.pem'),
+  //     cert: fs.readFileSync('./localhost+2.pem'),
+  //   },
+  // },
 });
