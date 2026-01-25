@@ -1,14 +1,55 @@
-import { Typography } from 'antd';
+import { Form } from 'antd';
+import { useState } from 'react';
 
 import Layout from '@/components/Layout';
 
-const { Title } = Typography;
+import FlightFilterForm from './components/FlightFilterForm';
+import FlightHotelFilterForm from './components/FlightHotelFilterForm';
+import HotelFilterForm from './components/HotelFilterForm';
+import PassengerForm from './components/PassengerGuestForm';
 
-function Home() {
+function CreateView() {
+  const [activeType, setActiveType] = useState('flight');
+
+  const handleTypeChange = (key: string) => {
+    setActiveType(key);
+  };
+
+  const [form] = Form.useForm();
+
   return (
     <Layout>
-      <Title level={3}>Create</Title>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{
+          tripType: 'roundTrip',
+          bookerName: 'John Due',
+          flightClass: 'economy',
+          hotelStars: '5',
+          passengers: [{}],
+        }}
+      >
+        {activeType === 'flight' && (
+          <>
+            <FlightFilterForm form={form} onTypeChange={handleTypeChange} />
+            <PassengerForm type="flight" />
+          </>
+        )}
+        {activeType === 'hotel' && (
+          <>
+            <HotelFilterForm form={form} onTypeChange={handleTypeChange} />
+            <PassengerForm type="hotel" />
+          </>
+        )}
+        {activeType === 'flight-hotel' && (
+          <>
+            <FlightHotelFilterForm form={form} onTypeChange={handleTypeChange} />
+            <PassengerForm type="flight-hotel" />
+          </>
+        )}
+      </Form>
     </Layout>
   );
 }
-export default Home;
+export default CreateView;
