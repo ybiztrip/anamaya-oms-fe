@@ -30,8 +30,9 @@ const useLogin = () => {
     const result = await axios
       .post(apiURL, payload)
       .then((response) => {
+        console.log('response', response);
         setIsLoading(false);
-        const { token } = response.data;
+        const { token } = response.data.data;
         localStorage.setItem('accessToken', token);
         navigate(HOME_PATH);
       })

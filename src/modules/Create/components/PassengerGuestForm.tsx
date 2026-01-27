@@ -1,8 +1,27 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Col, DatePicker, Form, Input, Row, Select, Space } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Form,
+  type FormInstance,
+  Input,
+  Row,
+  Select,
+  Space,
+} from 'antd';
 import { useMemo } from 'react';
 
-function PassengerGuestForm({ type }: { type: 'flight' | 'hotel' | 'flight-hotel' }) {
+import SelectPassenger from './SelectPassenger';
+
+function PassengerGuestForm({
+  form,
+  type,
+}: {
+  form: FormInstance;
+  type: 'flight' | 'hotel' | 'flight-hotel';
+}) {
   const paxTitle = useMemo(() => {
     if (type === 'flight') return 'Passenger';
     if (type === 'hotel') return 'Guest';
@@ -36,103 +55,126 @@ function PassengerGuestForm({ type }: { type: 'flight' | 'hotel' | 'flight-hotel
                 <Row gutter={[16, 8]}>
                   <Col xs={24} md={12}>
                     <Form.Item
-                      label="First Name"
-                      name={[field.name, 'firstName']}
-                      rules={[{ required: true, message: 'First Name required' }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Last Name"
-                      name={[field.name, 'lastName']}
-                      rules={[{ required: true, message: 'Last Name required' }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Phone"
-                      name={[field.name, 'phone']}
-                      rules={[{ required: true, message: 'Phone required' }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item
                       label="Email"
                       name={[field.name, 'email']}
-                      rules={[
-                        { required: true, message: 'Email required' },
-                        { type: 'email', message: 'Invalid email' },
-                      ]}
+                      rules={[{ required: true, message: 'Email required' }]}
                     >
-                      <Input />
-                    </Form.Item>
-                  </Col>
+                      <SelectPassenger
+                        showSearch
+                        placeholder="Select Passenger"
+                        onChange={(_, option) => {
+                          const p = (option as any)?.passenger;
+                          if (!p) return;
 
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label="Date of Birth"
-                      name={[field.name, 'dob']}
-                      rules={[{ required: true, message: 'Date of Birth required' }]}
-                    >
-                      <DatePicker style={{ width: '100%' }} />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label="Gender"
-                      name={[field.name, 'gender']}
-                      rules={[{ required: true, message: 'Gender required' }]}
-                    >
-                      <Select
-                        options={[
-                          { label: 'Male', value: 'male' },
-                          { label: 'Female', value: 'female' },
-                          { label: 'Other', value: 'other' },
-                        ]}
+                          form.setFieldsValue({
+                            paxList: {
+                              [field.name]: {
+                                email: p.email,
+                                firstName: p.firstName,
+                                lastName: p.lastName,
+                                gender: p.gender,
+                                phone: p.phoneNo,
+                                dob: p.dateOfBirth,
+                                idNumber: p.idNumber,
+                                passportNumber: p.passportNumber,
+                                passportExpiry: p.passportExpiry,
+                              },
+                            },
+                          });
+                        }}
                       />
                     </Form.Item>
                   </Col>
-
-                  <Col xs={24} md={8}>
-                    <Form.Item
-                      label="ID#"
-                      name={[field.name, 'idNumber']}
-                      rules={[{ required: true, message: 'ID# required' }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Passport"
-                      name={[field.name, 'passportNumber']}
-                      rules={[{ required: true, message: 'Passport required' }]}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      label="Expiry Date"
-                      name={[field.name, 'passportExpiry']}
-                      rules={[{ required: true, message: 'Expiry Date required' }]}
-                    >
-                      <DatePicker style={{ width: '100%' }} />
-                    </Form.Item>
-                  </Col>
                 </Row>
+                <Form.Item noStyle shouldUpdate={(prev, next) => prev?.paxList !== next?.paxList}>
+                  {({ getFieldValue }) => {
+                    const selectedEmail = getFieldValue(['paxList', field.name, 'email']);
+                    if (!selectedEmail) return null;
+
+                    return (
+                      <Row gutter={[16, 8]}>
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            label="First Name"
+                            name={[field.name, 'firstName']}
+                            rules={[{ required: true, message: 'First Name required' }]}
+                          >
+                            <Input disabled />
+                          </Form.Item>
+                        </Col>
+
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            label="Last Name"
+                            name={[field.name, 'lastName']}
+                            rules={[{ required: true, message: 'Last Name required' }]}
+                          >
+                            <Input disabled />
+                          </Form.Item>
+                        </Col>
+
+                        <Col xs={24} md={12}>
+                          <Form.Item
+                            label="Phone"
+                            name={[field.name, 'phone']}
+                            rules={[{ required: true, message: 'Phone required' }]}
+                          >
+                            <Input disabled />
+                          </Form.Item>
+                        </Col>
+
+                        <Col xs={24} md={8}>
+                          <Form.Item
+                            label="Date of Birth"
+                            name={[field.name, 'dob']}
+                            // rules={[{ required: true, message: 'Date of Birth required' }]}
+                          >
+                            <DatePicker style={{ width: '100%' }} disabled />
+                          </Form.Item>
+                        </Col>
+
+                        <Col xs={24} md={8}>
+                          <Form.Item
+                            label="Gender"
+                            name={[field.name, 'gender']}
+                            rules={[{ required: true, message: 'Gender required' }]}
+                          >
+                            <Select
+                              options={[
+                                { label: 'Male', value: 'male' },
+                                { label: 'Female', value: 'female' },
+                                { label: 'Other', value: 'other' },
+                              ]}
+                              disabled
+                            />
+                          </Form.Item>
+                        </Col>
+
+                        <Col xs={24} md={8}>
+                          <Form.Item
+                            label="ID#"
+                            name={[field.name, 'idNumber']}
+                            // rules={[{ required: true, message: 'ID# required' }]}
+                          >
+                            <Input disabled />
+                          </Form.Item>
+                        </Col>
+
+                        <Col xs={24} md={12}>
+                          <Form.Item label="Passport" name={[field.name, 'passportNumber']}>
+                            <Input disabled />
+                          </Form.Item>
+                        </Col>
+
+                        <Col xs={24} md={12}>
+                          <Form.Item label="Expiry Date" name={[field.name, 'passportExpiry']}>
+                            <DatePicker style={{ width: '100%' }} disabled />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    );
+                  }}
+                </Form.Item>
               </Card>
             ))}
 

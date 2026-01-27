@@ -33,19 +33,19 @@ function CreateView() {
         {activeType === 'flight' && (
           <>
             <FlightFilterForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerForm type="flight" />
+            <PassengerForm form={form} type="flight" />
           </>
         )}
         {activeType === 'hotel' && (
           <>
             <HotelFilterForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerForm type="hotel" />
+            <PassengerForm form={form} type="hotel" />
           </>
         )}
         {activeType === 'flight-hotel' && (
           <>
             <FlightHotelFilterForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerForm type="flight-hotel" />
+            <PassengerForm form={form} type="flight-hotel" />
           </>
         )}
       </Form>
