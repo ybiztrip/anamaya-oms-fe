@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { useMemo } from 'react';
 
-import SelectPassenger from './SelectPassenger';
+import SelectUser from '../../../components/Select/SelectUser';
 
 function PassengerGuestForm({
   form,
@@ -59,25 +59,25 @@ function PassengerGuestForm({
                       name={[field.name, 'email']}
                       rules={[{ required: true, message: 'Email required' }]}
                     >
-                      <SelectPassenger
+                      <SelectUser
                         showSearch
                         placeholder="Select Passenger"
                         onChange={(_, option) => {
-                          const p = (option as any)?.passenger;
-                          if (!p) return;
+                          const u = (option as any)?.user;
+                          if (!u) return;
 
                           form.setFieldsValue({
                             paxList: {
                               [field.name]: {
-                                email: p.email,
-                                firstName: p.firstName,
-                                lastName: p.lastName,
-                                gender: p.gender,
-                                phone: p.phoneNo,
-                                dob: p.dateOfBirth,
-                                idNumber: p.idNumber,
-                                passportNumber: p.passportNumber,
-                                passportExpiry: p.passportExpiry,
+                                email: u.email,
+                                firstName: u.firstName,
+                                lastName: u.lastName,
+                                gender: u.gender,
+                                phone: u.phoneNo,
+                                dob: u.dateOfBirth,
+                                idNumber: u.idNumber,
+                                passportNumber: u.passportNumber,
+                                passportExpiry: u.passportExpiry,
                               },
                             },
                           });
