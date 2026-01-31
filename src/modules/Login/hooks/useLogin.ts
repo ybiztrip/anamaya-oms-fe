@@ -5,7 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { AUTH_LOGIN_API } from '@/constants/api';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { HOME_PATH } from '@/constants/routePath';
+import { ACCESS_TOKEN } from '@/constants/storageKey';
 import axios from '@/utils/api';
+import { localStorageSet } from '@/utils/localStorage';
 
 export type useLoginProps = {
   isLoading: boolean;
@@ -33,7 +35,7 @@ const useLogin = () => {
         console.log('response', response);
         setIsLoading(false);
         const { token } = response.data.data;
-        localStorage.setItem('accessToken', token);
+        localStorageSet(ACCESS_TOKEN, token);
         navigate(HOME_PATH);
       })
       .catch((e: any) => {
