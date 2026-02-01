@@ -18,10 +18,16 @@ export type UserType = {
   createdAt: string;
   updatedBy: number;
   updatedAt: string;
-}
+};
+
+export type AirlineType = {
+  airlineCode: string;
+  airlineName: string;
+  logoUrl: string;
+};
 
 export type AirportType = {
-  airportCode: string;    
+  airportCode: string;
   city: string;
   countryId: string;
   countryCode: string;
@@ -59,4 +65,74 @@ export type PassengerType = {
   createdAt: string;
   updatedBy: number;
   updatedAt: string;
+};
+
+export type TripType = 'roundTrip' | 'oneWay' | 'multiCity';
+
+export type FlightSearchParamsType = {
+  tripType: TripType;
+  origin?: string;
+  destination?: string;
+  departureDate?: string;
+  returnDate?: string;
+  segments?: {
+    origin: string;
+    destination: string;
+    departureDate: string;
+  }[];
+  bookerName: string;
+  flightClass: string;
+  attachments: string[];
+  paxList: {
+    email: string;
+  }[];
+  selectedFlight?: FlightSearchOneWayType;
+};
+
+export type FlightSearchOneWayPayloadType = {
+  journey: {
+    depAirportOrAreaCode: string;
+    arrAirportOrAreaCode: string;
+    depDate: string;
+    seatClass: string;
+    sortBy: string;
+  };
+  passengers: {
+    adult: string;
+    child: string;
+    infant: string;
+  };
+};
+
+export type FlightSearchOneWayType = {
+  flightId: string;
+  departureAirport: string;
+  arrivalAirport: string;
+  numOfTransits: string;
+  journeys: {
+    numOfTransits: string;
+    journeyDuration: string;
+    daysOffset: string;
+    refundableStatus: string;
+    departureDetail: {
+      airportCode: string;
+      departureDate: string;
+      departureTime: string;
+      departureTerminal: string;
+    };
+    arrivalDetail: {
+      airportCode: string;
+      arrivalDate: string;
+      arrivalTime: string;
+      arrivalTerminal: string;
+    };
+    fareInfo: any;
+    segments: any[];
+  }[];
+  tripDuration: string;
+};
+
+export type FlightSearchOneWayResponseType = {
+  completed: boolean;
+  oneWayFlightSearchResults: FlightSearchOneWayType[];
 };

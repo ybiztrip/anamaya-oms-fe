@@ -15,13 +15,15 @@ import {
   type UploadFile,
   type UploadProps,
 } from 'antd';
+import dayjs from 'dayjs';
+import { useEffect } from 'react';
+
+import SelectAirport from '@/components/Select/SelectAirport';
+import { FLIGHT_SEARCH_PARAMS } from '@/constants/storageKey';
+import type { FlightSearchParamsType } from '@/types';
+import { sessionStorageGet } from '@/utils/sessionStorage';
 
 type TripType = 'roundTrip' | 'oneWay' | 'multiCity';
-
-const airportOptions = [
-  { value: 'CGK', label: 'CGK — Jakarta' },
-  { value: 'DPS', label: 'DPS — Denpasar' },
-];
 
 function normFile(
   e: UploadProps['onChange'] extends (...args: any) => any
@@ -47,6 +49,17 @@ function FlightFilterForm({
     const destination = form.getFieldValue('destination');
     form.setFieldsValue({ origin: destination, destination: origin });
   };
+
+  useEffect(() => {
+    const flightSearchParams = sessionStorageGet<FlightSearchParamsType>(FLIGHT_SEARCH_PARAMS);
+    if (flightSearchParams) {
+      form.setFieldsValue({
+        ...flightSearchParams,
+        departureDate: dayjs(flightSearchParams?.departureDate),
+        returnDate: dayjs(flightSearchParams?.returnDate),
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -127,7 +140,7 @@ function FlightFilterForm({
                     }),
                   ]}
                 >
-                  <Select showSearch options={airportOptions} placeholder="From" />
+                  <SelectAirport showSearch placeholder="From" />
                 </Form.Item>
 
                 <Button onClick={onSwap} icon={<SwapOutlined />} />
@@ -145,7 +158,7 @@ function FlightFilterForm({
                     }),
                   ]}
                 >
-                  <Select showSearch options={airportOptions} placeholder="To" />
+                  <SelectAirport showSearch placeholder="To" />
                 </Form.Item>
               </Space.Compact>
             </Col>
@@ -202,7 +215,7 @@ function FlightFilterForm({
                             rules={[{ required: true, message: 'Origin required' }]}
                             style={{ flex: 1, marginBottom: 0 }}
                           >
-                            <Select showSearch options={airportOptions} placeholder="From" />
+                            <SelectAirport showSearch placeholder="From" />
                           </Form.Item>
 
                           <Button
@@ -224,7 +237,7 @@ function FlightFilterForm({
                             rules={[{ required: true, message: 'Destination required' }]}
                             style={{ flex: 1, marginBottom: 0 }}
                           >
-                            <Select showSearch options={airportOptions} placeholder="To" />
+                            <SelectAirport showSearch placeholder="To" />
                           </Form.Item>
                         </Space.Compact>
                       </Col>
@@ -271,10 +284,10 @@ function FlightFilterForm({
             >
               <Select
                 options={[
-                  { label: 'First Class', value: 'first' },
-                  { label: 'Premium Economy', value: 'premiumEconomy' },
-                  { label: 'Economy', value: 'economy' },
-                  { label: 'Business', value: 'business' },
+                  { label: 'First Class', value: 'FIRST_CLASS' },
+                  { label: 'Premium Economy', value: 'PREMIUM_ECONOMY' },
+                  { label: 'Economy', value: 'ECONOMY' },
+                  { label: 'Business', value: 'BUSINESS' },
                 ]}
               />
             </Form.Item>

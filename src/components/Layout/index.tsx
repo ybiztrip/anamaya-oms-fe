@@ -11,7 +11,13 @@ import useAuth from '@/hooks/useAuth';
 const { Header, Sider } = Layout;
 const { Title } = Typography;
 
-const AppLayout = ({ children }: { children: ReactNode }) => {
+const AppLayout = ({
+  children,
+  withSidebar = true,
+}: {
+  children: ReactNode;
+  withSidebar?: boolean;
+}) => {
   const { pathname } = useLocation();
   const { logout } = useAuth();
 
@@ -41,28 +47,30 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
         </Button>
       </Header>
       <Layout>
-        <Sider trigger={null} width={300} theme="light">
-          <Menu
-          className="mt-8"
-            mode="inline"
-            selectedKeys={[selectedMenuKey]}
-            items={menus.map((menu) => {
-              const { name, title, path, childs } = menu;
-              const children = childs.map((child) => {
-                const { name, title, path } = child;
+        {withSidebar && (
+          <Sider trigger={null} width={300} theme="light">
+            <Menu
+              className="mt-8"
+              mode="inline"
+              selectedKeys={[selectedMenuKey]}
+              items={menus.map((menu) => {
+                const { name, title, path, childs } = menu;
+                const children = childs.map((child) => {
+                  const { name, title, path } = child;
+                  return {
+                    key: name,
+                    label: <Link to={path}>{title}</Link>,
+                  };
+                });
                 return {
                   key: name,
-                  label: <Link to={path}>{title}</Link>,
+                  label: path ? <Link to={path}>{title}</Link> : title,
+                  ...(children.length ? { children } : {}),
                 };
-              });
-              return {
-                key: name,
-                label: path ? <Link to={path}>{title}</Link> : title,
-                ...(children.length ? { children } : {}),
-              };
-            })}
-          />
-        </Sider>
+              })}
+            />
+          </Sider>
+        )}
         <Layout style={{ minHeight: 'calc(100vh - 80px)' }}>
           <div className="p-8">{children}</div>
         </Layout>

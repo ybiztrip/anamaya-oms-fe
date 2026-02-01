@@ -1,8 +1,15 @@
 import { Route, Routes } from 'react-router-dom';
 
-import { APPROVAL_PATH, CREATE_PATH, HOME_PATH, LOGIN_PATH } from '@/constants/routePath';
+import {
+  APPROVAL_PATH,
+  CREATE_FLIGHT_SEARCH_PATH,
+  CREATE_PATH,
+  HOME_PATH,
+  LOGIN_PATH,
+} from '@/constants/routePath';
 import ApprovalView from '@/modules/Approval/ApprovalView';
 import CreateView from '@/modules/Create/CreateView';
+import FlightSearchView from '@/modules/Create/FlightSearchView';
 import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
 
@@ -25,6 +32,14 @@ function App() {
         element={
           <ProtectedRoute>
             <CreateView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={CREATE_FLIGHT_SEARCH_PATH}
+        element={
+          <ProtectedRoute>
+            <FlightSearchView />
           </ProtectedRoute>
         }
       />
