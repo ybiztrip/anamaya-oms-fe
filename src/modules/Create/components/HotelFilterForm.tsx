@@ -12,9 +12,13 @@ import {
   Select,
   Space,
   Upload,
+  message,
   type UploadFile,
   type UploadProps,
 } from 'antd';
+import { useState } from 'react';
+import { Modal } from 'antd';
+
 
 const { RangePicker } = DatePicker;
 
@@ -41,6 +45,62 @@ function HotelFilterForm({
 }) {
   const stayRange = Form.useWatch('stayRange', form);
   const nights = stayRange?.[0] && stayRange?.[1] ? stayRange[1].diff(stayRange[0], 'day') : 0;
+
+  /* STATE */
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewType, setPreviewType] = useState<'image' | 'pdf'>('image');
+  const [previewImage, setPreviewImage] = useState('');
+  const [previewTitle, setPreviewTitle] = useState('');
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}')?.v?.email || '';
+    } catch {
+      return '';
+    }
+  });
+
+  /* FUNCTIONS  */
+  const getBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const handleUploadChange: UploadProps['onChange'] = ({ fileList }) => {
+    setFileList(fileList);
+  };
+
+  const handlePreview = async (file: UploadFile) => {
+    let previewUrl = file.url || file.preview;
+
+    if (!previewUrl && file.originFileObj) {
+      previewUrl = await getBase64(file.originFileObj as File);
+      file.preview = previewUrl;
+    }
+
+    const isPdf =
+      file.type === 'application/pdf' ||
+      file.name?.toLowerCase().endsWith('.pdf');
+
+    setPreviewType(isPdf ? 'pdf' : 'image');
+    setPreviewImage(previewUrl as string);
+    setPreviewOpen(true);
+    setPreviewTitle(file.name || 'Preview');
+  };
+
+  const beforeUploadFile = (file: File) => {
+    const isImage = file.type.startsWith('image/');
+    const isPdf = file.type === 'application/pdf';
+
+    if (!isImage && !isPdf) {
+      message.error('Hanya dapat upload file gambar (JPG/PNG) atau PDF!');
+      return Upload.LIST_IGNORE;
+    }
+    return false;
+  };
 
   return (
     <>
@@ -116,45 +176,127 @@ function HotelFilterForm({
           )}
         </Row>
       </Card>
+
       <div className="space-y-4 mt-4">
-        <Row gutter={[16, 8]}>
-          <Col xs={24} md={8}>
-            <Form.Item label="Booker" name="bookerName">
-              <Input disabled />
-            </Form.Item>
-          </Col>
+        <Form
+          form={form}
+          layout="horizontal"
+          labelAlign="left"
+          style={{ paddingLeft: 30 }}
+          labelCol={{
+            xs: { span: 24 },
+            sm: { span: 24 },
+            md: { span: 8 },
+          }}
+          wrapperCol={{
+            xs: { span: 24 },
+            sm: { span: 24 },
+            md: { span: 16 },
+          }}
+        >
+          {/* Booker */}
+          <Form.Item
+            label="Booker"
+            name="booker"
+            rules={[{ required: true, message: 'Booker required' }]}
+          >
+            <span style={{ fontSize: 14 }}>
+              {user}
+            </span>
+          </Form.Item>
 
-          <Col xs={24} md={16}>
-            <Form.Item
-              label="Hotel Stars"
-              name="hotelStars"
-              rules={[{ required: true, message: 'Hotel Class required' }]}
-            >
-              <Radio.Group optionType="button" buttonStyle="solid">
+          {/* Hotel Stars */}
+          <Form.Item
+            label="Hotel Star"
+            name="hotelStars"
+            rules={[{ required: true, message: 'Hotel Class required' }]}
+          >
+            <Radio.Group>
+              <Space size={16} wrap>
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <Radio.Button key={n} value={String(n)}>
+                  <Radio
+                    key={n}
+                    value={String(n)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
                     {Array.from({ length: n }).map((_, i) => (
-                      <StarFilled key={i} style={{ color: '#fadb14' }} />
+                      <StarFilled
+                        key={i}
+                        style={{
+                          color: '#69A8FF',
+                          fontSize: 16,
+                        }}
+                      />
                     ))}
-                  </Radio.Button>
+                  </Radio>
                 ))}
-              </Radio.Group>
-            </Form.Item>
-          </Col>
+              </Space>
+            </Radio.Group>
+          </Form.Item>
 
-          <Col xs={24} md={24}>
-            <Form.Item
-              label="Attachment"
-              name="attachments"
-              valuePropName="fileList"
-              getValueFromEvent={normFile}
-            >
-              <Upload beforeUpload={() => false} multiple>
-                <Button icon={<UploadOutlined />}>Upload</Button>
+          {/* Attachment */}
+          <Form.Item
+            label="Attachment"
+            name="attachments"
+            valuePropName="fileList"
+            getValueFromEvent={normFile}
+            style={{ marginBottom: 16, marginLeft: 10 }}
+          >
+            <>
+              <Upload
+                beforeUpload={beforeUploadFile}
+                multiple
+                listType="picture" // penting untuk preview
+                fileList={fileList}
+                onChange={handleUploadChange}
+                onPreview={handlePreview}
+              >
+                <span
+                  style={{
+                    color: '#1677ff',
+                    cursor: 'pointer',
+                    fontWeight: 500,
+                    fontSize: 14,
+                  }}
+                >
+                  Upload
+                </span>
               </Upload>
-            </Form.Item>
-          </Col>
-        </Row>
+
+              {/* Modal Preview */}
+              <Modal
+                open={previewOpen}
+                title={previewTitle}
+                footer={null}
+                onCancel={() => setPreviewOpen(false)}
+                width={800}
+              >
+                {previewType === 'image' ? (
+                  <img
+                    alt="preview"
+                    style={{ width: '100%' }}
+                    src={previewImage}
+                  />
+                ) : (
+                  <iframe
+                    src={previewImage}
+                    style={{
+                      width: '100%',
+                      height: '80vh',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                    title="PDF Preview"
+                  />
+                )}
+              </Modal>
+            </>
+          </Form.Item>
+        </Form>
       </div>
     </>
   );

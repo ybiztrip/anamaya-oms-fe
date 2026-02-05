@@ -66,7 +66,9 @@ function CreateView() {
         {activeType === 'hotel' && (
           <>
             <HotelFilterForm form={form} onTypeChange={handleTypeChange} />
+            <div style={{ paddingLeft: '40px', paddingTop: '20px' }}>
             <PassengerForm form={form} type="hotel" />
+            </div>
           </>
         )}
         {activeType === 'flight-hotel' && (
