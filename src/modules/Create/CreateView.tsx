@@ -9,20 +9,25 @@ import {
   CREATE_HOTEL_SEARCH_PATH,
 } from '@/constants/routePath';
 import {
+  BOOKING_PARAMS,
   FLIGHT_HOTEL_SEARCH_PARAMS,
-  FLIGHT_SEARCH_PARAMS,
   HOTEL_SEARCH_PARAMS,
+  USER,
 } from '@/constants/storageKey';
+import type { BookingParamsType, UserType } from '@/types';
+import { localStorageGet } from '@/utils/localStorage';
 import { sessionStorageSet } from '@/utils/sessionStorage';
 
-import FlightFilterForm from './components/FlightFilterForm';
+import FlightForm from './components/FlightForm';
 import FlightHotelFilterForm from './components/FlightHotelFilterForm';
 import HotelFilterForm from './components/HotelFilterForm';
 import PassengerForm from './components/PassengerGuestForm';
+import { flightFormToBookingParams } from './utils/flightFormMapper';
 
 function CreateView() {
   const navigate = useNavigate();
   const [activeType, setActiveType] = useState('flight');
+  const userProfile = localStorageGet<UserType>(USER);
 
   const handleTypeChange = (key: string) => {
     setActiveType(key);
@@ -32,7 +37,8 @@ function CreateView() {
 
   const onFinish = (values: any) => {
     if (activeType === 'flight') {
-      sessionStorageSet(FLIGHT_SEARCH_PARAMS, values);
+      const bookingParams = flightFormToBookingParams(values);
+      sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_FLIGHT_SEARCH_PATH);
     } else if (activeType === 'hotel') {
       sessionStorageSet(HOTEL_SEARCH_PARAMS, values);
@@ -50,7 +56,7 @@ function CreateView() {
         layout="vertical"
         initialValues={{
           tripType: 'roundTrip',
-          bookerName: 'John Due', // TODO: add booker name
+          bookerName: `${userProfile?.firstName} ${userProfile?.lastName}`,
           flightClass: 'ECONOMY',
           hotelStars: '5',
           passengers: [{}],
@@ -59,7 +65,7 @@ function CreateView() {
       >
         {activeType === 'flight' && (
           <>
-            <FlightFilterForm form={form} onTypeChange={handleTypeChange} />
+            <FlightForm form={form} onTypeChange={handleTypeChange} />
             <PassengerForm form={form} type="flight" />
           </>
         )}

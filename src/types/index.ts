@@ -58,35 +58,33 @@ export type PassengerType = {
   firstName: string;
   lastName: string;
   gender: string;
-  positionId: number;
-  phoneNo: string;
-  status: number;
-  createdBy: number;
-  createdAt: string;
-  updatedBy: number;
-  updatedAt: string;
+  phone: string;
+  dob: string;
+  idNumber: string;
+  passportNumber: string;
+  passportExpiry: string;
 };
 
 export type TripType = 'roundTrip' | 'oneWay' | 'multiCity';
 
-export type FlightSearchParamsType = {
-  tripType: TripType;
-  origin?: string;
-  destination?: string;
-  departureDate?: string;
-  returnDate?: string;
-  segments?: {
-    origin: string;
-    destination: string;
-    departureDate: string;
-  }[];
-  bookerName: string;
+export type BookingFlightParamsType = {
+  name: string;
+  origin: string;
+  destination: string;
+  departureDate: string;
   flightClass: string;
-  attachments: string[];
-  paxList: {
-    email: string;
-  }[];
   selectedFlight?: FlightSearchOneWayType;
+};
+
+export type BookingParamsType = {
+  tripType?: TripType;
+  flights?: BookingFlightParamsType[];
+  // TODO: hotel params
+  hotel?: any;
+  bookerName: string;
+  attachments: string[];
+  paxList: PassengerType[];
+  // TODO: hotel guest
 };
 
 export type FlightSearchOneWayPayloadType = {

@@ -15,13 +15,14 @@ import {
   type UploadFile,
   type UploadProps,
 } from 'antd';
-import dayjs from 'dayjs';
 import { useEffect } from 'react';
 
 import SelectAirport from '@/components/Select/SelectAirport';
-import { FLIGHT_SEARCH_PARAMS } from '@/constants/storageKey';
-import type { FlightSearchParamsType } from '@/types';
+import { BOOKING_PARAMS } from '@/constants/storageKey';
+import type { BookingParamsType } from '@/types';
 import { sessionStorageGet } from '@/utils/sessionStorage';
+
+import { bookingParamsToFlightForm } from '../utils/flightFormMapper';
 
 type TripType = 'roundTrip' | 'oneWay' | 'multiCity';
 
@@ -34,7 +35,7 @@ function normFile(
   return e?.fileList as UploadFile[];
 }
 
-function FlightFilterForm({
+function FlightForm({
   form,
   onTypeChange,
 }: {
@@ -51,15 +52,13 @@ function FlightFilterForm({
   };
 
   useEffect(() => {
-    const flightSearchParams = sessionStorageGet<FlightSearchParamsType>(FLIGHT_SEARCH_PARAMS);
-    if (flightSearchParams) {
-      form.setFieldsValue({
-        ...flightSearchParams,
-        departureDate: dayjs(flightSearchParams?.departureDate),
-        returnDate: dayjs(flightSearchParams?.returnDate),
-      });
+    const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
+    if (bookingParams) {
+      const flightForm = bookingParamsToFlightForm(bookingParams);
+      console.log('flightForm', flightForm);
+      form.setFieldsValue(flightForm);
     }
-  }, []);
+  }, [form]);
 
   return (
     <>
@@ -202,7 +201,7 @@ function FlightFilterForm({
           </Row>
         )}
         {tripType === 'multiCity' && (
-          <Form.List name="segments" initialValue={[{}, {}]}>
+          <Form.List name="flights" initialValue={[{}, {}]}>
             {(fields, { add, remove }) => (
               <>
                 {fields.map((field) => (
@@ -221,14 +220,14 @@ function FlightFilterForm({
                           <Button
                             icon={<SwapOutlined />}
                             onClick={() => {
-                              const origin = form.getFieldValue(['segments', field.name, 'origin']);
+                              const origin = form.getFieldValue(['flights', field.name, 'origin']);
                               const destination = form.getFieldValue([
-                                'segments',
+                                'flights',
                                 field.name,
                                 'destination',
                               ]);
-                              form.setFieldValue(['segments', field.name, 'origin'], destination);
-                              form.setFieldValue(['segments', field.name, 'destination'], origin);
+                              form.setFieldValue(['flights', field.name, 'origin'], destination);
+                              form.setFieldValue(['flights', field.name, 'destination'], origin);
                             }}
                           />
 
@@ -300,6 +299,7 @@ function FlightFilterForm({
               valuePropName="fileList"
               getValueFromEvent={normFile}
             >
+              {/* TODO: upload attachment */}
               <Upload beforeUpload={() => false} multiple>
                 <Button icon={<UploadOutlined />}>Upload</Button>
               </Upload>
@@ -310,4 +310,5 @@ function FlightFilterForm({
     </>
   );
 }
-export default FlightFilterForm;
+
+export default FlightForm;

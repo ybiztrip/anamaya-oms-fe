@@ -13,6 +13,8 @@ import {
 } from 'antd';
 import { useMemo } from 'react';
 
+import type { UserType } from '@/types';
+
 import SelectUser from '../../../components/Select/SelectUser';
 
 function PassengerGuestForm({
@@ -62,8 +64,8 @@ function PassengerGuestForm({
                       <SelectUser
                         showSearch
                         placeholder="Select Passenger"
-                        onChange={(_, option) => {
-                          const u = (option as any)?.user;
+                        onChange={(_, option: any) => {
+                          const u = option.user as UserType;
                           if (!u) return;
 
                           form.setFieldsValue({
@@ -74,13 +76,15 @@ function PassengerGuestForm({
                                 lastName: u.lastName,
                                 gender: u.gender,
                                 phone: u.phoneNo,
-                                dob: u.dateOfBirth,
-                                idNumber: u.idNumber,
-                                passportNumber: u.passportNumber,
-                                passportExpiry: u.passportExpiry,
+                                // TODO: passenger data
+                                dob: '',
+                                idNumber: '',
+                                passportNumber: '',
+                                passportExpiry: '',
                               },
                             },
                           });
+                          // TODO: input passenger manually
                         }}
                       />
                     </Form.Item>
