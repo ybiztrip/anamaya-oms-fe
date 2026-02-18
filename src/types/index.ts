@@ -134,3 +134,74 @@ export type FlightSearchOneWayResponseType = {
   completed: boolean;
   oneWayFlightSearchResults: FlightSearchOneWayType[];
 };
+
+export type BookingPayloadType = {
+  startDate: string;
+  endDate: string;
+  contactEmail: string;
+  contactFirstName: string;
+  contactLastName: string;
+  contactTitle: string;
+  contactNationality: string;
+  contactPhoneCode: string;
+  contactPhoneNumber: string;
+  contactDob: string;
+};
+
+export type BookingResponseType = {
+  id: number;
+  companyId: number;
+  code: string;
+  journeyCode: string | null;
+  startDate: string;
+  endDate: string;
+  contactEmail: string;
+  contactFirstName: string;
+  contactLastName: string;
+  contactTitle: string;
+  contactNationality: string;
+  contactPhoneCode: string;
+  contactPhoneNumber: string;
+  contactDob: string;
+  additionalInfo: any;
+  clientAdditionalInfo: any;
+  status: string;
+  flights: any;
+  hotels: any;
+};
+
+export type BookingFlightPayloadType = {
+  flights: {
+    type: number;
+    clientSource: string;
+    itemId: string;
+    origin: string;
+    destination: string;
+    departureDatetime: string;
+    arrivalDatetime: string;
+  }[];
+  paxs: {
+    firstName: string;
+    lastName: string;
+    title: string;
+    gender: string;
+    type: string;
+    email: string;
+    nationality: string;
+    phoneCode: string;
+    phoneNumber: string;
+    dob: string;
+    addOn: {
+      type: string;
+      mealPreference: string;
+      seatPreference?: string;
+      baggage: string;
+    }[];
+    issuingCountry: string;
+    documentType: string;
+    documentNo: string;
+    expirationDate: string;
+  }[];
+};
+
+export type BookingFlightResponseType = any;
