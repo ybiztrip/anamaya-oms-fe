@@ -5,6 +5,7 @@ import {
   FLIGHT_AIRPORTS_API,
   FLIGHT_SEARCH_ONE_WAY_API,
   USERS_API,
+  USERS_DETAIL_API,
 } from '@/constants/api';
 import type {
   AirlineType,
@@ -28,6 +29,11 @@ export async function fetchUsers(): Promise<PaginationResponseType<UserType>> {
   return res.data;
 }
 
+export async function fetchUserDetail(id: string): Promise<ResponseType<UserType>> {
+  const res = await axios.get(USERS_DETAIL_API.replace(':id', id));
+  return res.data;
+}
+
 export async function fetchAirports(): Promise<ResponseType<AirportType[]>> {
   const res = await axios.get(FLIGHT_AIRPORTS_API);
   return res.data;
@@ -41,9 +47,9 @@ export async function fetchAirlines(): Promise<ResponseType<AirlineType[]>> {
 export async function fetchFlightSearchOneWay(
   params: FlightSearchOneWayPayloadType,
 ): Promise<ResponseType<FlightSearchOneWayResponseType>> {
-  // const res = await axios.post(FLIGHT_SEARCH_ONE_WAY_API, params);
-  // return res.data;
-  return mockFetchFlightSearchOneWay;
+  const res = await axios.post(FLIGHT_SEARCH_ONE_WAY_API, params);
+  return res.data;
+  // return mockFetchFlightSearchOneWay;
 }
 
 export async function createBookings(

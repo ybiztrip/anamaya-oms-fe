@@ -36,7 +36,6 @@ export default function useFlightConfirm() {
   const { flights = [], paxList = [] } = bookingParams ?? {};
 
   const handleSubmitForApproval = async (values: any) => {
-    console.log('values', values);
     const userProfile = localStorageGet<UserType>(USER);
     let startDate = '';
     let endDate = '';
@@ -46,6 +45,8 @@ export default function useFlightConfirm() {
     }
     // TODO: get start and end date from flights and hotel
 
+    const phone = parsePhoneNumber(userProfile?.phoneNo ?? '');
+    
     // TODO: booking payload
     const bookingPayload: BookingPayloadType = {
       startDate: startDate,
@@ -55,9 +56,11 @@ export default function useFlightConfirm() {
       contactLastName: userProfile?.lastName ?? '',
       contactTitle: 'MR',
       contactNationality: 'ID',
-      contactPhoneCode: '+62',
-      contactPhoneNumber: '8123456789',
-      contactDob: '1990-05-20',
+      contactPhoneCode: phone?.countryCallingCode ?? '',
+      contactPhoneNumber: phone?.nationalNumber ?? '',
+      contactDob: userProfile?.dateOfBirth
+        ? dayjs(userProfile.dateOfBirth).format('YYYY-MM-DD')
+        : '',
     };
     const createBookingsResponse = await createBookingsMutation.mutateAsync(bookingPayload);
 

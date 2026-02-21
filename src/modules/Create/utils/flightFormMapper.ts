@@ -53,7 +53,7 @@ export function flightFormToBookingParams(values: any): BookingParamsType {
 
 export function bookingParamsToFlightForm(bookingParams: BookingParamsType): any {
   if (bookingParams.tripType !== 'multiCity') {
-    const { flights, ...rest } = bookingParams;
+    const { flights, paxList, ...rest } = bookingParams;
     return {
       ...rest,
       origin: flights?.[0]?.origin,
@@ -63,15 +63,26 @@ export function bookingParamsToFlightForm(bookingParams: BookingParamsType): any
       ...(bookingParams.tripType === 'roundTrip'
         ? { returnDate: dayjs(flights?.[1]?.departureDate) }
         : {}),
+      paxList: paxList.map((pax: any) => ({
+        ...pax,
+        dob: dayjs(pax.dob),
+        passportExpiry: dayjs(pax.passportExpiry),
+      })),
     };
   } else {
+    const { flights, paxList, ...rest } = bookingParams;
     return {
-      ...bookingParams,
-      flightClass: bookingParams.flights?.[0]?.flightClass,
-      flights: bookingParams.flights?.map((flight: any) => ({
+      ...rest,
+      flightClass: flights?.[0]?.flightClass,
+      flights: flights?.map((flight: any) => ({
         ...flight,
         departureDate: dayjs(flight.departureDate),
       })),
+      paxList: paxList.map((pax: any) => ({
+        ...pax,
+        dob: dayjs(pax.dob),
+        passportExpiry: dayjs(pax.passportExpiry),
+      })),  
     };
   }
 }

@@ -2,6 +2,7 @@ import { Form, type FormInstance, message } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { fetchUserDetail } from '@/api';
 import { AUTH_LOGIN_API } from '@/constants/api';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { HOME_PATH } from '@/constants/routePath';
@@ -32,26 +33,12 @@ const useLogin = () => {
     };
     const result = await axios
       .post(apiURL, payload)
-      .then((response) => {
-        console.log('response', response);
+      .then(async (response) => {
         setIsLoading(false);
-        const { token, id, email, firstName, lastName } = response.data.data;
+        const { token, id } = response.data.data;
         localStorageSet(ACCESS_TOKEN, token);
-        localStorageSet<UserType>(USER, {
-          id,
-          email,
-          firstName,
-          lastName,
-          gender: '',
-          positionId: 0,
-          phoneNo: '',
-          status: 0,
-          createdBy: 0,
-          createdAt: '',
-          updatedBy: 0,
-          updatedAt: '',
-          companyId: 0,
-        });
+        const userDetail = await fetchUserDetail(id);
+        localStorageSet<UserType>(USER, userDetail.data);
         navigate(HOME_PATH);
       })
       .catch((e: any) => {

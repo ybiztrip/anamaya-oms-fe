@@ -13,6 +13,12 @@ export type UserType = {
   gender: string;
   positionId: number;
   phoneNo: string;
+  title: string;
+  identityNo: string;
+  passportNo: string;
+  passportExpiry: string;
+  dateOfBirth: string;
+  nationality: string;
   status: number;
   createdBy: number;
   createdAt: string;
