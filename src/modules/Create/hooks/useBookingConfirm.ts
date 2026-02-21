@@ -33,7 +33,7 @@ export default function useFlightConfirm() {
   });
 
   const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
-  const { flights = [], paxList = [] } = bookingParams ?? {};
+  const { flights = [], paxList = [], tripType } = bookingParams ?? {};
 
   const handleSubmitForApproval = async (values: any) => {
     const userProfile = localStorageGet<UserType>(USER);
@@ -69,18 +69,19 @@ export default function useFlightConfirm() {
         const departure = flight.selectedFlight?.journeys?.[0]?.departureDetail;
         const arrival = flight.selectedFlight?.journeys?.[0]?.arrivalDetail;
         return {
-          type: 1, // TODO: payload type
+          type: tripType === 'roundTrip' ? 1 : tripType === 'oneWay' ? 2 : 3,
           clientSource: CLIENT_SOURCE,
-          itemId: '1st:285d55b16931618a72b4b15ff5d80977bc857730c68e944b055d7df70360dbe7', // TODO: itemId
+          itemId: flight.selectedFlight?.flightId ?? '',
           origin: flight.selectedFlight?.departureAirport ?? '',
           destination: flight.selectedFlight?.arrivalAirport ?? '',
           departureDatetime: departure?.departureDate
-            ? dayjs(`${departure.departureDate}T${departure.departureTime}:00`).format(
-                'YYYY-MM-DDTHH:mm:ss',
-              )
+            ? dayjs(
+                `${departure.departureDate}T${departure.departureTime}:00`,
+                'DD-MM-YYYY HH:mm',
+              ).format('YYYY-MM-DDTHH:mm:ss')
             : '',
           arrivalDatetime: arrival?.arrivalDate
-            ? dayjs(`${arrival.arrivalDate}T${arrival.arrivalTime}:00`).format(
+            ? dayjs(`${arrival.arrivalDate}T${arrival.arrivalTime}:00`, 'DD-MM-YYYY HH:mm').format(
                 'YYYY-MM-DDTHH:mm:ss',
               )
             : '',

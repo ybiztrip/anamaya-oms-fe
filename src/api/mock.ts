@@ -71,13 +71,13 @@ export const mockFetchFlightSearchOneWay: ResponseType<FlightSearchOneWayRespons
             refundableStatus: 'REFUNDABLE',
             departureDetail: {
               airportCode: 'CGK',
-              departureDate: '2026-02-20',
+              departureDate: '20-02-2026',
               departureTime: '07:30',
               departureTerminal: '3',
             },
             arrivalDetail: {
               airportCode: 'DPS',
-              arrivalDate: '2026-02-20',
+              arrivalDate: '20-02-2026',
               arrivalTime: '09:40',
               arrivalTerminal: 'D',
             },
@@ -114,13 +114,13 @@ export const mockFetchFlightSearchOneWay: ResponseType<FlightSearchOneWayRespons
             refundableStatus: 'NON_REFUNDABLE',
             departureDetail: {
               airportCode: 'CGK',
-              departureDate: '2026-02-20',
+              departureDate: '20-02-2026',
               departureTime: '10:00',
               departureTerminal: '2',
             },
             arrivalDetail: {
               airportCode: 'DPS',
-              arrivalDate: '2026-02-20',
+              arrivalDate: '20-02-2026',
               arrivalTime: '14:30',
               arrivalTerminal: 'I',
             },

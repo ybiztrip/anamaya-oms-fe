@@ -24,7 +24,7 @@ function FlightSearchView() {
       ...newFlights[flightIndex],
       origin: flight.departureAirport,
       destination: flight.arrivalAirport,
-      departureDate: flight.journeys[0].departureDetail.departureDate,
+      departureDate: dayjs(flight.journeys[0].departureDetail.departureDate, 'MM-DD-YYYY').format('YYYY-MM-DD'),
       selectedFlight: flight,
     };
     const newBookingParams = {
@@ -75,7 +75,7 @@ function FlightSearchView() {
                   <div className="text-center">
                     <div className="flex items-center gap-2 text-center">
                       <div className="font-semibold">{flight.name}</div>
-                      <div>{`(${dayjs(flight?.departureDate).format('DD-MM-YYYY')})`}</div>
+                      <div>{`(${dayjs(flight?.departureDate).format('DD MMM YYYY')})`}</div>
                     </div>
                     <div className="mt-2">
                       {flight.selectedFlight && (

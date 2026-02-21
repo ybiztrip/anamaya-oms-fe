@@ -55,7 +55,6 @@ function FlightForm({
     const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
     if (bookingParams) {
       const flightForm = bookingParamsToFlightForm(bookingParams);
-      console.log('flightForm', flightForm);
       form.setFieldsValue(flightForm);
     }
   }, [form]);
@@ -168,7 +167,11 @@ function FlightForm({
                   rules={[{ required: true }]}
                   style={{ flex: 1, marginBottom: 0 }}
                 >
-                  <DatePicker style={{ width: '100%' }} placeholder="Departure date" />
+                  <DatePicker
+                    style={{ width: '100%' }}
+                    placeholder="Departure date"
+                    format="DD MMM YYYY"
+                  />
                 </Form.Item>
                 {tripType === 'roundTrip' && (
                   <>
@@ -192,6 +195,7 @@ function FlightForm({
                         style={{ width: '100%' }}
                         placeholder="Return date"
                         disabledDate={(d) => (depart ? d.isBefore(depart, 'day') : false)}
+                        format="DD MMM YYYY"
                       />
                     </Form.Item>
                   </>
@@ -247,7 +251,11 @@ function FlightForm({
                             rules={[{ required: true, message: 'Departure date required' }]}
                             style={{ flex: 1, marginBottom: 0 }}
                           >
-                            <DatePicker style={{ width: '100%' }} placeholder="Departure date" />
+                            <DatePicker
+                              style={{ width: '100%' }}
+                              placeholder="Departure date"
+                              format="DD MMM YYYY"
+                            />
                           </Form.Item>
 
                           {fields.length > 1 && (

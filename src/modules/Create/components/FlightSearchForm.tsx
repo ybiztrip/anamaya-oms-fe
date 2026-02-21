@@ -167,7 +167,7 @@ function FlightSearchForm({
                       rules={[{ required: true }]}
                       style={{ flex: 1, marginBottom: 0 }}
                     >
-                      <DatePicker style={{ width: '100%' }} placeholder="Departure date" />
+                      <DatePicker style={{ width: '100%' }} placeholder="Departure date" format="DD MMM YYYY" />
                     </Form.Item>
                   </Space.Compact>
                 </Col>
