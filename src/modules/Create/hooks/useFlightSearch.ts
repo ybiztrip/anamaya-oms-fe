@@ -3,8 +3,8 @@ import { message } from 'antd';
 import dayjs from 'dayjs';
 
 import { fetchFlightSearchOneWay } from '@/api';
-import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
-import type { BookingParamsType, FlightSearchOneWayPayloadType } from '@/types';
+import { ADULT_TYPE, CHILD_TYPE, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import type { BookingParamsType, FlightSearchOneWayPayloadType, PassengerType } from '@/types';
 
 export default function useFlightSearch({
   flightIndex,
@@ -27,20 +27,16 @@ export default function useFlightSearch({
   });
 
   const handleSearchFlights = async (values: any) => {
-    let totalAdult = 0; // age 12 and over
-    let totalChild = 0; // age 2 - 11
-    let totalInfant = 0; // below age 2
-    bookingParams?.paxList?.forEach((pax) => {
-      if (pax.dob) {
-        if (dayjs(pax.dob).isBefore(dayjs().subtract(12, 'year'))) {
-          totalAdult++;
-        } else if (dayjs(pax.dob).isBefore(dayjs().subtract(2, 'year'))) {
-          totalChild++;
-        } else {
-          totalInfant++;
-        }
-      } else {
+    let totalAdult = 0;
+    let totalChild = 0;
+    let totalInfant = 0;
+    bookingParams?.paxList?.forEach((pax: PassengerType) => {
+      if (pax?.type === ADULT_TYPE) {
         totalAdult++;
+      } else if (pax?.type === CHILD_TYPE) {
+        totalChild++;
+      } else {
+        totalInfant++;
       }
     });
     const payload: FlightSearchOneWayPayloadType = {

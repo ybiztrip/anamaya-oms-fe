@@ -12,6 +12,7 @@ export const FLIGHT_API = API_V1 + '/flight';
 export const FLIGHT_AIRLINES_API = FLIGHT_API + '/airlines';
 export const FLIGHT_AIRPORTS_API = FLIGHT_API + '/airports';
 export const FLIGHT_SEARCH_ONE_WAY_API = FLIGHT_API + '/search/one-way';
+export const FLIGHT_BOOKING_ADD_ONS_API = FLIGHT_API + '/booking/add-ons';
 
 export const BOOKINGS_API = API_V1 + '/bookings';
 export const BOOKINGS_FLIGHT_API = BOOKINGS_API + '/:id/flights';

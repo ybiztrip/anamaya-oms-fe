@@ -13,6 +13,9 @@ export default function SelectAirport({
   const { data, isLoading, error } = useQuery({
     queryKey: [FLIGHT_AIRPORTS],
     queryFn: fetchAirports,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   const options = useMemo(() => {

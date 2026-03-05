@@ -6,10 +6,12 @@ import { formatDuration, formatIDR } from '@/utils/formatter';
 
 function FlightInfo({
   flight,
+  withPrice = true,
   withSelect = true,
   onSelect,
 }: {
   flight: FlightSearchOneWayType;
+  withPrice?: boolean;
   withSelect?: boolean;
   onSelect?: (flight: FlightSearchOneWayType) => void;
 }) {
@@ -81,11 +83,13 @@ function FlightInfo({
           </div>
         </Col>
 
-        <Col flex="220px" className="text-right">
-          <div className="text-lg font-semibold">
-            {total?.currency ?? 'IDR'} {formatIDR(total?.amount)}
-          </div>
-        </Col>
+        {withPrice && (
+          <Col flex="220px" className="text-right">
+            <div className="text-lg font-semibold">
+              {total?.currency ?? 'IDR'} {formatIDR(total?.amount)}
+            </div>
+          </Col>
+        )}
         {withSelect && (
           <Col flex="220px" className="text-right">
             <Button type="primary" className="mt-2" onClick={() => onSelect?.(flight)}>

@@ -20,6 +20,7 @@ import { useEffect } from 'react';
 import SelectAirport from '@/components/Select/SelectAirport';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import type { BookingParamsType } from '@/types';
+import dayjs from '@/utils/dayjs';
 import { sessionStorageGet } from '@/utils/sessionStorage';
 
 import { bookingParamsToFlightForm } from '../utils/flightFormMapper';
@@ -171,6 +172,7 @@ function FlightForm({
                     style={{ width: '100%' }}
                     placeholder="Departure date"
                     format="DD MMM YYYY"
+                    disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
                   />
                 </Form.Item>
                 {tripType === 'roundTrip' && (
@@ -254,6 +256,7 @@ function FlightForm({
                             <DatePicker
                               style={{ width: '100%' }}
                               placeholder="Departure date"
+                              disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
                               format="DD MMM YYYY"
                             />
                           </Form.Item>

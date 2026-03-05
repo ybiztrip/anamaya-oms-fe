@@ -63,7 +63,7 @@ function FlightSearchForm({
             <Select
               placeholder="Sort By"
               options={[
-                { label: 'Lowest Price', value: 'LOWEST_PRICE' },
+                { label: 'Lowest Price', value: 'PRICE' },
                 { label: 'Earliest Departure', value: 'DEPARTURE_TIME' },
                 { label: 'Earliest Arrival', value: 'ARRIVAL_TIME' },
               ]}
@@ -186,6 +186,11 @@ function FlightSearchForm({
               </div>
             ) : (
               <>
+                {data && data?.data?.oneWayFlightSearchResults?.length === 0 && (
+                  <div className="flex justify-center items-center h-full">
+                    <div className="text-gray-500">No flights found</div>
+                  </div>
+                )}
                 {data?.data?.oneWayFlightSearchResults?.map((r: FlightSearchOneWayType) => {
                   return (
                     <FlightInfo

@@ -1,11 +1,25 @@
 import dayjs from 'dayjs';
 
+import { ADULT_AGE, ADULT_TYPE, CHILD_AGE, CHILD_TYPE, INFANT_TYPE } from '@/constants/common';
 import type { BookingParamsType } from '@/types';
 
 export function flightFormToBookingParams(values: any): BookingParamsType {
+  const paxList = values.paxList.map((pax: any) => ({
+    ...pax,
+    dob: dayjs(pax.dob),
+    passportExpiry: dayjs(pax.passportExpiry),
+    type: pax.dob
+      ? dayjs(pax.dob).isBefore(dayjs().subtract(ADULT_AGE, 'year'))
+        ? ADULT_TYPE
+        : dayjs(pax.dob).isBefore(dayjs().subtract(CHILD_AGE, 'year'))
+          ? CHILD_TYPE
+          : INFANT_TYPE
+      : ADULT_TYPE,
+  }));
   if (values.tripType === 'roundTrip') {
     return {
       ...values,
+      paxList,
       flights: [
         {
           name: 'Departure',
@@ -26,6 +40,7 @@ export function flightFormToBookingParams(values: any): BookingParamsType {
   } else if (values.tripType === 'oneWay') {
     return {
       ...values,
+      paxList,
       flights: [
         {
           name: 'Departure',
@@ -39,6 +54,7 @@ export function flightFormToBookingParams(values: any): BookingParamsType {
   } else {
     return {
       ...values,
+      paxList,
       flights: values.flights.map((flight: any, index: number) => ({
         name: `Flight ${index + 1}`,
         origin: flight.origin,
@@ -65,8 +81,8 @@ export function bookingParamsToFlightForm(bookingParams: BookingParamsType): any
         : {}),
       paxList: paxList.map((pax: any) => ({
         ...pax,
-        dob: dayjs(pax.dob),
-        passportExpiry: dayjs(pax.passportExpiry),
+        dob: pax.dob ? dayjs(pax.dob) : undefined,
+        passportExpiry: pax.passportExpiry ? dayjs(pax.passportExpiry) : undefined,
       })),
     };
   } else {
@@ -80,9 +96,9 @@ export function bookingParamsToFlightForm(bookingParams: BookingParamsType): any
       })),
       paxList: paxList.map((pax: any) => ({
         ...pax,
-        dob: dayjs(pax.dob),
-        passportExpiry: dayjs(pax.passportExpiry),
-      })),  
+        dob: pax.dob ? dayjs(pax.dob) : undefined,
+        passportExpiry: pax.passportExpiry ? dayjs(pax.passportExpiry) : undefined,
+      })),
     };
   }
 }

@@ -1,6 +1,7 @@
 import type {
   AirlineType,
   AirportType,
+  FlightBookingAddOnsResponseType,
   FlightSearchOneWayResponseType,
   ResponseType,
 } from '@/types';
@@ -131,6 +132,65 @@ export const mockFetchFlightSearchOneWay: ResponseType<FlightSearchOneWayRespons
             ],
           },
         ],
+      },
+    ],
+  },
+};
+
+export const mockFetchFlightBookingAddOns: ResponseType<FlightBookingAddOnsResponseType> = {
+  success: true,
+  message: 'Success',
+  data: {
+    journeysWithAvailableAddOnsOptions: [
+      {
+        segmentsWithAvailableAddOns: [],
+        availableAddOnsOptions: {
+          baggageOptions: [
+            {
+              id: '0',
+              baggageType: 'KG',
+              baggageQuantity: '0',
+              baggageWeight: '10',
+              priceWithCurrency: {
+                amount: '0.0',
+                currency: 'IDR',
+              },
+              netToAgent: {
+                amount: '0.0',
+                currency: 'IDR',
+              },
+            },
+            {
+              id: 'JTJT20##20=8AUzXjE2NTAwMF4wQ1d8MV58NXxLZw==',
+              baggageType: 'KG',
+              baggageQuantity: '',
+              baggageWeight: '15',
+              priceWithCurrency: {
+                amount: '165000',
+                currency: 'IDR',
+              },
+              netToAgent: {
+                amount: '0.0',
+                currency: 'IDR',
+              },
+            },
+            {
+              id: 'JTJT20##21=8AYzXjMzMDAwMF4wQ1d8Ml58MTB8S2c=',
+              baggageType: 'KG',
+              baggageQuantity: '',
+              baggageWeight: '20',
+              priceWithCurrency: {
+                amount: '330000',
+                currency: 'IDR',
+              },
+              netToAgent: {
+                amount: '0.0',
+                currency: 'IDR',
+              },
+            },
+          ],
+          mealOptions: [],
+        },
       },
     ],
   },

@@ -12,6 +12,7 @@ export type UserType = {
   lastName: string;
   gender: string;
   positionId: number;
+  countryCode: string;
   phoneNo: string;
   title: string;
   identityNo: string;
@@ -64,11 +65,13 @@ export type PassengerType = {
   firstName: string;
   lastName: string;
   gender: string;
-  phone: string;
+  phoneNumber: string;
+  phoneCode: string;
   dob: string;
   idNumber: string;
   passportNumber: string;
   passportExpiry: string;
+  type?: string
 };
 
 export type TripType = 'roundTrip' | 'oneWay' | 'multiCity';
@@ -141,6 +144,45 @@ export type FlightSearchOneWayResponseType = {
   oneWayFlightSearchResults: FlightSearchOneWayType[];
 };
 
+export type FlightBookingAddOnsPayloadType = {
+  journeyType: string;
+  flightIds: string[];
+};
+
+export type FlightBookingAddOnType = {
+  segmentsWithAvailableAddOns: [];
+  availableAddOnsOptions: {
+    baggageOptions: {
+      id: string;
+      baggageType: string;
+      baggageQuantity: string;
+      baggageWeight: string;
+      priceWithCurrency: {
+        amount: string;
+        currency: string;
+      };
+      netToAgent: {
+        amount: string;
+        currency: string;
+      };
+    }[];
+    // TODO: meal options type
+    mealOptions: {
+      id: string;
+      mealType: string;
+      mealName: string;
+      priceWithCurrency: {
+        amount: string;
+        currency: string;
+      };
+    }[];
+  };
+};
+
+export type FlightBookingAddOnsResponseType = {
+  journeysWithAvailableAddOnsOptions: FlightBookingAddOnType[];
+};
+
 export type BookingPayloadType = {
   startDate: string;
   endDate: string;
@@ -197,12 +239,7 @@ export type BookingFlightPayloadType = {
     phoneCode: string;
     phoneNumber: string;
     dob: string;
-    addOn: {
-      type: string;
-      mealPreference: string;
-      seatPreference?: string;
-      baggage: string;
-    }[];
+    addOn: FlightBookingAddOnType[];
     issuingCountry: string;
     documentType: string;
     documentNo: string;
