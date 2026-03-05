@@ -3,73 +3,67 @@ import { message } from 'antd';
 import dayjs from 'dayjs';
 
 import { fetchFlightSearchOneWay } from '@/api';
-import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
-import { FLIGHT_SEARCH_PARAMS } from '@/constants/storageKey';
-import type {
-  FlightSearchOneWayPayloadType,
-  FlightSearchOneWayType,
-  FlightSearchParamsType,
-} from '@/types';
-import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
+import { ADULT_TYPE, CHILD_TYPE, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import type { BookingParamsType, FlightSearchOneWayPayloadType, PassengerType } from '@/types';
 
-export default function useFlightSearch() {
+export default function useFlightSearch({
+  flightIndex,
+  bookingParams,
+}: {
+  flightIndex: number;
+  bookingParams: BookingParamsType;
+}) {
+  const flightParams = bookingParams?.flights?.[flightIndex];
   const { mutateAsync, data, isPending, error, reset } = useMutation({
     mutationFn: (payload: FlightSearchOneWayPayloadType) => fetchFlightSearchOneWay(payload),
+    onSuccess: (data) => {
+      if (!data.success) {
+        message.error(data.message);
+      }
+    },
     onError: (e: any) => {
       message.error(e?.response?.data?.message ?? DEFAULT_ERROR_MESSAGE);
     },
   });
 
-  const flightSearchParams = sessionStorageGet<FlightSearchParamsType>(FLIGHT_SEARCH_PARAMS);
-
   const handleSearchFlights = async (values: any) => {
+    let totalAdult = 0;
+    let totalChild = 0;
+    let totalInfant = 0;
+    bookingParams?.paxList?.forEach((pax: PassengerType) => {
+      if (pax?.type === ADULT_TYPE) {
+        totalAdult++;
+      } else if (pax?.type === CHILD_TYPE) {
+        totalChild++;
+      } else {
+        totalInfant++;
+      }
+    });
     const payload: FlightSearchOneWayPayloadType = {
       journey: {
         depAirportOrAreaCode: values.origin,
         arrAirportOrAreaCode: values.destination,
-        depDate: dayjs(values.departureDate).format('DD-MM-YYYY'),
-        seatClass: flightSearchParams?.flightClass ?? 'ECONOMY',
+        depDate: dayjs(values.departureDate).format('MM-DD-YYYY'),
+        seatClass: flightParams?.flightClass ?? 'ECONOMY',
         sortBy: values.sortBy ?? 'ARRIVAL_TIME',
       },
       passengers: {
-        adult: String(flightSearchParams?.paxList?.length ?? 1),
-        child: '0', // TODO: add child count
-        infant: '0', // TODO: add infant count
+        adult: String(totalAdult),
+        child: String(totalChild),
+        infant: String(totalInfant),
       },
     };
     await mutateAsync(payload);
-
-    const currentFlightSearchParams =
-      sessionStorageGet<FlightSearchParamsType>(FLIGHT_SEARCH_PARAMS) ?? flightSearchParams;
-
-    sessionStorageSet<FlightSearchParamsType>(FLIGHT_SEARCH_PARAMS, {
-      ...currentFlightSearchParams,
-      origin: values.origin,
-      destination: values.destination,
-      departureDate: values.departureDate,
-      ...(currentFlightSearchParams?.tripType === 'roundTrip'
-        ? { returnDate: values.returnDate }
-        : {}),
-    } as FlightSearchParamsType);
-  };
-
-  const handleSelectFlight = (flight: FlightSearchOneWayType) => {
-    const currentFlightSearchParams =
-      sessionStorageGet<FlightSearchParamsType>(FLIGHT_SEARCH_PARAMS) ?? flightSearchParams;
-    sessionStorageSet<FlightSearchParamsType>(FLIGHT_SEARCH_PARAMS, {
-      ...currentFlightSearchParams,
-      selectedFlight: flight,
-    } as FlightSearchParamsType);
+    // TODO: filter and sort response data
   };
 
   return {
+    flightParams,
     searchFlight: mutateAsync,
     data: data,
     isLoading: isPending,
     error: error,
     reset: reset,
-    flightSearchParams,
     handleSearchFlights,
-    handleSelectFlight,
   };
 }

@@ -8,6 +8,9 @@ export default function useFlightAirlines() {
   const { data, isLoading, error } = useQuery({
     queryKey: [FLIGHT_AIRLINES],
     queryFn: fetchAirlines,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   const airlinesByCode = useMemo(() => {

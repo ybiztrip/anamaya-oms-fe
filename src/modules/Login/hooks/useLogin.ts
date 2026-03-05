@@ -2,10 +2,12 @@ import { Form, type FormInstance, message } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { fetchUserDetail } from '@/api';
 import { AUTH_LOGIN_API } from '@/constants/api';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { HOME_PATH } from '@/constants/routePath';
-import { ACCESS_TOKEN } from '@/constants/storageKey';
+import { ACCESS_TOKEN, USER } from '@/constants/storageKey';
+import type { UserType } from '@/types';
 import axios from '@/utils/api';
 import { localStorageSet } from '@/utils/localStorage';
 
@@ -31,11 +33,12 @@ const useLogin = () => {
     };
     const result = await axios
       .post(apiURL, payload)
-      .then((response) => {
-        console.log('response', response);
+      .then(async (response) => {
         setIsLoading(false);
-        const { token } = response.data.data;
+        const { token, id } = response.data.data;
         localStorageSet(ACCESS_TOKEN, token);
+        const userDetail = await fetchUserDetail(id);
+        localStorageSet<UserType>(USER, userDetail.data);
         navigate(HOME_PATH);
       })
       .catch((e: any) => {

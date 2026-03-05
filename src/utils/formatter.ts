@@ -5,7 +5,7 @@ export const formatDuration = (minsStr?: string) => {
   return h ? `${h}h ${m}m` : `${m}m`;
 };
 
-export const formatIDR = (amountStr?: string) => {
+export const formatIDR = (amountStr?: string | number) => {
   const n = Math.round(Number(amountStr ?? 0));
   return new Intl.NumberFormat('id-ID').format(n);
 };
