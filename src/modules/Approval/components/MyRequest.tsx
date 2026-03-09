@@ -1,54 +1,15 @@
-import { Button, Card, Col, List, Row, Space, Tag, Typography } from 'antd';
-import dayjs from 'dayjs';
+import { Alert, Button, Card, Col, List, Row, Space, Spin, Typography } from 'antd';
 
 const { Text } = Typography;
-import { useState } from 'react';
 
-type BookingItem = {
-  id: string;
-  booker: string;
-  passenger: string;
-  origin: string;
-  destination: string;
-  departureDatetime: string;
-  arrivalDatetime: string;
-  createdAt: string;
-  approvedAt: string;
-  rejectedAt: string;
-  status: 'BOOKED' | 'APPROVED' | 'REJECTED';
-};
+import { BOOKING_STATUS_APPROVED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 
-const MOCK: BookingItem[] = [
-  {
-    id: 'REQ-001',
-    booker: 'John Doe',
-    passenger: 'John Doe',
-    origin: 'CGK',
-    destination: 'DPS',
-    departureDatetime: '2025-12-27T08:00:00',
-    arrivalDatetime: '2025-12-27T11:00:00',
-    createdAt: '2026-01-17T09:30:00',
-    approvedAt: '',
-    rejectedAt: '',
-    status: 'BOOKED',
-  },
-  {
-    id: 'REQ-002',
-    booker: 'John Doe',
-    passenger: 'Jane Doe',
-    origin: 'CGK',
-    destination: 'DPS',
-    departureDatetime: '2025-12-27T08:00:00',
-    arrivalDatetime: '2025-12-27T11:00:00',
-    createdAt: '2026-01-16T11:20:00',
-    approvedAt: '',
-    rejectedAt: '',
-    status: 'BOOKED',
-  },
-];
+import useBookingList from '../hooks/useBookingList';
+import BookingSummary from './BookingSummary';
 
 function MyRequest() {
-  const [items] = useState<BookingItem[]>(MOCK);
+  const { data, isLoading, error } = useBookingList({ status: BOOKING_STATUS_APPROVED });
+
   return (
     <Card
       className="mt-4"
@@ -81,56 +42,22 @@ function MyRequest() {
         },
       }}
     >
+      {isLoading && <Spin />}
+      {error && <Alert message={error?.message ?? DEFAULT_ERROR_MESSAGE} type="error" />}
       <List
-        dataSource={items}
+        dataSource={data}
         rowKey="id"
         renderItem={(item) => {
           return (
-            <List.Item style={{ paddingInline: 0 }}>
-              <Row gutter={[16, 8]} align="top" style={{ width: '100%' }}>
-
-                <Col flex="auto">
-                  <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                    <Text>
-                      <Text type="secondary">Booker:</Text> {item.booker}
-                    </Text>
-                    <Text>
-                      <Text type="secondary">Passenger:</Text> {item.passenger}
-                    </Text>
-
-                    <Text>
-                      {dayjs(item.departureDatetime).format('ddd, MMM DD HH:mm')}{' '}
-                      <Text strong>{item.origin}</Text>
-                    </Text>
-                    <Text>
-                      {dayjs(item.arrivalDatetime).format('ddd, MMM DD HH:mm')}{' '}
-                      <Text strong>{item.destination}</Text>
-                    </Text>
-
+            <List.Item style={{ paddingBlock: 24 }}>
+              <div style={{ width: '100%' }}>
+                <BookingSummary data={item} />
+                <Row gutter={[16, 8]} style={{ width: '100%' }} className="mt-2">
+                  <Col>
                     <Button type="link">View detail</Button>
-                  </Space>
-                </Col>
-
-                <Col flex="280px">
-                  <Space direction="vertical" align="end" size={8} style={{ width: '100%' }}>
-                    <Tag
-                      color={
-                        item.status === 'BOOKED'
-                          ? 'blue'
-                          : item.status === 'APPROVED'
-                            ? 'green'
-                            : 'red'
-                      }
-                    >
-                      {item.status}
-                    </Tag>
-
-                    <Text type="secondary">
-                      Created: {dayjs(item.createdAt).format('ddd, MMM DD HH:mm')}
-                    </Text>
-                  </Space>
-                </Col>
-              </Row>
+                  </Col>
+                </Row>
+              </div>
             </List.Item>
           );
         }}

@@ -1,67 +1,31 @@
-import { Button, Card, Checkbox, Col, List, Row, Space, Tag, Typography } from 'antd';
-import dayjs from 'dayjs';
+import { Alert, Button, Card, Checkbox, Col, List, Row, Space, Spin, Typography } from 'antd';
+
+import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+
+import useBookingList from '../hooks/useBookingList';
+import BookingSummary from './BookingSummary';
 
 const { Text } = Typography;
+
 import { useMemo, useState } from 'react';
 
-type BookingItem = {
-  id: string;
-  booker: string;
-  passenger: string;
-  origin: string;
-  destination: string;
-  departureDatetime: string;
-  arrivalDatetime: string;
-  createdAt: string;
-  approvedAt: string;
-  rejectedAt: string;
-  status: 'BOOKED' | 'APPROVED' | 'REJECTED';
-};
-
-const MOCK: BookingItem[] = [
-  {
-    id: 'REQ-001',
-    booker: 'John Doe',
-    passenger: 'John Doe',
-    origin: 'CGK',
-    destination: 'DPS',
-    departureDatetime: '2025-12-27T08:00:00',
-    arrivalDatetime: '2025-12-27T11:00:00',
-    createdAt: '2026-01-17T09:30:00',
-    approvedAt: '',
-    rejectedAt: '',
-    status: 'BOOKED',
-  },
-  {
-    id: 'REQ-002',
-    booker: 'John Doe',
-    passenger: 'Jane Doe',
-    origin: 'CGK',
-    destination: 'DPS',
-    departureDatetime: '2025-12-27T08:00:00',
-    arrivalDatetime: '2025-12-27T11:00:00',
-    createdAt: '2026-01-16T11:20:00',
-    approvedAt: '',
-    rejectedAt: '',
-    status: 'BOOKED',
-  },
-];
-
 function NeedApproval() {
-  const [items, setItems] = useState<BookingItem[]>(MOCK);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { data, isLoading, error } = useBookingList({ status: BOOKING_STATUS_BOOKED });
+
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const allPendingIds = useMemo(
-    () => items.filter((x) => x.status === 'BOOKED').map((x) => x.id),
-    [items],
+    () => data?.filter((x) => x.status === BOOKING_STATUS_BOOKED).map((x) => x.id) ?? [],
+    [data],
   );
 
   const selectedPendingIds = useMemo(
-    () => selectedIds.filter((id) => items.find((x) => x.id === id)?.status === 'BOOKED'),
-    [selectedIds, items],
+    () =>
+      selectedIds.filter((id) => data?.find((x) => x.id === id)?.status === BOOKING_STATUS_BOOKED),
+    [selectedIds, data],
   );
 
-  const toggleOne = (id: string, checked: boolean) => {
+  const toggleOne = (id: number, checked: boolean) => {
     setSelectedIds((prev) =>
       checked ? Array.from(new Set([...prev, id])) : prev.filter((x) => x !== id),
     );
@@ -74,13 +38,13 @@ function NeedApproval() {
     });
   };
 
-  const approve = (ids: string[]) => {
-    setItems((prev) => prev.map((x) => (ids.includes(x.id) ? { ...x, status: 'APPROVED' } : x)));
+  const approve = (ids: number[]) => {
+    // TODO: approve bookings
     setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
   };
 
-  const reject = (ids: string[]) => {
-    setItems((prev) => prev.map((x) => (ids.includes(x.id) ? { ...x, status: 'REJECTED' } : x)));
+  const reject = (ids: number[]) => {
+    // TODO: reject bookings
     setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
   };
   return (
@@ -141,65 +105,31 @@ function NeedApproval() {
         },
       }}
     >
+      {isLoading && <Spin />}
+      {error && <Alert message={error?.message ?? DEFAULT_ERROR_MESSAGE} type="error" />}
       <List
-        dataSource={items}
+        dataSource={data}
         rowKey="id"
         renderItem={(item) => {
           const checked = selectedIds.includes(item.id);
-          const isPending = item.status === 'BOOKED';
-
           return (
-            <List.Item style={{ paddingInline: 0 }}>
+            <List.Item style={{ paddingBlock: 24 }}>
               <Row gutter={[16, 8]} align="top" style={{ width: '100%' }}>
                 <Col flex="32px">
                   <Checkbox
                     checked={checked}
-                    disabled={!isPending}
+                    disabled={item.status !== BOOKING_STATUS_BOOKED}
                     onChange={(e) => toggleOne(item.id, e.target.checked)}
                   />
                 </Col>
 
                 <Col flex="auto">
-                  <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                    <Text>
-                      <Text type="secondary">Booker:</Text> {item.booker}
-                    </Text>
-                    <Text>
-                      <Text type="secondary">Passenger:</Text> {item.passenger}
-                    </Text>
-
-                    <Text>
-                      {dayjs(item.departureDatetime).format('ddd, MMM DD HH:mm')}{' '}
-                      <Text strong>{item.origin}</Text>
-                    </Text>
-                    <Text>
-                      {dayjs(item.arrivalDatetime).format('ddd, MMM DD HH:mm')}{' '}
-                      <Text strong>{item.destination}</Text>
-                    </Text>
-
-                    <Button type="link">View detail</Button>
-                  </Space>
-                </Col>
-
-                <Col flex="280px">
-                  <Space direction="vertical" align="end" size={8} style={{ width: '100%' }}>
-                    <Tag
-                      color={
-                        item.status === 'BOOKED'
-                          ? 'blue'
-                          : item.status === 'APPROVED'
-                            ? 'green'
-                            : 'red'
-                      }
-                    >
-                      {item.status}
-                    </Tag>
-
-                    <Text type="secondary">
-                      Created: {dayjs(item.createdAt).format('ddd, MMM DD HH:mm')}
-                    </Text>
-
-                    {isPending && (
+                  <BookingSummary data={item} />
+                  <Row gutter={[16, 8]} justify="space-between" className="mt-2">
+                    <Col>
+                      <Button type="link">View detail</Button>
+                    </Col>
+                    <Col>
                       <Space>
                         <Button type="link" danger onClick={() => reject([item.id])}>
                           Reject with reason
@@ -208,8 +138,8 @@ function NeedApproval() {
                           Approve
                         </Button>
                       </Space>
-                    )}
-                  </Space>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             </List.Item>

@@ -1,4 +1,6 @@
 import { Tabs } from 'antd';
+import { useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import Layout from '@/components/Layout';
 
@@ -7,11 +9,20 @@ import MyRequest from './components/MyRequest';
 import NeedApproval from './components/NeedApproval';
 
 function ApprovalView() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activeKey = useMemo(() => {
+    const tab = searchParams.get('tab');
+    const allowed = ['need-approval', 'my-approval', 'my-request'];
+    return allowed.includes(tab ?? '') ? tab! : 'need-approval';
+  }, [searchParams]);
+
   return (
     <Layout>
       <Tabs
         className="mt-4"
-        defaultActiveKey="need-approval"
+        activeKey={activeKey}
+        onChange={(key) => setSearchParams({ tab: key })}
         size="large"
         centered
         items={[
