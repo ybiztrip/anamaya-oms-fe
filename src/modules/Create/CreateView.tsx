@@ -20,9 +20,9 @@ import { sessionStorageSet } from '@/utils/sessionStorage';
 
 import FlightForm from './components/FlightForm';
 import FlightHotelFilterForm from './components/FlightHotelFilterForm';
-import HotelFilterForm from './components/HotelFilterForm';
-import PassengerForm from './components/PassengerGuestForm';
-import { flightFormToBookingParams } from './utils/flightFormMapper';
+import HotelForm from './components/HotelForm';
+import PassengerGuestForm from './components/PassengerGuestForm';
+import { flightFormToBookingParams } from './utils/bookingFormMapper';
 
 function CreateView() {
   const navigate = useNavigate();
@@ -53,12 +53,12 @@ function CreateView() {
     <Layout>
       <Form
         form={form}
-        layout="vertical"
+        layout="horizontal"
         initialValues={{
           tripType: 'roundTrip',
           bookerName: `${userProfile?.firstName} ${userProfile?.lastName}`,
           flightClass: 'ECONOMY',
-          hotelStars: '5',
+          hotelStars: ['5'],
           passengers: [{}],
         }}
         onFinish={onFinish}
@@ -66,21 +66,19 @@ function CreateView() {
         {activeType === 'flight' && (
           <>
             <FlightForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerForm form={form} type="flight" />
+            <PassengerGuestForm form={form} type="flight" />
           </>
         )}
         {activeType === 'hotel' && (
           <>
-            <HotelFilterForm form={form} onTypeChange={handleTypeChange} />
-            <div style={{ paddingLeft: '40px', paddingTop: '20px' }}>
-            <PassengerForm form={form} type="hotel" />
-            </div>
+            <HotelForm form={form} onTypeChange={handleTypeChange} />
+            <PassengerGuestForm form={form} type="hotel" />
           </>
         )}
         {activeType === 'flight-hotel' && (
           <>
             <FlightHotelFilterForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerForm form={form} type="flight-hotel" />
+            <PassengerGuestForm form={form} type="flight-hotel" />
           </>
         )}
         <Row justify="end">

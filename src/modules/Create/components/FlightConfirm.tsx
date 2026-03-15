@@ -2,7 +2,7 @@ import { Card, Col, Form, type FormInstance, Row, Select, Space, Spin } from 'an
 import { useMemo } from 'react';
 
 import { ADULT_TYPE, CHILD_TYPE } from '@/constants/common';
-import type { BookingParamsType, FlightSearchOneWayType, PassengerType } from '@/types';
+import type { BookingParamsType, FlightSearchOneWayType, PassengerGuestType } from '@/types';
 import { formatIDR } from '@/utils/formatter';
 
 import useFlightAddOns from '../hooks/useFlightAddOns';
@@ -35,7 +35,7 @@ const FlightConfirm = ({
     let totalAdult = 0;
     let totalChild = 0;
     let totalInfant = 0;
-    bookingParams?.paxList?.forEach((pax: PassengerType) => {
+    bookingParams?.paxList?.forEach((pax: PassengerGuestType) => {
       if (pax?.type === ADULT_TYPE) {
         totalAdult++;
       } else if (pax?.type === CHILD_TYPE) {

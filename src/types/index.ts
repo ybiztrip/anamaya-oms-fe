@@ -58,7 +58,7 @@ export type PaginationResponseType<T> = {
   number: number;
 };
 
-export type PassengerType = {
+export type PassengerGuestType = {
   id: string;
   companyId: number;
   email: string;
@@ -71,7 +71,7 @@ export type PassengerType = {
   idNumber: string;
   passportNumber: string;
   passportExpiry: string;
-  type?: string
+  type?: string;
 };
 
 export type TripType = 'roundTrip' | 'oneWay' | 'multiCity';
@@ -85,15 +85,23 @@ export type BookingFlightParamsType = {
   selectedFlight?: FlightSearchOneWayType;
 };
 
+export type BookingHotelParamsType = {
+  destination: string;
+  checkInDate: string;
+  checkOutDate: string;
+  hotelStars: string[];
+  rooms: number;
+  notes?: string;
+  selectedHotel?: any; // TODO: selected hotel type
+};
+
 export type BookingParamsType = {
   tripType?: TripType;
   flights?: BookingFlightParamsType[];
-  // TODO: hotel params
-  hotel?: any;
+  hotel?: BookingHotelParamsType | null;
   bookerName: string;
   attachments: string[];
-  paxList: PassengerType[];
-  // TODO: hotel guest
+  paxList: PassengerGuestType[];
 };
 
 export type FlightSearchOneWayPayloadType = {

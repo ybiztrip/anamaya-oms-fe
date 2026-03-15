@@ -14,7 +14,7 @@ import type {
   BookingPayloadType,
   FlightBookingAddOnsResponseType,
   FlightBookingAddOnType,
-  PassengerType,
+  PassengerGuestType,
   ResponseType,
   UserType,
 } from '@/types';
@@ -100,7 +100,7 @@ export default function useFlightConfirm() {
           : '',
       };
     });
-    const paxsPayload = paxList.map((pax: PassengerType, paxIndex: number) => {
+    const paxsPayload = paxList.map((pax: PassengerGuestType, paxIndex: number) => {
       const addOn: FlightBookingAddOnType[] = flightAddOns.map((flightAddOn, flightIndex) => {
         const paxAddOnValues =
           values?.flights?.[`flight-${flightIndex}`]?.paxs?.[`pax-${paxIndex}`] ?? {};

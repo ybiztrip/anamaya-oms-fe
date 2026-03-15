@@ -23,7 +23,7 @@ import type { BookingParamsType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { sessionStorageGet } from '@/utils/sessionStorage';
 
-import { bookingParamsToFlightForm } from '../utils/flightFormMapper';
+import { bookingParamsToFlightForm } from '../utils/bookingFormMapper';
 
 type TripType = 'roundTrip' | 'oneWay' | 'multiCity';
 

@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 
 import { ADULT_AGE, ADULT_TYPE, CHILD_AGE, CHILD_TYPE, INFANT_TYPE } from '@/constants/common';
-import type { BookingParamsType } from '@/types';
+import type { BookingParamsType, PassengerGuestType } from '@/types';
 
-export function flightFormToBookingParams(values: any): BookingParamsType {
-  const paxList = values.paxList.map((pax: any) => ({
+function paxFormToPaxParams(values: any): PassengerGuestType[] {
+  return values.paxList.map((pax: any) => ({
     ...pax,
     dob: dayjs(pax.dob),
     passportExpiry: dayjs(pax.passportExpiry),
@@ -16,6 +16,18 @@ export function flightFormToBookingParams(values: any): BookingParamsType {
           : INFANT_TYPE
       : ADULT_TYPE,
   }));
+}
+
+function paxParamsToPaxForm(paxList: PassengerGuestType[]): any {
+  return paxList.map((pax: PassengerGuestType) => ({
+    ...pax,
+    dob: pax.dob ? dayjs(pax.dob) : undefined,
+    passportExpiry: pax.passportExpiry ? dayjs(pax.passportExpiry) : undefined,
+  }));
+}
+
+export function flightFormToBookingParams(values: any): BookingParamsType {
+  const paxList = paxFormToPaxParams(values);
   if (values.tripType === 'roundTrip') {
     return {
       ...values,
@@ -79,11 +91,7 @@ export function bookingParamsToFlightForm(bookingParams: BookingParamsType): any
       ...(bookingParams.tripType === 'roundTrip'
         ? { returnDate: dayjs(flights?.[1]?.departureDate) }
         : {}),
-      paxList: paxList.map((pax: any) => ({
-        ...pax,
-        dob: pax.dob ? dayjs(pax.dob) : undefined,
-        passportExpiry: pax.passportExpiry ? dayjs(pax.passportExpiry) : undefined,
-      })),
+      paxList: paxParamsToPaxForm(paxList),
     };
   } else {
     const { flights, paxList, ...rest } = bookingParams;
@@ -94,11 +102,36 @@ export function bookingParamsToFlightForm(bookingParams: BookingParamsType): any
         ...flight,
         departureDate: dayjs(flight.departureDate),
       })),
-      paxList: paxList.map((pax: any) => ({
-        ...pax,
-        dob: pax.dob ? dayjs(pax.dob) : undefined,
-        passportExpiry: pax.passportExpiry ? dayjs(pax.passportExpiry) : undefined,
-      })),
+      paxList: paxParamsToPaxForm(paxList),
     };
   }
+}
+
+export function hotelFormToBookingParams(values: any): BookingParamsType {
+  const paxList = paxFormToPaxParams(values);
+  return {
+    ...values,
+    paxList,
+    hotel: {
+      destination: values.destination,
+      checkInDate: values.stayRange[0],
+      checkOutDate: values.stayRange[1],
+      hotelStars: values.hotelStars,
+      rooms: values.rooms,
+      notes: values.notes,
+    },
+  };
+}
+
+export function bookingParamsToHotelForm(bookingParams: BookingParamsType): any {
+  const { hotel, paxList, ...rest } = bookingParams;
+  return {
+    ...rest,
+    destination: hotel?.destination,
+    stayRange: [dayjs(hotel?.checkInDate), dayjs(hotel?.checkOutDate)],
+    hotelStars: hotel?.hotelStars,
+    rooms: hotel?.rooms,
+    notes: hotel?.notes,
+    paxList: paxParamsToPaxForm(paxList),
+  };
 }
