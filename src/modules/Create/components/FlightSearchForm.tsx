@@ -58,40 +58,7 @@ function FlightSearchForm({
       onFinish={handleSearchFlights}
     >
       <Row>
-        <Col flex="300px" className="pr-8">
-          <Form.Item className="mt-8" name="sortBy" label="Sort By">
-            <Select
-              placeholder="Sort By"
-              options={[
-                { label: 'Lowest Price', value: 'PRICE' },
-                { label: 'Earliest Departure', value: 'DEPARTURE_TIME' },
-                { label: 'Earliest Arrival', value: 'ARRIVAL_TIME' },
-              ]}
-              style={{ width: 'fit-content' }}
-            />
-          </Form.Item>
-          <Form.Item className="mb-0" name="isDirect" valuePropName="checked">
-            <Checkbox>Direct</Checkbox>
-          </Form.Item>
-          <Form.Item className="mb-0" name="isFreeRefund" valuePropName="checked">
-            <Checkbox>Include free refund & reschedule</Checkbox>
-          </Form.Item>
-          <Form.Item className="mb-0" name="isIncludeCheckedBaggage" valuePropName="checked">
-            <Checkbox>Include checked baggage</Checkbox>
-          </Form.Item>
-          <Form.Item className="mb-0" name="isHideCodeshare" valuePropName="checked">
-            <Checkbox>Hide codeshare</Checkbox>
-          </Form.Item>
-          <Form.Item className="mt-16 mb-0" name="isMorningFlight" valuePropName="checked">
-            <Checkbox>Morning flight &lt; 11am</Checkbox>
-          </Form.Item>
-          <Form.Item className="mb-0" name="isNoonFlight" valuePropName="checked">
-            <Checkbox>Noon flight 11am - 4pm</Checkbox>
-          </Form.Item>
-          <Form.Item className="mb-0" name="isEveningFlight" valuePropName="checked">
-            <Checkbox>Evening flight &gt; 4pm</Checkbox>
-          </Form.Item>
-        </Col>
+        <Col flex="300px"></Col>
         <Col flex="auto">
           <Card
             className="mt-4"
@@ -167,7 +134,11 @@ function FlightSearchForm({
                       rules={[{ required: true }]}
                       style={{ flex: 1, marginBottom: 0 }}
                     >
-                      <DatePicker style={{ width: '100%' }} placeholder="Departure date" format="DD MMM YYYY" />
+                      <DatePicker
+                        style={{ width: '100%' }}
+                        placeholder="Departure date"
+                        format="DD MMM YYYY"
+                      />
                     </Form.Item>
                   </Space.Compact>
                 </Col>
@@ -179,6 +150,44 @@ function FlightSearchForm({
               </Row>
             )}
           </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col flex="300px" className="pr-8">
+          <Form.Item className="mt-8" name="sortBy" label="Sort By">
+            <Select
+              placeholder="Sort By"
+              options={[
+                { label: 'Lowest Price', value: 'PRICE' },
+                { label: 'Earliest Departure', value: 'DEPARTURE_TIME' },
+                { label: 'Earliest Arrival', value: 'ARRIVAL_TIME' },
+              ]}
+              style={{ width: 'fit-content' }}
+            />
+          </Form.Item>
+          <Form.Item className="mb-0" name="isDirect" valuePropName="checked">
+            <Checkbox>Direct</Checkbox>
+          </Form.Item>
+          <Form.Item className="mb-0" name="isFreeRefund" valuePropName="checked">
+            <Checkbox>Include free refund & reschedule</Checkbox>
+          </Form.Item>
+          <Form.Item className="mb-0" name="isIncludeCheckedBaggage" valuePropName="checked">
+            <Checkbox>Include checked baggage</Checkbox>
+          </Form.Item>
+          <Form.Item className="mb-0" name="isHideCodeshare" valuePropName="checked">
+            <Checkbox>Hide codeshare</Checkbox>
+          </Form.Item>
+          <Form.Item className="mt-16 mb-0" name="isMorningFlight" valuePropName="checked">
+            <Checkbox>Morning flight &lt; 11am</Checkbox>
+          </Form.Item>
+          <Form.Item className="mb-0" name="isNoonFlight" valuePropName="checked">
+            <Checkbox>Noon flight 11am - 4pm</Checkbox>
+          </Form.Item>
+          <Form.Item className="mb-0" name="isEveningFlight" valuePropName="checked">
+            <Checkbox>Evening flight &gt; 4pm</Checkbox>
+          </Form.Item>
+        </Col>
+        <Col flex="auto">
           <div className="mt-4 space-y-3">
             {isLoading ? (
               <div className="flex justify-center items-center h-full">

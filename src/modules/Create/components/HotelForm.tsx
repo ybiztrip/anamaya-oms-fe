@@ -10,7 +10,6 @@ import {
   Input,
   InputNumber,
   Row,
-  Select,
   Space,
   type UploadFile,
   type UploadProps,
@@ -18,19 +17,14 @@ import {
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
 
+import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
 import Upload from '@/components/Upload';
+import { ADULT_AGE } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
-import type { BookingParamsType } from '@/types';
+import type { BookingParamsType, PassengerGuestType } from '@/types';
 import { sessionStorageGet } from '@/utils/sessionStorage';
 
 import { bookingParamsToHotelForm } from '../utils/bookingFormMapper';
-
-const { RangePicker } = DatePicker;
-
-const destinationOptions = [
-  { value: 'CGK', label: 'Jakarta' },
-  { value: 'DPS', label: 'Denpasar' },
-];
 
 function normFile(
   e: UploadProps['onChange'] extends (...args: any) => any
@@ -48,9 +42,9 @@ function HotelForm({
   form: FormInstance;
   onTypeChange: (key: string) => void;
 }) {
-  const stayRange = Form.useWatch('stayRange', form);
-  const nights = stayRange?.[0] && stayRange?.[1] ? stayRange[1].diff(stayRange[0], 'day') : 0;
-  const paxList = Form.useWatch('paxList', form);
+  const checkInDate = Form.useWatch('checkInDate', form);
+  const checkOutDate = Form.useWatch('checkOutDate', form);
+  const nights = checkInDate && checkOutDate ? checkOutDate.diff(checkInDate, 'day') : 0;
 
   useEffect(() => {
     const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
@@ -118,26 +112,42 @@ function HotelForm({
               label="Destination"
               layout="vertical"
               style={{ flex: 1, marginBottom: 0 }}
-              rules={[{ required: true, message: 'Origin required' }]}
+              rules={[{ required: true, message: 'Destination required' }]}
             >
-              <Select showSearch options={destinationOptions} placeholder="City, Hotel name" />
+              <SelectHotelGeo placeholder="City, Hotel name" labelInValue />
             </Form.Item>
           </Col>
-          <Col xs={24} md={8}>
+          <Col xs={24} md={6}>
             <Form.Item
-              name="stayRange"
-              label="Check in - Check out"
+              name="checkInDate"
+              label="Check in"
               layout="vertical"
-              rules={[{ required: true }]}
+              rules={[{ required: true, message: 'Check in required' }]}
             >
-              <RangePicker
+              <DatePicker
                 style={{ width: '100%' }}
                 disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
                 format="DD MMM YYYY"
               />
             </Form.Item>
           </Col>
-          {stayRange?.[0] && stayRange?.[1] && (
+          <Col xs={24} md={6}>
+            <Form.Item
+              name="checkOutDate"
+              label="Check out"
+              layout="vertical"
+              rules={[{ required: true, message: 'Check out required' }]}
+            >
+              <DatePicker
+                style={{ width: '100%' }}
+                disabledDate={(d) =>
+                  checkInDate ? d.isBefore(checkInDate, 'day') : d.isBefore(dayjs().add(1, 'day'))
+                }
+                format="DD MMM YYYY"
+              />
+            </Form.Item>
+          </Col>
+          {checkInDate && checkOutDate && (
             <Col xs={24} md={4}>
               <div className="mt-8">{nights} nights</div>
             </Col>
@@ -192,23 +202,37 @@ function HotelForm({
           </Checkbox.Group>
         </Form.Item>
 
-        <Form.Item
-          label="Rooms"
-          name="rooms"
-          rules={[
-            { required: true, message: 'Rooms required' },
-            () => ({
-              validator: (_, value) => {
-                const paxCount = paxList?.length ?? 0;
-                if (!value || value < paxCount) return Promise.resolve();
-                return Promise.reject(
-                  new Error(`Rooms must be less than or equal to total guests (${paxCount})`),
-                );
-              },
-            }),
-          ]}
-        >
-          <InputNumber min={1} />
+        <Form.Item noStyle shouldUpdate={(prev, next) => prev.paxList !== next.paxList}>
+          {({ getFieldValue }) => (
+            <Form.Item
+              label="Rooms"
+              name="rooms"
+              dependencies={['paxList']}
+              rules={[
+                { required: true, message: 'Rooms required' },
+                () => ({
+                  validator: (_, value) => {
+                    const paxList = getFieldValue('paxList') ?? [];
+
+                    let totalAdult = 0;
+                    paxList?.forEach((pax: PassengerGuestType) => {
+                      if (dayjs(pax.dob).isBefore(dayjs().subtract(ADULT_AGE, 'year'))) {
+                        totalAdult++;
+                      }
+                    });
+                    if (!value || value <= totalAdult) return Promise.resolve();
+                    return Promise.reject(
+                      new Error(
+                        `Rooms must be less than or equal to total adult guests (${totalAdult})`,
+                      ),
+                    );
+                  },
+                }),
+              ]}
+            >
+              <InputNumber min={1} />
+            </Form.Item>
+          )}
         </Form.Item>
 
         <Form.Item label="Notes" name="notes">

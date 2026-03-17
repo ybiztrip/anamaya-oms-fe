@@ -8,28 +8,30 @@ import {
   CREATE_FLIGHT_SEARCH_PATH,
   CREATE_HOTEL_SEARCH_PATH,
 } from '@/constants/routePath';
-import {
-  BOOKING_PARAMS,
-  FLIGHT_HOTEL_SEARCH_PARAMS,
-  HOTEL_SEARCH_PARAMS,
-  USER,
-} from '@/constants/storageKey';
+import { BOOKING_PARAMS, FLIGHT_HOTEL_SEARCH_PARAMS, USER } from '@/constants/storageKey';
 import type { BookingParamsType, UserType } from '@/types';
 import { localStorageGet } from '@/utils/localStorage';
-import { sessionStorageSet } from '@/utils/sessionStorage';
+import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
 
 import FlightForm from './components/FlightForm';
 import FlightHotelFilterForm from './components/FlightHotelFilterForm';
 import HotelForm from './components/HotelForm';
 import PassengerGuestForm from './components/PassengerGuestForm';
-import { flightFormToBookingParams } from './utils/bookingFormMapper';
+import { flightFormToBookingParams, hotelFormToBookingParams } from './utils/bookingFormMapper';
 
 function CreateView() {
   const navigate = useNavigate();
-  const [activeType, setActiveType] = useState('flight');
+  const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
+  const initialType = bookingParams?.hotel
+    ? bookingParams?.flights?.length
+      ? 'flight-hotel'
+      : 'hotel'
+    : 'flight';
+  const [activeType, setActiveType] = useState(initialType);
   const userProfile = localStorageGet<UserType>(USER);
 
   const handleTypeChange = (key: string) => {
+    form.resetFields();
     setActiveType(key);
   };
 
@@ -41,7 +43,8 @@ function CreateView() {
       sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_FLIGHT_SEARCH_PATH);
     } else if (activeType === 'hotel') {
-      sessionStorageSet(HOTEL_SEARCH_PARAMS, values);
+      const bookingParams = hotelFormToBookingParams(values);
+      sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_HOTEL_SEARCH_PATH);
     } else if (activeType === 'flight-hotel') {
       sessionStorageSet(FLIGHT_HOTEL_SEARCH_PARAMS, values);

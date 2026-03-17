@@ -113,9 +113,10 @@ export function hotelFormToBookingParams(values: any): BookingParamsType {
     ...values,
     paxList,
     hotel: {
-      destination: values.destination,
-      checkInDate: values.stayRange[0],
-      checkOutDate: values.stayRange[1],
+      destinationGeo: values.destination.value,
+      destinationName: values.destination.label,
+      checkInDate: values.checkInDate,
+      checkOutDate: values.checkOutDate,
       hotelStars: values.hotelStars,
       rooms: values.rooms,
       notes: values.notes,
@@ -127,8 +128,9 @@ export function bookingParamsToHotelForm(bookingParams: BookingParamsType): any 
   const { hotel, paxList, ...rest } = bookingParams;
   return {
     ...rest,
-    destination: hotel?.destination,
-    stayRange: [dayjs(hotel?.checkInDate), dayjs(hotel?.checkOutDate)],
+    destination: hotel?.destinationGeo ? { value: hotel.destinationGeo, label: hotel.destinationName } : undefined,
+    checkInDate: hotel?.checkInDate ? dayjs(hotel.checkInDate) : undefined,
+    checkOutDate: hotel?.checkOutDate ? dayjs(hotel.checkOutDate) : undefined,
     hotelStars: hotel?.hotelStars,
     rooms: hotel?.rooms,
     notes: hotel?.notes,

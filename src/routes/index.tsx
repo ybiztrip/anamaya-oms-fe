@@ -4,6 +4,7 @@ import {
   APPROVAL_PATH,
   CREATE_BOOKING_CONFIRM_PATH,
   CREATE_FLIGHT_SEARCH_PATH,
+  CREATE_HOTEL_SEARCH_PATH,
   CREATE_PATH,
   HOME_PATH,
   LOGIN_PATH,
@@ -12,6 +13,7 @@ import ApprovalView from '@/modules/Approval/ApprovalView';
 import BookingConfirmView from '@/modules/Create/BookingConfirmView';
 import CreateView from '@/modules/Create/CreateView';
 import FlightSearchView from '@/modules/Create/FlightSearchView';
+import HotelSearchView from '@/modules/Create/HotelSearchView';
 import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
 
@@ -42,6 +44,14 @@ function App() {
         element={
           <ProtectedRoute>
             <FlightSearchView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={CREATE_HOTEL_SEARCH_PATH}
+        element={
+          <ProtectedRoute>
+            <HotelSearchView />
           </ProtectedRoute>
         }
       />

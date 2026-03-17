@@ -1,3 +1,5 @@
+export * from './hotel';
+
 export type ResponseType<T> = {
   data: T;
   message: string;
@@ -86,7 +88,8 @@ export type BookingFlightParamsType = {
 };
 
 export type BookingHotelParamsType = {
-  destination: string;
+  destinationGeo: string;
+  destinationName: string;
   checkInDate: string;
   checkOutDate: string;
   hotelStars: string[];
