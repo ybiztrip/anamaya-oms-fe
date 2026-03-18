@@ -1,0 +1,97 @@
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Button, Col, Row, Spin } from 'antd';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import Layout from '@/components/Layout';
+import { CREATE_BOOKING_CONFIRM_PATH, CREATE_HOTEL_SEARCH_PATH } from '@/constants/routePath';
+import { BOOKING_PARAMS } from '@/constants/storageKey';
+import HotelDetail from '@/modules/Create/components/HotelDetail';
+import HotelRoomInfo from '@/modules/Create/components/HotelRoomInfo';
+import useHotelRoomRate from '@/modules/Create/hooks/useHotelRoomRate';
+import type { BookingParamsType, HotelPropertyType, HotelRoomRateType } from '@/types';
+import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
+
+function HotelRoomView() {
+  const navigate = useNavigate();
+
+  const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
+  const selectedHotel = bookingParams?.hotel?.selectedHotel as HotelPropertyType | undefined;
+  const propertyId = selectedHotel?.propertyId ?? '';
+
+  const { data, isLoading, getHotelRoomRates } = useHotelRoomRate({
+    propertyId,
+    bookingParams: bookingParams ?? ({} as BookingParamsType),
+  });
+
+  const selectRoom = (room: HotelRoomRateType) => {
+    const newBookingParams = {
+      ...bookingParams,
+      hotel: {
+        ...bookingParams?.hotel,
+        selectedRoom: room,
+      },
+    } as BookingParamsType;
+    sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, newBookingParams);
+    navigate(CREATE_BOOKING_CONFIRM_PATH);
+  };
+
+  useEffect(() => {
+    if (propertyId) {
+      getHotelRoomRates();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [propertyId]);
+
+  useEffect(() => {
+    if (!bookingParams || !bookingParams?.hotel?.selectedHotel) {
+      navigate(CREATE_HOTEL_SEARCH_PATH);
+      return;
+    }
+  }, [bookingParams, navigate]);
+
+  return (
+    <Layout withSidebar={false}>
+      <Row className="mb-4">
+        <Col flex="300px">
+          <Button
+            color="primary"
+            variant="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate(CREATE_HOTEL_SEARCH_PATH)}
+          >
+            Back
+          </Button>
+        </Col>
+      </Row>
+
+      {selectedHotel && (
+        <div className="mb-4">
+          <HotelDetail hotel={selectedHotel} />
+        </div>
+      )}
+
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <div className="text-lg font-semibold">Available Rooms</div>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-40">
+              <Spin />
+            </div>
+          ) : (
+            <div className="mt-4 space-y-3">
+              {data?.data?.length ? (
+                data.data.map((room: HotelRoomRateType) => {
+                  return <HotelRoomInfo key={room.roomId} room={room} onSelect={selectRoom} />;
+                })
+              ) : (
+                <div className="text-gray-500">No rooms found</div>
+              )}
+            </div>
+          )}
+        </Col>
+      </Row>
+    </Layout>
+  );
+}
+export default HotelRoomView;

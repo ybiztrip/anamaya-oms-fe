@@ -1,13 +1,12 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Col, Row } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Layout from '@/components/Layout';
-import { CREATE_BOOKING_CONFIRM_PATH, CREATE_PATH } from '@/constants/routePath';
+import { CREATE_HOTEL_ROOM_PATH, CREATE_PATH } from '@/constants/routePath';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import type { BookingParamsType, HotelPropertyType } from '@/types';
-import dayjs from '@/utils/dayjs';
 import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
 
 import HotelSearchForm from './components/HotelSearchForm';
@@ -18,11 +17,11 @@ function HotelSearchView() {
   const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
 
   const selectHotel = (hotel: HotelPropertyType, formValues: any) => {
-    const newHotel = { 
+    const newHotel = {
       ...bookingParams?.hotel,
       destination: formValues.destination,
-      checkInDate: dayjs(formValues.stayRange?.[0]).format('YYYY-MM-DD'),
-      checkOutDate: dayjs(formValues.stayRange?.[1]).format('YYYY-MM-DD'),
+      checkInDate: formValues.checkInDate,
+      checkOutDate: formValues.checkOutDate,
       selectedHotel: hotel,
     };
     const newBookingParams = {
@@ -30,7 +29,7 @@ function HotelSearchView() {
       hotel: newHotel,
     } as BookingParamsType;
     sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, newBookingParams);
-    // TODO: open hotel rooms detail
+    navigate(CREATE_HOTEL_ROOM_PATH);
   };
 
   useEffect(() => {

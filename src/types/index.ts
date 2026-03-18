@@ -1,4 +1,5 @@
 export * from './hotel';
+import type { HotelPropertyType, HotelRoomRateType } from './hotel';
 
 export type ResponseType<T> = {
   data: T;
@@ -95,7 +96,8 @@ export type BookingHotelParamsType = {
   hotelStars: string[];
   rooms: number;
   notes?: string;
-  selectedHotel?: any; // TODO: selected hotel type
+  selectedHotel?: HotelPropertyType;
+  selectedRoom?: HotelRoomRateType;
 };
 
 export type BookingParamsType = {
