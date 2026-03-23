@@ -196,20 +196,41 @@ export type FlightBookingAddOnsResponseType = {
   journeysWithAvailableAddOnsOptions: FlightBookingAddOnType[];
 };
 
-export type BookingPayloadType = {
-  startDate: string;
-  endDate: string;
-  contactEmail: string;
-  contactFirstName: string;
-  contactLastName: string;
-  contactTitle: string;
-  contactNationality: string;
-  contactPhoneCode: string;
-  contactPhoneNumber: string;
-  contactDob: string;
+export type BookingFlightType = {
+  id?: string;
+  bookingId?: string;
+  companyId?: number;
+  status?: string;
+  type: number;
+  clientSource: string;
+  itemId: string;
+  origin: string;
+  destination: string;
+  departureDatetime: string;
+  arrivalDatetime: string;
+}
+
+export type BookingFlightPax = {
+  id?: string;
+  bookingId?: string;
+  firstName: string;
+  lastName: string;
+  title: string;
+  gender: string;
+  type: string;
+  email: string;
+  nationality: string;
+  phoneCode: string;
+  phoneNumber: string;
+  dob: string;
+  addOn: FlightBookingAddOnType[];
+  issuingCountry: string;
+  documentType: string;
+  documentNo: string;
+  expirationDate: string;
 };
 
-export type BookingResponseType = {
+export type BookingType = {
   id: number;
   companyId: number;
   code: string;
@@ -227,37 +248,38 @@ export type BookingResponseType = {
   additionalInfo: any;
   clientAdditionalInfo: any;
   status: string;
-  flights: any;
+  createdAt: string;
+  approvedAt?: string;
+  rejectedAt?: string;
+  flights: (BookingFlightType & { paxs: BookingFlightPax[] })[];
   hotels: any;
 };
 
+export type BookingListPayloadType = {
+  userId?: string;
+  status?: string;
+};
+
+export type BookingListResponseType = BookingType[];
+
+export type BookingCreatePayloadType = {
+  startDate: string;
+  endDate: string;
+  contactEmail: string;
+  contactFirstName: string;
+  contactLastName: string;
+  contactTitle: string;
+  contactNationality: string;
+  contactPhoneCode: string;
+  contactPhoneNumber: string;
+  contactDob: string;
+};
+
+export type BookingCreateResponseType = BookingType;
+
 export type BookingFlightPayloadType = {
-  flights: {
-    type: number;
-    clientSource: string;
-    itemId: string;
-    origin: string;
-    destination: string;
-    departureDatetime: string;
-    arrivalDatetime: string;
-  }[];
-  paxs: {
-    firstName: string;
-    lastName: string;
-    title: string;
-    gender: string;
-    type: string;
-    email: string;
-    nationality: string;
-    phoneCode: string;
-    phoneNumber: string;
-    dob: string;
-    addOn: FlightBookingAddOnType[];
-    issuingCountry: string;
-    documentType: string;
-    documentNo: string;
-    expirationDate: string;
-  }[];
+  flights: BookingFlightType[];
+  paxs: BookingFlightPax[];
 };
 
 export type BookingFlightResponseType = any;

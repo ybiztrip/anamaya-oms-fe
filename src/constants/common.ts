@@ -8,3 +8,7 @@ export const INFANT_AGE = 0;
 export const ADULT_TYPE = 'ADULT';
 export const CHILD_TYPE = 'CHILD';
 export const INFANT_TYPE = 'INFANT';
+
+export const BOOKING_STATUS_APPROVED = 'APPROVED';
+export const BOOKING_STATUS_REJECTED = 'REJECTED';
+export const BOOKING_STATUS_BOOKED = 'BOOKED';

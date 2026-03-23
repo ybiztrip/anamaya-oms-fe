@@ -9,9 +9,9 @@ import { FLIGHT_ADD_ONS } from '@/constants/queryKey';
 import { APPROVAL_PATH } from '@/constants/routePath';
 import { BOOKING_PARAMS, USER } from '@/constants/storageKey';
 import type {
+  BookingCreatePayloadType,
   BookingFlightPayloadType,
   BookingParamsType,
-  BookingPayloadType,
   FlightBookingAddOnsResponseType,
   FlightBookingAddOnType,
   PassengerGuestType,
@@ -26,7 +26,7 @@ export default function useFlightConfirm() {
   const navigate = useNavigate();
 
   const createBookingsMutation = useMutation({
-    mutationFn: (payload: BookingPayloadType) => createBookings(payload),
+    mutationFn: (payload: BookingCreatePayloadType) => createBookings(payload),
     onError: (e: any) => {
       message.error(e?.response?.data?.message ?? DEFAULT_ERROR_MESSAGE);
     },
@@ -53,7 +53,7 @@ export default function useFlightConfirm() {
     }
     // TODO: get start and end date from flights and hotel
 
-    const bookingPayload: BookingPayloadType = {
+    const bookingPayload: BookingCreatePayloadType = {
       startDate: startDate,
       endDate: endDate,
       contactEmail: userProfile?.email ?? '',
@@ -164,7 +164,7 @@ export default function useFlightConfirm() {
       message.success('Booking submitted for approval');
       sessionStorageRemove(BOOKING_PARAMS);
 
-      navigate(APPROVAL_PATH);
+      navigate(`${APPROVAL_PATH}?tab=my-request`);
     } catch (e: any) {
       console.error('e', e);
     }
