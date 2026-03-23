@@ -11,10 +11,12 @@ import {
 import type {
   AirlineType,
   AirportType,
+  BookingCreatePayloadType,
+  BookingCreateResponseType,
   BookingFlightPayloadType,
   BookingFlightResponseType,
-  BookingPayloadType,
-  BookingResponseType,
+  BookingListPayloadType,
+  BookingListResponseType,
   FlightBookingAddOnsPayloadType,
   FlightBookingAddOnsResponseType,
   FlightSearchOneWayPayloadType,
@@ -59,9 +61,16 @@ export async function fetchFlightBookingAddOns(
   return res.data;
 }
 
+export async function fetchBookings(
+  params: BookingListPayloadType,
+): Promise<ResponseType<BookingListResponseType>> {
+  const res = await axios.get(BOOKINGS_API, { params });
+  return res.data;
+}
+
 export async function createBookings(
-  params: BookingPayloadType,
-): Promise<ResponseType<BookingResponseType>> {
+  params: BookingCreatePayloadType,
+): Promise<ResponseType<BookingCreateResponseType>> {
   const res = await axios.post(BOOKINGS_API, params);
   return res.data;
 }
