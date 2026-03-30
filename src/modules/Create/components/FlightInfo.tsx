@@ -84,14 +84,17 @@ function FlightInfo({
         </Col>
 
         {withPrice && (
-          <Col flex="220px" className="text-right">
-            <div className="text-lg font-semibold">
+          <Col flex="auto" className="text-center">
+            <div className="text-lg font-semibold mr-4">
               {total?.currency ?? 'IDR'} {formatIDR(total?.amount)}
             </div>
           </Col>
         )}
         {withSelect && (
-          <Col flex="220px" className="text-right">
+          <Col
+            flex="100px"
+            className="text-right self-stretch sticky right-0 bg-white flex items-center justify-end"
+          >
             <Button type="primary" className="mt-2" onClick={() => onSelect?.(flight)}>
               Select
             </Button>

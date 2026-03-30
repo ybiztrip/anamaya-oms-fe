@@ -2,29 +2,30 @@ import { useQuery } from '@tanstack/react-query';
 import { Select, type SelectProps } from 'antd';
 import { useMemo, useState } from 'react';
 
-import { fetchUsers } from '@/api';
-import { USERS } from '@/constants/queryKey';
+import { fetchHotelGeoList } from '@/api';
+import { HOTEL_GEO_LIST } from '@/constants/queryKey';
 import useDebouncedValue from '@/hooks/useDebouncedValue';
-import type { UserType } from '@/types';
+import type { HotelGeoListType } from '@/types';
 
-export type SelectUserProps = Omit<SelectProps, 'options' | 'loading' | 'onSearch'> & {
+export type SelectHotelGeoProps = Omit<SelectProps, 'options' | 'loading' | 'onSearch'> & {
   onSearch?: SelectProps['onSearch'];
 };
 
 const DEFAULT_LIMIT = 20;
 
-function SelectUser({ onSearch, ...props }: SelectUserProps) {
+export default function SelectHotelGeo({ onSearch, ...props }: SelectHotelGeoProps) {
   const [searchInput, setSearchInput] = useState('');
   const debouncedInput = useDebouncedValue(searchInput, 400);
-  const searchKey = debouncedInput.trim().toLowerCase();
+  const searchKey = debouncedInput.trim();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: [USERS, searchKey],
+    queryKey: [HOTEL_GEO_LIST, searchKey],
     queryFn: () =>
-      fetchUsers({
-        email: searchKey,
-        size: String(DEFAULT_LIMIT),
-        page: '0',
+      fetchHotelGeoList({
+        countryCode: 'ID',
+        offset: '0',
+        key: searchKey,
+        limit: String(DEFAULT_LIMIT),
       }),
     enabled: !!searchKey,
     refetchOnMount: false,
@@ -33,15 +34,18 @@ function SelectUser({ onSearch, ...props }: SelectUserProps) {
   });
 
   const options = useMemo(() => {
-    const list = data?.data ?? [];
-    if (!searchKey) return [];
+    const list = data?.data
+      ? Array.isArray(data.data)
+        ? data.data
+        : [data.data]
+      : [];
 
-    return list.map((user: UserType) => ({
-      label: user.email,
-      value: user.email,
-      user,
+    return list.map((geo: HotelGeoListType) => ({
+      value: geo.geoId,
+      label: geo.localeName || geo.name,
+      geo,
     }));
-  }, [data?.data, searchKey]);
+  }, [data]);
 
   const handleSearch = (value: string) => {
     setSearchInput(value);
@@ -56,12 +60,9 @@ function SelectUser({ onSearch, ...props }: SelectUserProps) {
       options={options}
       style={{ width: '100%' }}
       status={error ? 'error' : undefined}
-      notFoundContent={
-        isLoading ? 'Loading users…' : searchKey ? 'No users' : 'Type to search user'
-      }
+      notFoundContent={isLoading ? 'Loading locations…' : 'Type to search location'}
       onSearch={handleSearch}
       {...props}
     />
   );
 }
-export default SelectUser;

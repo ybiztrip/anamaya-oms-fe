@@ -23,7 +23,7 @@ import type { BookingParamsType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { sessionStorageGet } from '@/utils/sessionStorage';
 
-import { bookingParamsToFlightForm } from '../utils/flightFormMapper';
+import { bookingParamsToFlightForm } from '../utils/bookingFormMapper';
 
 type TripType = 'roundTrip' | 'oneWay' | 'multiCity';
 
@@ -114,8 +114,8 @@ function FlightForm({
         <Form.Item name="tripType">
           <Radio.Group
             options={[
-              { label: 'Round-trip', value: 'roundTrip' },
               { label: 'One-way', value: 'oneWay' },
+              { label: 'Round-trip', value: 'roundTrip' },
               { label: 'Multi City', value: 'multiCity' },
             ]}
             optionType="button"

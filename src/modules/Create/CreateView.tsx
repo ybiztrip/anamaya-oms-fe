@@ -8,28 +8,30 @@ import {
   CREATE_FLIGHT_SEARCH_PATH,
   CREATE_HOTEL_SEARCH_PATH,
 } from '@/constants/routePath';
-import {
-  BOOKING_PARAMS,
-  FLIGHT_HOTEL_SEARCH_PARAMS,
-  HOTEL_SEARCH_PARAMS,
-  USER,
-} from '@/constants/storageKey';
+import { BOOKING_PARAMS, FLIGHT_HOTEL_SEARCH_PARAMS, USER } from '@/constants/storageKey';
 import type { BookingParamsType, UserType } from '@/types';
 import { localStorageGet } from '@/utils/localStorage';
-import { sessionStorageSet } from '@/utils/sessionStorage';
+import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
 
 import FlightForm from './components/FlightForm';
 import FlightHotelFilterForm from './components/FlightHotelFilterForm';
-import HotelFilterForm from './components/HotelFilterForm';
-import PassengerForm from './components/PassengerGuestForm';
-import { flightFormToBookingParams } from './utils/flightFormMapper';
+import HotelForm from './components/HotelForm';
+import PassengerGuestForm from './components/PassengerGuestForm';
+import { flightFormToBookingParams, hotelFormToBookingParams } from './utils/bookingFormMapper';
 
 function CreateView() {
   const navigate = useNavigate();
-  const [activeType, setActiveType] = useState('flight');
+  const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
+  const initialType = bookingParams?.hotel
+    ? bookingParams?.flights?.length
+      ? 'flight-hotel'
+      : 'hotel'
+    : 'flight';
+  const [activeType, setActiveType] = useState(initialType);
   const userProfile = localStorageGet<UserType>(USER);
 
   const handleTypeChange = (key: string) => {
+    form.resetFields();
     setActiveType(key);
   };
 
@@ -41,7 +43,8 @@ function CreateView() {
       sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_FLIGHT_SEARCH_PATH);
     } else if (activeType === 'hotel') {
-      sessionStorageSet(HOTEL_SEARCH_PARAMS, values);
+      const bookingParams = hotelFormToBookingParams(values);
+      sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_HOTEL_SEARCH_PATH);
     } else if (activeType === 'flight-hotel') {
       sessionStorageSet(FLIGHT_HOTEL_SEARCH_PARAMS, values);
@@ -53,12 +56,13 @@ function CreateView() {
     <Layout>
       <Form
         form={form}
-        layout="vertical"
+        layout="horizontal"
         initialValues={{
-          tripType: 'roundTrip',
+          tripType: 'oneWay',
           bookerName: `${userProfile?.firstName} ${userProfile?.lastName}`,
           flightClass: 'ECONOMY',
-          hotelStars: '5',
+          hotelStars: ['5'],
+          rooms: 1,
           passengers: [{}],
         }}
         onFinish={onFinish}
@@ -66,26 +70,28 @@ function CreateView() {
         {activeType === 'flight' && (
           <>
             <FlightForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerForm form={form} type="flight" />
+            <PassengerGuestForm form={form} type="flight" />
           </>
         )}
         {activeType === 'hotel' && (
           <>
-            <HotelFilterForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerForm form={form} type="hotel" />
+            <HotelForm form={form} onTypeChange={handleTypeChange} />
+            <PassengerGuestForm form={form} type="hotel" />
           </>
         )}
         {activeType === 'flight-hotel' && (
           <>
             <FlightHotelFilterForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerForm form={form} type="flight-hotel" />
+            <PassengerGuestForm form={form} type="flight-hotel" />
           </>
         )}
-        <Row justify="end">
-          <Button type="primary" htmlType="submit">
-            Search
-          </Button>
-        </Row>
+        <div className="sticky bottom-0 z-10 bg-white p-4 border-t mb-[-2rem] mx-[-2rem]">
+          <Row justify="end">
+            <Button type="primary" htmlType="submit">
+              Search
+            </Button>
+          </Row>
+        </div>
       </Form>
     </Layout>
   );

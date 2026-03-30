@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 
 import { fetchFlightSearchOneWay } from '@/api';
 import { ADULT_TYPE, CHILD_TYPE, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
-import type { BookingParamsType, FlightSearchOneWayPayloadType, PassengerType } from '@/types';
+import type { BookingParamsType, FlightSearchOneWayPayloadType, PassengerGuestType } from '@/types';
 
 export default function useFlightSearch({
   flightIndex,
@@ -30,7 +30,7 @@ export default function useFlightSearch({
     let totalAdult = 0;
     let totalChild = 0;
     let totalInfant = 0;
-    bookingParams?.paxList?.forEach((pax: PassengerType) => {
+    bookingParams?.paxList?.forEach((pax: PassengerGuestType) => {
       if (pax?.type === ADULT_TYPE) {
         totalAdult++;
       } else if (pax?.type === CHILD_TYPE) {

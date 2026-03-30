@@ -14,6 +14,12 @@ export const FLIGHT_AIRPORTS_API = FLIGHT_API + '/airports';
 export const FLIGHT_SEARCH_ONE_WAY_API = FLIGHT_API + '/search/one-way';
 export const FLIGHT_BOOKING_ADD_ONS_API = FLIGHT_API + '/booking/add-ons';
 
+export const HOTEL_API = API_V1 + '/hotel';
+export const HOTEL_GEO_LIST_API = HOTEL_API + '/geo/list';
+export const HOTEL_DISCOVERY_API = HOTEL_API + '/discovery';
+export const HOTEL_ROOM_API = HOTEL_API + '/room';
+export const HOTEL_ROOM_RATE_API = HOTEL_API + '/room-rate';
+
 export const BOOKINGS_API = API_V1 + '/bookings';
 export const BOOKINGS_FLIGHT_API = BOOKINGS_API + '/:id/flights';
 export const BOOKINGS_HOTEL_API = BOOKINGS_API + '/:id/hotels';
