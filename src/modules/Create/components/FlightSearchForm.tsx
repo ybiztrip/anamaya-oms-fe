@@ -11,7 +11,7 @@ import {
   Space,
   Spin,
 } from 'antd';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import SelectAirport from '@/components/Select/SelectAirport';
 import type { BookingParamsType, FlightSearchOneWayType } from '@/types';
@@ -36,6 +36,13 @@ function FlightSearchForm({
     flightIndex,
   });
 
+  const isDirect = Form.useWatch('isDirect', form);
+  const isFreeRefund = Form.useWatch('isFreeRefund', form);
+  const isIncludeCheckedBaggage = Form.useWatch('isIncludeCheckedBaggage', form);
+  const isMorningFlight = Form.useWatch('isMorningFlight', form);
+  const isNoonFlight = Form.useWatch('isNoonFlight', form);
+  const isEveningFlight = Form.useWatch('isEveningFlight', form);
+
   const autoSearchRef = useRef(false);
   useEffect(() => {
     if (autoSearchRef.current) return;
@@ -45,6 +52,71 @@ function FlightSearchForm({
       autoSearchRef.current = true;
     }
   }, [flightParams, form]);
+
+  const filteredResults = useMemo(() => {
+    const results = data?.data?.oneWayFlightSearchResults ?? [];
+
+    const parseMinutes = (time?: string) => {
+      if (!time) return null;
+      const [h, m] = time.split(':').map((v) => Number(v));
+      if (Number.isNaN(h) || Number.isNaN(m)) return null;
+      return h * 60 + m;
+    };
+
+    const hasCheckedBaggage = (fareInfo: any) => {
+      const candidates = [
+        fareInfo?.includedBaggage?.baggageWeight,
+        fareInfo?.includedBaggage?.weight,
+        fareInfo?.baggage?.baggageWeight,
+        fareInfo?.baggage?.weight,
+        fareInfo?.baggageAllowance?.baggageWeight,
+        fareInfo?.baggageAllowance?.weight,
+        fareInfo?.baggageAllowance?.pieces,
+        fareInfo?.baggageAllowance?.quantity,
+      ];
+      const value = candidates.find((v) => v !== undefined && v !== null);
+      if (value === undefined || value === null) return false;
+      const num = Number(value);
+      return !Number.isNaN(num) ? num > 0 : Boolean(value);
+    };
+
+    const hasTimeFilter = Boolean(isMorningFlight || isNoonFlight || isEveningFlight);
+
+    return results.filter((flight: FlightSearchOneWayType) => {
+      const journey = flight?.journeys?.[0];
+      const numTransits = flight?.numOfTransits ?? journey?.numOfTransits;
+
+      if (isDirect && String(numTransits) !== '0') return false;
+      if (isFreeRefund && journey?.refundableStatus !== 'REFUNDABLE') return false;
+      if (isIncludeCheckedBaggage && !hasCheckedBaggage(journey?.fareInfo)) return false;
+
+      if (hasTimeFilter) {
+        const minutes = parseMinutes(journey?.departureDetail?.departureTime);
+        if (minutes === null) return false;
+        const isMorning = minutes < 11 * 60;
+        const isNoon = minutes >= 11 * 60 && minutes <= 16 * 60;
+        const isEvening = minutes > 16 * 60;
+        if (
+          (isMorningFlight && isMorning) ||
+          (isNoonFlight && isNoon) ||
+          (isEveningFlight && isEvening)
+        ) {
+          return true;
+        }
+        return false;
+      }
+
+      return true;
+    });
+  }, [
+    data?.data?.oneWayFlightSearchResults,
+    isDirect,
+    isFreeRefund,
+    isIncludeCheckedBaggage,
+    isMorningFlight,
+    isNoonFlight,
+    isEveningFlight,
+  ]);
 
   return (
     <Form
@@ -152,7 +224,7 @@ function FlightSearchForm({
           </Card>
         </Col>
       </Row>
-      <Row>
+      <Row wrap={false}>
         <Col flex="300px" className="pr-8">
           <Form.Item className="mt-8" name="sortBy" label="Sort By">
             <Select
@@ -174,9 +246,10 @@ function FlightSearchForm({
           <Form.Item className="mb-0" name="isIncludeCheckedBaggage" valuePropName="checked">
             <Checkbox>Include checked baggage</Checkbox>
           </Form.Item>
-          <Form.Item className="mb-0" name="isHideCodeshare" valuePropName="checked">
+          {/* TODO: filter codeshare */}
+          {/* <Form.Item className="mb-0" name="isHideCodeshare" valuePropName="checked">
             <Checkbox>Hide codeshare</Checkbox>
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item className="mt-16 mb-0" name="isMorningFlight" valuePropName="checked">
             <Checkbox>Morning flight &lt; 11am</Checkbox>
           </Form.Item>
@@ -188,29 +261,31 @@ function FlightSearchForm({
           </Form.Item>
         </Col>
         <Col flex="auto">
-          <div className="mt-4 space-y-3">
-            {isLoading ? (
-              <div className="flex justify-center items-center h-full">
-                <Spin />
-              </div>
-            ) : (
-              <>
-                {data && data?.data?.oneWayFlightSearchResults?.length === 0 && (
-                  <div className="flex justify-center items-center h-full">
-                    <div className="text-gray-500">No flights found</div>
-                  </div>
-                )}
-                {data?.data?.oneWayFlightSearchResults?.map((r: FlightSearchOneWayType) => {
-                  return (
-                    <FlightInfo
-                      key={r.flightId}
-                      flight={r}
-                      onSelect={() => onSelectFlight(r, flightIndex)}
-                    />
-                  );
-                })}
-              </>
-            )}
+          <div className="overflow-x-auto">
+            <div style={{ minWidth: 800 }} className="mt-4 space-y-3">
+              {isLoading ? (
+                <div className="flex justify-center items-center h-full">
+                  <Spin />
+                </div>
+              ) : (
+                <>
+                  {data && filteredResults.length === 0 && (
+                    <div className="flex justify-center items-center h-full">
+                      <div className="text-gray-500">No flights found</div>
+                    </div>
+                  )}
+                  {filteredResults.map((r: FlightSearchOneWayType) => {
+                    return (
+                      <FlightInfo
+                        key={r.flightId}
+                        flight={r}
+                        onSelect={() => onSelectFlight(r, flightIndex)}
+                      />
+                    );
+                  })}
+                </>
+              )}
+            </div>
           </div>
         </Col>
       </Row>

@@ -27,8 +27,8 @@ function ApprovalView() {
         centered
         items={[
           { key: 'need-approval', label: 'Need Approval', children: <NeedApproval /> },
-          { key: 'my-approval', label: 'My Approval', children: <MyApproval /> },
           { key: 'my-request', label: 'My Request', children: <MyRequest /> },
+          { key: 'my-approval', label: 'My Approval', children: <MyApproval /> },
         ]}
       />
     </Layout>
