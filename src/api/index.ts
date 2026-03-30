@@ -1,6 +1,7 @@
 import {
   BOOKINGS_API,
   BOOKINGS_FLIGHT_API,
+  BOOKINGS_HOTEL_API,
   FLIGHT_AIRLINES_API,
   FLIGHT_AIRPORTS_API,
   FLIGHT_BOOKING_ADD_ONS_API,
@@ -19,6 +20,8 @@ import type {
   BookingCreateResponseType,
   BookingFlightPayloadType,
   BookingFlightResponseType,
+  BookingHotelPayloadType,
+  BookingHotelResponseType,
   BookingListPayloadType,
   BookingListResponseType,
   FlightBookingAddOnsPayloadType,
@@ -120,5 +123,13 @@ export async function submitBookingsFlight(
   params: BookingFlightPayloadType,
 ): Promise<ResponseType<BookingFlightResponseType>> {
   const res = await axios.post(BOOKINGS_FLIGHT_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function submitBookingsHotel(
+  id: string,
+  params: BookingHotelPayloadType,
+): Promise<ResponseType<BookingHotelResponseType>> {
+  const res = await axios.post(BOOKINGS_HOTEL_API.replace(':id', id), params);
   return res.data;
 }

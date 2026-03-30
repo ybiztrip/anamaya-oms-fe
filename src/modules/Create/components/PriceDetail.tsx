@@ -1,9 +1,10 @@
 import { Card } from 'antd';
 import { useMemo } from 'react';
 
+import type { BookingPriceItemType } from '@/types';
 import { formatIDR } from '@/utils/formatter';
 
-function PriceDetail({ prices }: { prices: { item: string; currency: string; amount: number }[] }) {
+function PriceDetail({ prices }: { prices: BookingPriceItemType[] }) {
   const total = useMemo(() => {
     return prices.reduce((acc, price) => acc + Number(price.amount), 0);
   }, [prices]);
@@ -14,7 +15,9 @@ function PriceDetail({ prices }: { prices: { item: string; currency: string; amo
         {prices.map((price, index) => (
           <div key={`price-${index}`} className="flex justify-between gap-6 text-medium py-1">
             <span>{price.item}</span>
-            <span>{price.currency} {formatIDR(price.amount)}</span>
+            <span>
+              {price.currency} {formatIDR(price.amount)}
+            </span>
           </div>
         ))}
       </div>

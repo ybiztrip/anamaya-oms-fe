@@ -3,7 +3,7 @@ import { message } from 'antd';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 
-import { createBookings, submitBookingsFlight } from '@/api';
+import { createBookings, submitBookingsFlight, submitBookingsHotel } from '@/api';
 import { CLIENT_SOURCE, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { FLIGHT_ADD_ONS } from '@/constants/queryKey';
 import { APPROVAL_PATH } from '@/constants/routePath';
@@ -11,6 +11,7 @@ import { BOOKING_PARAMS, USER } from '@/constants/storageKey';
 import type {
   BookingCreatePayloadType,
   BookingFlightPayloadType,
+  BookingHotelPayloadType,
   BookingParamsType,
   FlightBookingAddOnsResponseType,
   FlightBookingAddOnType,
@@ -21,7 +22,7 @@ import type {
 import { localStorageGet } from '@/utils/localStorage';
 import { sessionStorageGet, sessionStorageRemove } from '@/utils/sessionStorage';
 
-export default function useFlightConfirm() {
+export default function useBookingConfirm() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -40,8 +41,16 @@ export default function useFlightConfirm() {
     },
   });
 
+  const submitBookingsHotelMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: BookingHotelPayloadType }) =>
+      submitBookingsHotel(id, payload),
+    onError: (e: any) => {
+      message.error(e?.response?.data?.message ?? DEFAULT_ERROR_MESSAGE);
+    },
+  });
+
   const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
-  const { flights = [], paxList = [], tripType } = bookingParams ?? {};
+  const { flights = [], paxList = [], tripType, hotel } = bookingParams ?? {};
 
   const createBooking = async () => {
     const userProfile = localStorageGet<UserType>(USER);
@@ -50,8 +59,10 @@ export default function useFlightConfirm() {
     if (flights?.length) {
       startDate = flights?.[0]?.departureDate;
       endDate = flights?.[flights?.length - 1]?.departureDate;
+    } else if (hotel) {
+      startDate = hotel?.checkInDate;
+      endDate = hotel?.checkOutDate;
     }
-    // TODO: get start and end date from flights and hotel
 
     const bookingPayload: BookingCreatePayloadType = {
       startDate: startDate,
@@ -68,6 +79,25 @@ export default function useFlightConfirm() {
         : '',
     };
     return await createBookingsMutation.mutateAsync(bookingPayload);
+  };
+
+  const getBookingPaxPayload = (pax: PassengerGuestType) => {
+    return {
+      firstName: pax.firstName,
+      lastName: pax.lastName,
+      title: pax.gender === 'MALE' ? 'MR' : 'MRS',
+      gender: pax.gender,
+      type: pax.type ?? 'ADULT',
+      email: pax.email,
+      nationality: 'ID',
+      phoneCode: pax.phoneCode ?? '',
+      phoneNumber: `${pax.phoneCode ?? ''}${pax.phoneNumber ?? ''}`,
+      dob: pax.dob,
+      issuingCountry: 'ID',
+      documentType: 'PASSPORT',
+      documentNo: pax.passportNumber,
+      expirationDate: pax.passportExpiry,
+    };
   };
 
   const createBookingsFlight = async (bookingId: string, values: any) => {
@@ -98,6 +128,10 @@ export default function useFlightConfirm() {
               'YYYY-MM-DDTHH:mm:ss',
             )
           : '',
+        // TODO: payment
+        paymentMethod: 'DEPOSIT',
+        paymentReference1: 'last six digit',
+        paymentReference2: '6624234',
       };
     });
     const paxsPayload = paxList.map((pax: PassengerGuestType, paxIndex: number) => {
@@ -126,21 +160,8 @@ export default function useFlightConfirm() {
         };
       });
       return {
-        firstName: pax.firstName,
-        lastName: pax.lastName,
-        title: pax.gender === 'MALE' ? 'MR' : 'MRS',
-        gender: pax.gender,
-        type: pax.type ?? 'ADULT',
-        email: pax.email,
-        nationality: 'ID',
-        phoneCode: pax.phoneCode ?? '',
-        phoneNumber: `${pax.phoneCode ?? ''}${pax.phoneNumber ?? ''}`,
-        dob: pax.dob,
+        ...getBookingPaxPayload(pax),
         addOn: addOn,
-        issuingCountry: 'ID',
-        documentType: 'PASSPORT',
-        documentNo: pax.passportNumber,
-        expirationDate: pax.passportExpiry,
       };
     });
     const bookingFlightPayload: BookingFlightPayloadType = {
@@ -153,6 +174,37 @@ export default function useFlightConfirm() {
     });
   };
 
+  const createBookingsHotel = async (bookingId: string, values: any) => {
+    const hotelPayload = {
+      clientSource: CLIENT_SOURCE,
+      itemId: hotel?.selectedHotel?.propertyId ?? '',
+      roomId: hotel?.selectedRoom?.roomId ?? '',
+      rateKey: hotel?.selectedRoom?.rateKey ?? '',
+      numRoom: hotel?.rooms ?? 1,
+      checkInDate: hotel?.checkInDate ? dayjs(hotel.checkInDate).format('YYYY-MM-DD') : '',
+      checkOutDate: hotel?.checkOutDate ? dayjs(hotel.checkOutDate).format('YYYY-MM-DD') : '',
+      partnerSellAmount: hotel?.selectedRoom?.totalRates.partnerSellAmount ?? 0,
+      partnerNettAmount: hotel?.selectedRoom?.totalRates.partnerNettAmount ?? 0,
+      currency: hotel?.selectedRoom?.totalRates.partnerCurrency ?? '',
+      specialRequest: values?.specialRequests ?? '',
+      // TODO: payment
+      paymentMethod: 'DEPOSIT',
+      paymentReference1: 'last six digit',
+      paymentReference2: '6624234',
+    };
+    const paxsPayload = paxList.map((pax: PassengerGuestType) => {
+      return getBookingPaxPayload(pax);
+    });
+    const bookingHotelPayload: BookingHotelPayloadType = {
+      hotel: hotelPayload,
+      paxs: paxsPayload,
+    };
+    return await submitBookingsHotelMutation.mutateAsync({
+      id: bookingId,
+      payload: bookingHotelPayload,
+    });
+  };
+
   const handleSubmitForApproval = async (values: any) => {
     try {
       const createBookingsResponse = await createBooking();
@@ -160,7 +212,9 @@ export default function useFlightConfirm() {
       if (flights?.length) {
         await createBookingsFlight(bookingId, values);
       }
-      // TODO: hotel booking
+      if (hotel) {
+        await createBookingsHotel(bookingId, values);
+      }
       message.success('Booking submitted for approval');
       sessionStorageRemove(BOOKING_PARAMS);
 

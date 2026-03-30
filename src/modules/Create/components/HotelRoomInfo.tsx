@@ -6,6 +6,8 @@ import { formatIDR } from '@/utils/formatter';
 
 function HotelInfo({
   room,
+  withPrice = true,
+  withSelect = true,
   onSelect,
 }: {
   room: HotelRoomRateType;
@@ -78,17 +80,25 @@ function HotelInfo({
             </Space>
           </div>
         </Col>
-        <Col flex="200px" className="text-right">
-          <div className="text-lg font-semibold">
-            {priceCurrency} {formatIDR(String(priceTotal))}
-          </div>
-          <div className="text-xs text-gray-500">
-            {priceCurrency} {formatIDR(String(nightly))} / night
-          </div>
-          <Button className="mt-2" type="primary" onClick={() => onSelect?.(room)}>
-            Select
-          </Button>
-        </Col>
+        {(withPrice || withSelect) && (
+          <Col flex="200px" className="text-right">
+            {withPrice && (
+              <>
+                <div className="text-lg font-semibold">
+                  {priceCurrency} {formatIDR(String(priceTotal))}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {priceCurrency} {formatIDR(String(nightly))} / night
+                </div>
+              </>
+            )}
+            {withSelect && (
+              <Button className="mt-2" type="primary" onClick={() => onSelect?.(room)}>
+                Select
+              </Button>
+            )}
+          </Col>
+        )}
       </Row>
     </Card>
   );
