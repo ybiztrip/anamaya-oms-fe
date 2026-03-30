@@ -58,7 +58,7 @@ function CreateView() {
         form={form}
         layout="horizontal"
         initialValues={{
-          tripType: 'roundTrip',
+          tripType: 'oneWay',
           bookerName: `${userProfile?.firstName} ${userProfile?.lastName}`,
           flightClass: 'ECONOMY',
           hotelStars: ['5'],
@@ -84,11 +84,13 @@ function CreateView() {
             <PassengerGuestForm form={form} type="flight-hotel" />
           </>
         )}
-        <Row justify="end">
-          <Button type="primary" htmlType="submit">
-            Search
-          </Button>
-        </Row>
+        <div className="sticky bottom-0 z-10 bg-white p-4 border-t mb-[-2rem] mx-[-2rem]">
+          <Row justify="end">
+            <Button type="primary" htmlType="submit">
+              Search
+            </Button>
+          </Row>
+        </div>
       </Form>
     </Layout>
   );

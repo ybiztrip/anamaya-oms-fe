@@ -114,8 +114,8 @@ function FlightForm({
         <Form.Item name="tripType">
           <Radio.Group
             options={[
-              { label: 'Round-trip', value: 'roundTrip' },
               { label: 'One-way', value: 'oneWay' },
+              { label: 'Round-trip', value: 'roundTrip' },
               { label: 'Multi City', value: 'multiCity' },
             ]}
             optionType="button"

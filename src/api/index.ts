@@ -38,12 +38,15 @@ import type {
   HotelRoomResponseType,
   PaginationResponseType,
   ResponseType,
+  UsersPayloadType,
   UserType,
 } from '@/types';
 import axios from '@/utils/api';
 
-export async function fetchUsers(): Promise<PaginationResponseType<UserType>> {
-  const res = await axios.get(USERS_API);
+export async function fetchUsers(
+  params: UsersPayloadType,
+): Promise<PaginationResponseType<UserType>> {
+  const res = await axios.get(USERS_API, { params });
   return res.data;
 }
 

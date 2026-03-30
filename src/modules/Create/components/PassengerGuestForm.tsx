@@ -86,9 +86,9 @@ function PassengerGuestForm({
                                 [field.name]: {
                                   id: 0,
                                   email: '',
+                                  title: '',
                                   firstName: '',
                                   lastName: '',
-                                  gender: '',
                                   phoneNumber: '',
                                   phoneCode: '+62',
                                   dob: '',
@@ -132,7 +132,8 @@ function PassengerGuestForm({
                                       (parsedPhone?.countryCallingCode
                                         ? `+${parsedPhone.countryCallingCode}`
                                         : '+62');
-                                    let phoneNumber = parsedPhone?.nationalNumber ?? u.phoneNo ?? '';
+                                    let phoneNumber =
+                                      parsedPhone?.nationalNumber ?? u.phoneNo ?? '';
                                     if (normalizedCountryCode && u.phoneNo) {
                                       const rawCode = normalizedCountryCode.replace('+', '');
                                       phoneNumber = phoneNumber
@@ -146,9 +147,9 @@ function PassengerGuestForm({
                                         [field.name]: {
                                           id: u.id,
                                           email: u.email,
+                                          title: u.title,
                                           firstName: u.firstName,
                                           lastName: u.lastName,
-                                          gender: u.gender,
                                           phoneNumber: phoneNumber,
                                           phoneCode: phoneCode,
                                           dob: u.dateOfBirth
@@ -179,9 +180,26 @@ function PassengerGuestForm({
 
                       return (
                         <Row gutter={[16, 8]}>
-                          <Col xs={24} md={12} hidden>
+                          <Col xs={24} hidden>
                             <Form.Item name={[field.name, 'id']}>
                               <Input />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24}>
+                            <Form.Item
+                              label="Title"
+                              name={[field.name, 'title']}
+                              rules={[{ required: true, message: 'Title required' }]}
+                            >
+                              <Select
+                                options={[
+                                  { label: 'Mr', value: 'MR' },
+                                  { label: 'Mrs', value: 'MRS' },
+                                  { label: 'Ms', value: 'MS' },
+                                ]}
+                                disabled={sourceType === 'fromEmployee'}
+                                style={{ width: '100px' }}
+                              />
                             </Form.Item>
                           </Col>
                           <Col xs={24} md={12}>
@@ -204,7 +222,7 @@ function PassengerGuestForm({
                             </Form.Item>
                           </Col>
                           <Col xs={24} md={12}>
-                            <Form.Item label="Phone" required>
+                            <Form.Item label="Phone">
                               <Space.Compact block>
                                 <Form.Item
                                   name={[field.name, 'phoneCode']}
@@ -217,11 +235,7 @@ function PassengerGuestForm({
                                     disabled={sourceType === 'fromEmployee'}
                                   />
                                 </Form.Item>
-                                <Form.Item
-                                  name={[field.name, 'phoneNumber']}
-                                  noStyle
-                                  rules={[{ required: true, message: 'Phone required' }]}
-                                >
+                                <Form.Item name={[field.name, 'phoneNumber']} noStyle>
                                   <Input disabled={sourceType === 'fromEmployee'} />
                                 </Form.Item>
                               </Space.Compact>
@@ -232,7 +246,7 @@ function PassengerGuestForm({
                             <Form.Item
                               label="Date of Birth"
                               name={[field.name, 'dob']}
-                              // rules={[{ required: true, message: 'Date of Birth required' }]}
+                              rules={[{ required: true, message: 'Date of Birth required' }]}
                             >
                               <DatePicker
                                 style={{ width: '100%' }}
@@ -243,27 +257,7 @@ function PassengerGuestForm({
                           </Col>
 
                           <Col xs={24} md={8}>
-                            <Form.Item
-                              label="Gender"
-                              name={[field.name, 'gender']}
-                              rules={[{ required: true, message: 'Gender required' }]}
-                            >
-                              <Select
-                                options={[
-                                  { label: 'Male', value: 'MALE' },
-                                  { label: 'Female', value: 'FEMALE' },
-                                ]}
-                                disabled={sourceType === 'fromEmployee'}
-                              />
-                            </Form.Item>
-                          </Col>
-
-                          <Col xs={24} md={8}>
-                            <Form.Item
-                              label="ID#"
-                              name={[field.name, 'idNumber']}
-                              // rules={[{ required: true, message: 'ID# required' }]}
-                            >
+                            <Form.Item label="ID#" name={[field.name, 'idNumber']}>
                               <Input disabled={sourceType === 'fromEmployee'} />
                             </Form.Item>
                           </Col>

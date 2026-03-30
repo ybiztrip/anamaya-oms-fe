@@ -5,9 +5,9 @@ export type PassengerGuestType = {
   id: string;
   companyId: number;
   email: string;
+  title: string;
   firstName: string;
   lastName: string;
-  gender: string;
   phoneNumber: string;
   phoneCode: string;
   dob: string;

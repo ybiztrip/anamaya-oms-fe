@@ -41,3 +41,9 @@ export type UserType = {
   updatedBy: number;
   updatedAt: string;
 };
+
+export type UsersPayloadType = {
+  page: string;
+  size: string;
+  email: string;
+};

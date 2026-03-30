@@ -70,7 +70,7 @@ export default function useBookingConfirm() {
       contactEmail: userProfile?.email ?? '',
       contactFirstName: userProfile?.firstName ?? '',
       contactLastName: userProfile?.lastName ?? '',
-      contactTitle: userProfile?.gender === 'MALE' ? 'MR' : 'MRS',
+      contactTitle: userProfile?.title ?? 'MR',
       contactNationality: 'ID',
       contactPhoneCode: userProfile?.countryCode ?? '',
       contactPhoneNumber: userProfile?.phoneNo ?? '',
@@ -85,8 +85,7 @@ export default function useBookingConfirm() {
     return {
       firstName: pax.firstName,
       lastName: pax.lastName,
-      title: pax.gender === 'MALE' ? 'MR' : 'MRS',
-      gender: pax.gender,
+      title: pax.title ?? 'MR',
       type: pax.type ?? 'ADULT',
       email: pax.email,
       nationality: 'ID',
