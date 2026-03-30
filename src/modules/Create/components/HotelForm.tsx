@@ -235,10 +235,6 @@ function HotelForm({
           )}
         </Form.Item>
 
-        <Form.Item label="Notes" name="notes">
-          <Input.TextArea rows={3} />
-        </Form.Item>
-
         <Form.Item
           label="Attachment"
           name="attachments"

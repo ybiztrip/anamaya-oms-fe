@@ -62,6 +62,7 @@ function CreateView() {
           bookerName: `${userProfile?.firstName} ${userProfile?.lastName}`,
           flightClass: 'ECONOMY',
           hotelStars: ['5'],
+          rooms: 1,
           passengers: [{}],
         }}
         onFinish={onFinish}

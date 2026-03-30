@@ -119,7 +119,6 @@ export function hotelFormToBookingParams(values: any): BookingParamsType {
       checkOutDate: values.checkOutDate,
       hotelStars: values.hotelStars,
       rooms: values.rooms,
-      notes: values.notes,
     },
   };
 }
@@ -133,7 +132,6 @@ export function bookingParamsToHotelForm(bookingParams: BookingParamsType): any 
     checkOutDate: hotel?.checkOutDate ? dayjs(hotel.checkOutDate) : undefined,
     hotelStars: hotel?.hotelStars,
     rooms: hotel?.rooms,
-    notes: hotel?.notes,
     paxList: paxParamsToPaxForm(paxList),
   };
 }

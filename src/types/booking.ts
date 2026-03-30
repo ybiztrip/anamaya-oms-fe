@@ -33,7 +33,6 @@ export type BookingHotelParamsType = {
   checkOutDate: string;
   hotelStars: string[];
   rooms: number;
-  notes?: string;
   selectedHotel?: HotelPropertyType;
   selectedRoom?: HotelRoomRateType;
 };

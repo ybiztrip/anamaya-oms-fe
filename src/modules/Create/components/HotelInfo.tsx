@@ -66,7 +66,10 @@ function HotelInfo({
           </Col>
         )}
         {withSelect && (
-          <Col flex="160px" className="text-right">
+          <Col
+            flex="140px"
+            className="text-right self-stretch sticky right-0 bg-white flex items-center justify-end"
+          >
             <Button type="primary" className="mt-2" onClick={() => onSelect?.(hotel)}>
               Select Room
             </Button>

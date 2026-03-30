@@ -1,4 +1,16 @@
-import { Button, Card, Col, DatePicker, Form, InputNumber, Row, Select, Space, Spin } from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Form,
+  InputNumber,
+  Row,
+  Select,
+  Space,
+  Spin,
+  Typography,
+} from 'antd';
 import { useEffect, useRef } from 'react';
 
 import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
@@ -127,59 +139,56 @@ function HotelSearchForm({
           </Card>
         </Col>
       </Row>
-      <Row>
+      <Row wrap={false}>
         <Col flex="300px" className="pr-8">
-          <Row className="mt-8">
-            <Col xs={12} md={12} lg={24}>
-              <Form.Item name="sortBy" label="Sort By">
-                <Select
-                  placeholder="Sort By"
-                  options={[
-                    { label: 'Lowest Price', value: 'LOWEST_PRICE' },
-                    { label: 'Highest Price', value: 'HIGHEST_PRICE' },
-                  ]}
-                  style={{ width: 'fit-content' }}
-                />
+          <Form.Item className="mt-8" name="sortBy" label="Sort By">
+            <Select
+              placeholder="Sort By"
+              options={[
+                { label: 'Lowest Price', value: 'LOWEST_PRICE' },
+                { label: 'Highest Price', value: 'HIGHEST_PRICE' },
+              ]}
+              style={{ width: 'fit-content' }}
+            />
+          </Form.Item>
+          <Form.Item label="Price Range">
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Form.Item name="minPrice" noStyle initialValue={0}>
+                <InputNumber min={0} placeholder="Min" style={{ width: '100%' }} />
               </Form.Item>
-            </Col>
-            <Col xs={12} md={12} lg={24}>
-              <Form.Item label="Price Range">
-                <Space.Compact block>
-                  <Form.Item name="minPrice" noStyle initialValue={0}>
-                    <InputNumber min={0} placeholder="Min" style={{ width: '100%' }} />
-                  </Form.Item>
-                  <Form.Item name="maxPrice" noStyle initialValue={10000000}>
-                    <InputNumber min={0} placeholder="Max" style={{ width: '100%' }} />
-                  </Form.Item>
-                </Space.Compact>
+              <Typography.Text type="secondary">to</Typography.Text>
+              <Form.Item name="maxPrice" noStyle initialValue={10000000}>
+                <InputNumber min={0} placeholder="Max" style={{ width: '100%' }} />
               </Form.Item>
-            </Col>
-          </Row>
+            </Space>
+          </Form.Item>
         </Col>
         <Col flex="auto">
-          <div className="mt-4 space-y-3">
-            {isLoading ? (
-              <div className="flex justify-center items-center h-full">
-                <Spin />
-              </div>
-            ) : (
-              <>
-                {data && data?.data?.properties?.length === 0 && (
-                  <div className="flex justify-center items-center h-full">
-                    <div className="text-gray-500">No hotels found</div>
-                  </div>
-                )}
-                {data?.data?.properties?.map((r: HotelPropertyType) => {
-                  return (
-                    <HotelInfo
-                      key={r.propertyId}
-                      hotel={r}
-                      onSelect={() => onSelectHotel(r, form.getFieldsValue())}
-                    />
-                  );
-                })}
-              </>
-            )}
+          <div className="overflow-x-auto">
+            <div style={{ minWidth: 800 }} className="mt-4 space-y-3">
+              {isLoading ? (
+                <div className="flex justify-center items-center h-full">
+                  <Spin />
+                </div>
+              ) : (
+                <>
+                  {data && data?.data?.properties?.length === 0 && (
+                    <div className="flex justify-center items-center h-full">
+                      <div className="text-gray-500">No hotels found</div>
+                    </div>
+                  )}
+                  {data?.data?.properties?.map((r: HotelPropertyType) => {
+                    return (
+                      <HotelInfo
+                        key={r.propertyId}
+                        hotel={r}
+                        onSelect={() => onSelectHotel(r, form.getFieldsValue())}
+                      />
+                    );
+                  })}
+                </>
+              )}
+            </div>
           </div>
         </Col>
       </Row>
