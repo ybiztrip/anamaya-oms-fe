@@ -86,6 +86,7 @@ export default function useBookingConfirm() {
       firstName: pax.firstName,
       lastName: pax.lastName,
       title: pax.title ?? 'MR',
+      gender: pax.title === 'MR' ? 'MALE' : 'FEMALE',
       type: pax.type ?? 'ADULT',
       email: pax.email,
       nationality: 'ID',
@@ -129,8 +130,8 @@ export default function useBookingConfirm() {
           : '',
         // TODO: payment
         paymentMethod: 'DEPOSIT',
-        paymentReference1: 'last six digit',
-        paymentReference2: '6624234',
+        paymentReference1: '',
+        paymentReference2: '',
       };
     });
     const paxsPayload = paxList.map((pax: PassengerGuestType, paxIndex: number) => {
@@ -188,8 +189,8 @@ export default function useBookingConfirm() {
       specialRequest: values?.specialRequests ?? '',
       // TODO: payment
       paymentMethod: 'DEPOSIT',
-      paymentReference1: 'last six digit',
-      paymentReference2: '6624234',
+      paymentReference1: '',
+      paymentReference2: '',
     };
     const paxsPayload = paxList.map((pax: PassengerGuestType) => {
       return getBookingPaxPayload(pax);
