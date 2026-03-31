@@ -24,4 +24,5 @@ export const BOOKINGS_API = API_V1 + '/bookings';
 export const BOOKINGS_NEED_APPROVAL_API = BOOKINGS_API + '/need-approval';
 export const BOOKINGS_FLIGHT_API = BOOKINGS_API + '/:id/flights';
 export const BOOKINGS_HOTEL_API = BOOKINGS_API + '/:id/hotels';
-export const BOOKINGS_APPROVE_API = BOOKINGS_API + '/:id/approve';
+export const BOOKINGS_APPROVE_API = BOOKINGS_API + '/approve/:id';
+export const BOOKINGS_REJECT_API = BOOKINGS_API + '/reject/:id';

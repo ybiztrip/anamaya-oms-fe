@@ -1,7 +1,9 @@
 import { Alert, Button, Card, Checkbox, Col, List, Row, Space, Spin, Typography } from 'antd';
 
 import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import type { BookingApprovePayloadType, BookingRejectPayloadType, BookingType } from '@/types';
 
+import useBookingApprove from '../hooks/useBookingApprove';
 import useBookingNeedApproval from '../hooks/useBookingNeedApproval';
 import BookingSummary from './BookingSummary';
 
@@ -11,41 +13,74 @@ import { useMemo, useState } from 'react';
 
 function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
   const { data, isLoading, error } = useBookingNeedApproval();
+  const { approveBooking, rejectBooking, isLoading: isActionLoading } = useBookingApprove();
 
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedBookings, setSelectedBookings] = useState<BookingType[]>([]);
 
-  const allPendingIds = useMemo(
-    () => data?.filter((x) => x.status === BOOKING_STATUS_BOOKED).map((x) => x.id) ?? [],
+  const allPendingBookings = useMemo(
+    () => data?.filter((x) => x.status === BOOKING_STATUS_BOOKED) ?? [],
     [data],
   );
 
-  const selectedPendingIds = useMemo(
+  const selectedPendingBookings = useMemo(
     () =>
-      selectedIds.filter((id) => data?.find((x) => x.id === id)?.status === BOOKING_STATUS_BOOKED),
-    [selectedIds, data],
+      selectedBookings.filter(
+        (booking) =>
+          data?.find((item) => item.id === booking.id)?.status === BOOKING_STATUS_BOOKED,
+      ),
+    [selectedBookings, data],
   );
 
-  const toggleOne = (id: number, checked: boolean) => {
-    setSelectedIds((prev) =>
-      checked ? Array.from(new Set([...prev, id])) : prev.filter((x) => x !== id),
-    );
-  };
-
-  const toggleAllPending = (checked: boolean) => {
-    setSelectedIds((prev) => {
-      if (!checked) return prev.filter((id) => !allPendingIds.includes(id));
-      return Array.from(new Set([...prev, ...allPendingIds]));
+  const toggleOne = (booking: BookingType, checked: boolean) => {
+    setSelectedBookings((prev) => {
+      if (!checked) return prev.filter((item) => item.id !== booking.id);
+      if (prev.some((item) => item.id === booking.id)) return prev;
+      return [...prev, booking];
     });
   };
 
-  const approve = (ids: number[]) => {
-    // TODO: approve bookings
-    setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
+  const toggleAllPending = (checked: boolean) => {
+    setSelectedBookings((prev) => {
+      if (!checked) return prev.filter((item) => !allPendingBookings.some((b) => b.id === item.id));
+      const merged = [...prev];
+      allPendingBookings.forEach((booking) => {
+        if (!merged.some((item) => item.id === booking.id)) {
+          merged.push(booking);
+        }
+      });
+      return merged;
+    });
   };
 
-  const reject = (ids: number[]) => {
-    // TODO: reject bookings
-    setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
+  const buildPayload = (booking: BookingType): BookingApprovePayloadType => {
+    const flightIds = (booking.flights ?? [])
+      .filter((flight) => flight.status === BOOKING_STATUS_BOOKED && flight.id)
+      .map((flight) => Number(flight.id))
+      .filter((id) => !Number.isNaN(id));
+    const hotelIds = (booking.hotels ?? [])
+      .filter((hotel) => hotel.status === BOOKING_STATUS_BOOKED && hotel.id)
+      .map((hotel) => Number(hotel.id))
+      .filter((id) => !Number.isNaN(id));
+
+    return { flightIds, hotelIds };
+  };
+
+  const approve = async (bookings: BookingType[]) => {
+    await Promise.all(
+      bookings.map((booking) =>
+        approveBooking({ id: String(booking.id), payload: buildPayload(booking) }),
+      ),
+    );
+    setSelectedBookings((prev) => prev.filter((item) => !bookings.some((b) => b.id === item.id)));
+  };
+
+  const reject = async (bookings: BookingType[]) => {
+    await Promise.all(
+      bookings.map((booking) =>
+        rejectBooking({ id: String(booking.id), payload: buildPayload(booking) }),
+      ),
+    );
+    setSelectedBookings((prev) => prev.filter((item) => !bookings.some((b) => b.id === item.id)));
   };
   return (
     <Card
@@ -102,10 +137,12 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
           <Col>
             <Checkbox
               indeterminate={
-                selectedPendingIds.length > 0 && selectedPendingIds.length < allPendingIds.length
+                selectedPendingBookings.length > 0 &&
+                selectedPendingBookings.length < allPendingBookings.length
               }
               checked={
-                allPendingIds.length > 0 && selectedPendingIds.length === allPendingIds.length
+                allPendingBookings.length > 0 &&
+                selectedPendingBookings.length === allPendingBookings.length
               }
               onChange={(e) => toggleAllPending(e.target.checked)}
             >
@@ -114,19 +151,21 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
           </Col>
           <Col>
             <Space>
-              <Text type="secondary">Selected: {selectedPendingIds.length}</Text>
+              <Text type="secondary">Selected: {selectedPendingBookings.length}</Text>
               <Button
                 type="primary"
-                disabled={selectedPendingIds.length === 0}
-                onClick={() => approve(selectedPendingIds)}
+                disabled={selectedPendingBookings.length === 0 || isActionLoading}
+                loading={isActionLoading}
+                onClick={() => approve(selectedPendingBookings)}
               >
                 Approve selected
               </Button>
 
               <Button
                 danger
-                disabled={selectedPendingIds.length === 0}
-                onClick={() => reject(selectedPendingIds)}
+                disabled={selectedPendingBookings.length === 0 || isActionLoading}
+                loading={isActionLoading}
+                onClick={() => reject(selectedPendingBookings)}
               >
                 Reject selected
               </Button>
@@ -145,7 +184,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
           dataSource={data}
           rowKey="id"
           renderItem={(item) => {
-            const checked = selectedIds.includes(item.id);
+            const checked = selectedBookings.some((booking) => booking.id === item.id);
             return (
               <List.Item style={{ paddingBlock: 24 }}>
                 <Row gutter={[16, 8]} align="top" style={{ width: '100%' }}>
@@ -153,7 +192,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
                     <Checkbox
                       checked={checked}
                       disabled={item.status !== BOOKING_STATUS_BOOKED}
-                      onChange={(e) => toggleOne(item.id, e.target.checked)}
+                      onChange={(e) => toggleOne(item, e.target.checked)}
                     />
                   </Col>
 
@@ -165,10 +204,19 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
                       </Col>
                       <Col>
                         <Space>
-                          <Button type="link" danger onClick={() => reject([item.id])}>
+                          <Button
+                            type="link"
+                            danger
+                            loading={isActionLoading}
+                            onClick={() => reject([item])}
+                          >
                             Reject
                           </Button>
-                          <Button type="primary" onClick={() => approve([item.id])}>
+                          <Button
+                            type="primary"
+                            loading={isActionLoading}
+                            onClick={() => approve([item])}
+                          >
                             Approve
                           </Button>
                         </Space>

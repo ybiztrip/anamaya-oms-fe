@@ -179,3 +179,13 @@ export type BookingHotelPayloadType = {
 };
 
 export type BookingHotelResponseType = any;
+
+export type BookingApprovePayloadType = {
+  flightIds: number[];
+  hotelIds: number[];
+};
+
+export type BookingRejectPayloadType = {
+  flightIds: number[];
+  hotelIds: number[];
+};

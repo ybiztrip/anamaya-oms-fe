@@ -14,15 +14,18 @@ interface BookingSummaryProps {
   data: BookingType;
 }
 function BookingSummary({ data }: BookingSummaryProps) {
-  const status = [
+  const journeyFlightHotelStatus = [
     data.status,
     ...data.flights.map((flight) => flight.status),
     ...data.hotels.map((hotel) => hotel.status),
-  ].includes(BOOKING_STATUS_BOOKED)
+  ];
+  const status = journeyFlightHotelStatus.includes(BOOKING_STATUS_BOOKED)
     ? BOOKING_STATUS_BOOKED
-    : data.status === BOOKING_STATUS_APPROVED
-      ? BOOKING_STATUS_APPROVED
-      : BOOKING_STATUS_REJECTED;
+    : journeyFlightHotelStatus.includes(BOOKING_STATUS_REJECTED)
+      ? BOOKING_STATUS_REJECTED
+      : BOOKING_STATUS_APPROVED;
+
+  const paxs = data.flights.length > 0 ? data.flights[0]?.paxs : (data.hotels[0]?.paxs ?? []);
   return (
     <div>
       <Row gutter={[16, 8]} align="top" justify="space-between" style={{ width: '100%' }}>
@@ -32,8 +35,8 @@ function BookingSummary({ data }: BookingSummaryProps) {
               <Text type="secondary">Booker:</Text> {data.contactFirstName} {data.contactLastName}
             </Text>
             <Text>
-              <Text type="secondary">Passenger:</Text>{' '}
-              {data.flights[0]?.paxs.map((pax) => `${pax.firstName} ${pax.lastName}`).join(', ')}
+              <Text type="secondary">Passenger/Guest:</Text>{' '}
+              {paxs.map((pax) => `${pax.firstName} ${pax.lastName}`).join(', ')}
             </Text>
           </Space>
 

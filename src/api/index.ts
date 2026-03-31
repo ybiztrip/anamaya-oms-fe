@@ -1,8 +1,10 @@
 import {
   BOOKINGS_API,
+  BOOKINGS_APPROVE_API,
   BOOKINGS_FLIGHT_API,
   BOOKINGS_HOTEL_API,
   BOOKINGS_NEED_APPROVAL_API,
+  BOOKINGS_REJECT_API,
   FLIGHT_AIRLINES_API,
   FLIGHT_AIRPORTS_API,
   FLIGHT_BOOKING_ADD_ONS_API,
@@ -17,6 +19,7 @@ import {
 import type {
   AirlineType,
   AirportType,
+  BookingApprovePayloadType,
   BookingCreatePayloadType,
   BookingCreateResponseType,
   BookingFlightPayloadType,
@@ -26,6 +29,7 @@ import type {
   BookingListPayloadType,
   BookingListResponseType,
   BookingNeedApprovalPayloadType,
+  BookingRejectPayloadType,
   FlightBookingAddOnsPayloadType,
   FlightBookingAddOnsResponseType,
   FlightSearchOneWayPayloadType,
@@ -120,6 +124,22 @@ export async function fetchBookingsNeedApproval(
   params: BookingNeedApprovalPayloadType,
 ): Promise<ResponseType<BookingListResponseType>> {
   const res = await axios.get(BOOKINGS_NEED_APPROVAL_API, { params });
+  return res.data;
+}
+
+export async function approveBookings(
+  id: string,
+  params: BookingApprovePayloadType,
+): Promise<ResponseType<any>> {
+  const res = await axios.put(BOOKINGS_APPROVE_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function rejectBookings(
+  id: string,
+  params: BookingRejectPayloadType,
+): Promise<ResponseType<any>> {
+  const res = await axios.put(BOOKINGS_REJECT_API.replace(':id', id), params);
   return res.data;
 }
 
