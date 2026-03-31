@@ -14,6 +14,15 @@ interface BookingSummaryProps {
   data: BookingType;
 }
 function BookingSummary({ data }: BookingSummaryProps) {
+  const status = [
+    data.status,
+    ...data.flights.map((flight) => flight.status),
+    ...data.hotels.map((hotel) => hotel.status),
+  ].includes(BOOKING_STATUS_BOOKED)
+    ? BOOKING_STATUS_BOOKED
+    : data.status === BOOKING_STATUS_APPROVED
+      ? BOOKING_STATUS_APPROVED
+      : BOOKING_STATUS_REJECTED;
   return (
     <div>
       <Row gutter={[16, 8]} align="top" justify="space-between" style={{ width: '100%' }}>
@@ -41,7 +50,15 @@ function BookingSummary({ data }: BookingSummaryProps) {
                 </Text>
               </>
             ))}
-            {/* TODO: Hotel Info */}
+            {data.hotels.map((hotel) => (
+              <>
+                <Text>
+                  {dayjs(hotel.checkInDate).format('ddd, MMM DD')} -{' '}
+                  {dayjs(hotel.checkOutDate).format('ddd, MMM DD')} {/* TODO: Hotel Info */}
+                  <Text strong>Hotel</Text>
+                </Text>
+              </>
+            ))}
           </Space>
         </Col>
 
@@ -49,14 +66,14 @@ function BookingSummary({ data }: BookingSummaryProps) {
           <Space direction="vertical" align="end" size={8} style={{ width: '100%' }}>
             <Tag
               color={
-                data.status === BOOKING_STATUS_BOOKED
+                status === BOOKING_STATUS_BOOKED
                   ? 'blue'
-                  : data.status === BOOKING_STATUS_APPROVED
+                  : status === BOOKING_STATUS_APPROVED
                     ? 'green'
                     : 'red'
               }
             >
-              {data.status}
+              {status}
             </Tag>
 
             <Text type="secondary">

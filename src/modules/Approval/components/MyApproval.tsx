@@ -1,20 +1,36 @@
-import { Alert, Button, Card, Col, List, Row, Space, Spin, Typography } from 'antd';
+import { Alert, Button, Card, Col, List, Row, Space, Spin } from 'antd';
 
-const { Text } = Typography;
+import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 
-import { BOOKING_STATUS_APPROVED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
-
-import useBookingList from '../hooks/useBookingList';
+import useBookingMyRequest from '../hooks/useBookingMyRequest';
 import BookingSummary from './BookingSummary';
 
-function MyApproval() {
-  const { data, isLoading, error } = useBookingList({ status: BOOKING_STATUS_APPROVED });
+function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
+  const { data, isLoading, error } = useBookingMyRequest();
   return (
     <Card
       className="mt-4"
       title={
         <Space>
-          <Text type="secondary">My Approval</Text>
+          <Button
+            variant="link"
+            size="large"
+            color="default"
+            onClick={() => onChangeTab('need-approval')}
+          >
+            Need Approval
+          </Button>
+          <Button
+            variant="link"
+            size="large"
+            color="default"
+            onClick={() => onChangeTab('my-request')}
+          >
+            My Request
+          </Button>
+          <Button variant="link" size="large" color="primary">
+            My Approval
+          </Button>
         </Space>
       }
       style={{
@@ -41,26 +57,32 @@ function MyApproval() {
         },
       }}
     >
-      {isLoading && <Spin />}
+      {isLoading && (
+        <div className="w-full text-center">
+          <Spin />
+        </div>
+      )}
       {error && <Alert message={error?.message ?? DEFAULT_ERROR_MESSAGE} type="error" />}
-      <List
-        dataSource={data}
-        rowKey="id"
-        renderItem={(item) => {
-          return (
-            <List.Item style={{ paddingBlock: 24 }}>
-              <div style={{ width: '100%' }}>
-                <BookingSummary data={item} />
-                <Row gutter={[16, 8]} style={{ width: '100%' }} className="mt-2">
-                  <Col>
-                    <Button type="link">View detail</Button>
-                  </Col>
-                </Row>
-              </div>
-            </List.Item>
-          );
-        }}
-      />
+      {!isLoading && !error && (
+        <List
+          dataSource={data}
+          rowKey="id"
+          renderItem={(item) => {
+            return (
+              <List.Item style={{ paddingBlock: 24 }}>
+                <div style={{ width: '100%' }}>
+                  <BookingSummary data={item} />
+                  <Row gutter={[16, 8]} style={{ width: '100%' }} className="mt-2">
+                    <Col>
+                      <Button type="link">View detail</Button>
+                    </Col>
+                  </Row>
+                </div>
+              </List.Item>
+            );
+          }}
+        />
+      )}
     </Card>
   );
 }

@@ -103,15 +103,8 @@ const FlightConfirm = ({
     }
 
     return prices;
-  }, [
-    bookingParams.flights,
-    bookingParams?.paxList,
-    index,
-    paxs,
-    flight?.journeys,
-    getBaggageById,
-    getMealById,
-  ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paxs]);
 
   useEffect(() => {
     onPriceListChange?.(priceList, index);

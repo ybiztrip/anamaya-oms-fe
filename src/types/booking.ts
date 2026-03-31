@@ -90,6 +90,7 @@ export type BookingHotelPaxType = BookingPaxType;
 
 export type BookingHotelType = {
   id?: string;
+  status?: string;
   clientSource: string;
   itemId: string;
   roomId: string;
@@ -128,7 +129,7 @@ export type BookingType = {
   approvedAt?: string;
   rejectedAt?: string;
   flights: (BookingFlightType & { paxs: BookingFlightPaxType[] })[];
-  hotels: BookingHotelType;
+  hotels: (BookingHotelType & { paxs: BookingHotelPaxType[] })[];
 };
 
 export type BookingPriceItemType = {
@@ -139,7 +140,13 @@ export type BookingPriceItemType = {
 
 export type BookingListPayloadType = {
   userId?: string;
-  status?: string;
+  size?: number;
+  needAttachment?: boolean;
+};
+
+export type BookingNeedApprovalPayloadType = {
+  size?: number;
+  page?: number;
 };
 
 export type BookingListResponseType = BookingType[];

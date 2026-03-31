@@ -2,15 +2,15 @@ import { Alert, Button, Card, Checkbox, Col, List, Row, Space, Spin, Typography 
 
 import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 
-import useBookingList from '../hooks/useBookingList';
+import useBookingNeedApproval from '../hooks/useBookingNeedApproval';
 import BookingSummary from './BookingSummary';
 
 const { Text } = Typography;
 
 import { useMemo, useState } from 'react';
 
-function NeedApproval() {
-  const { data, isLoading, error } = useBookingList({ status: BOOKING_STATUS_BOOKED });
+function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
+  const { data, isLoading, error } = useBookingNeedApproval();
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
@@ -52,33 +52,25 @@ function NeedApproval() {
       className="mt-4"
       title={
         <Space>
-          <Checkbox
-            indeterminate={
-              selectedPendingIds.length > 0 && selectedPendingIds.length < allPendingIds.length
-            }
-            checked={allPendingIds.length > 0 && selectedPendingIds.length === allPendingIds.length}
-            onChange={(e) => toggleAllPending(e.target.checked)}
-          >
-            Select all pending
-          </Checkbox>
-
-          <Button
-            type="primary"
-            disabled={selectedPendingIds.length === 0}
-            onClick={() => approve(selectedPendingIds)}
-          >
-            Approve selected
+          <Button variant="link" size="large" color="primary">
+            Need Approval
           </Button>
-
           <Button
-            danger
-            disabled={selectedPendingIds.length === 0}
-            onClick={() => reject(selectedPendingIds)}
+            variant="link"
+            size="large"
+            color="default"
+            onClick={() => onChangeTab('my-request')}
           >
-            Reject selected
+            My Request
           </Button>
-
-          <Text type="secondary">Selected: {selectedPendingIds.length}</Text>
+          <Button
+            variant="link"
+            size="large"
+            color="default"
+            onClick={() => onChangeTab('my-approval')}
+          >
+            My Approval
+          </Button>
         </Space>
       }
       style={{
@@ -105,47 +97,90 @@ function NeedApproval() {
         },
       }}
     >
-      {isLoading && <Spin />}
-      {error && <Alert message={error?.message ?? DEFAULT_ERROR_MESSAGE} type="error" />}
-      <List
-        dataSource={data}
-        rowKey="id"
-        renderItem={(item) => {
-          const checked = selectedIds.includes(item.id);
-          return (
-            <List.Item style={{ paddingBlock: 24 }}>
-              <Row gutter={[16, 8]} align="top" style={{ width: '100%' }}>
-                <Col flex="32px">
-                  <Checkbox
-                    checked={checked}
-                    disabled={item.status !== BOOKING_STATUS_BOOKED}
-                    onChange={(e) => toggleOne(item.id, e.target.checked)}
-                  />
-                </Col>
+      <Card size="small" className="mt-[-8px]">
+        <Row justify="space-between">
+          <Col>
+            <Checkbox
+              indeterminate={
+                selectedPendingIds.length > 0 && selectedPendingIds.length < allPendingIds.length
+              }
+              checked={
+                allPendingIds.length > 0 && selectedPendingIds.length === allPendingIds.length
+              }
+              onChange={(e) => toggleAllPending(e.target.checked)}
+            >
+              Select all
+            </Checkbox>
+          </Col>
+          <Col>
+            <Space>
+              <Text type="secondary">Selected: {selectedPendingIds.length}</Text>
+              <Button
+                type="primary"
+                disabled={selectedPendingIds.length === 0}
+                onClick={() => approve(selectedPendingIds)}
+              >
+                Approve selected
+              </Button>
 
-                <Col flex="auto">
-                  <BookingSummary data={item} />
-                  <Row gutter={[16, 8]} justify="space-between" className="mt-2">
-                    <Col>
-                      <Button type="link">View detail</Button>
-                    </Col>
-                    <Col>
-                      <Space>
-                        <Button type="link" danger onClick={() => reject([item.id])}>
-                          Reject with reason
-                        </Button>
-                        <Button type="primary" onClick={() => approve([item.id])}>
-                          Approve
-                        </Button>
-                      </Space>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </List.Item>
-          );
-        }}
-      />
+              <Button
+                danger
+                disabled={selectedPendingIds.length === 0}
+                onClick={() => reject(selectedPendingIds)}
+              >
+                Reject selected
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+      </Card>
+      {isLoading && (
+        <div className="w-full text-center">
+          <Spin />
+        </div>
+      )}
+      {error && <Alert message={error?.message ?? DEFAULT_ERROR_MESSAGE} type="error" />}
+      {!isLoading && !error && (
+        <List
+          dataSource={data}
+          rowKey="id"
+          renderItem={(item) => {
+            const checked = selectedIds.includes(item.id);
+            return (
+              <List.Item style={{ paddingBlock: 24 }}>
+                <Row gutter={[16, 8]} align="top" style={{ width: '100%' }}>
+                  <Col flex="32px">
+                    <Checkbox
+                      checked={checked}
+                      disabled={item.status !== BOOKING_STATUS_BOOKED}
+                      onChange={(e) => toggleOne(item.id, e.target.checked)}
+                    />
+                  </Col>
+
+                  <Col flex="auto">
+                    <BookingSummary data={item} />
+                    <Row gutter={[16, 8]} justify="space-between" className="mt-2">
+                      <Col>
+                        <Button type="link">View detail</Button>
+                      </Col>
+                      <Col>
+                        <Space>
+                          <Button type="link" danger onClick={() => reject([item.id])}>
+                            Reject
+                          </Button>
+                          <Button type="primary" onClick={() => approve([item.id])}>
+                            Approve
+                          </Button>
+                        </Space>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              </List.Item>
+            );
+          }}
+        />
+      )}
     </Card>
   );
 }
