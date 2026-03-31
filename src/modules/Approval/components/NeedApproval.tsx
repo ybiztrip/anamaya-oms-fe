@@ -1,7 +1,7 @@
 import { Alert, Button, Card, Checkbox, Col, List, Row, Space, Spin, Typography } from 'antd';
 
 import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
-import type { BookingApprovePayloadType, BookingRejectPayloadType, BookingType } from '@/types';
+import type { BookingApprovePayloadType, BookingType } from '@/types';
 
 import useBookingApprove from '../hooks/useBookingApprove';
 import useBookingNeedApproval from '../hooks/useBookingNeedApproval';
