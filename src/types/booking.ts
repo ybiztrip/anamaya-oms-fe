@@ -1,3 +1,5 @@
+import type { UploadFile } from 'antd';
+
 import type { FlightBookingAddOnType, FlightSearchOneWayType, TripType } from './flight';
 import type { HotelPropertyType, HotelRoomRateType } from './hotel';
 
@@ -42,7 +44,7 @@ export type BookingParamsType = {
   flights?: BookingFlightParamsType[];
   hotel?: BookingHotelParamsType | null;
   bookerName: string;
-  attachments: string[];
+  attachments: UploadFile[];
   paxList: PassengerGuestType[];
 };
 
@@ -179,6 +181,12 @@ export type BookingHotelPayloadType = {
 };
 
 export type BookingHotelResponseType = any;
+
+export type BookingAttachmentPayloadType = {
+  files: string[];
+};
+
+export type BookingAttachmentResponseType = any;
 
 export type BookingApprovePayloadType = {
   flightIds: number[];

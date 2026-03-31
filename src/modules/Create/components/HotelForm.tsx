@@ -239,7 +239,7 @@ function HotelForm({
           name="attachments"
           valuePropName="fileList"
           getValueFromEvent={normFile}
-          style={{ marginBottom: 16, marginLeft: 10 }}
+          style={{ marginBottom: 16, marginLeft: 10, width: '400px' }}
         >
           <Upload />
         </Form.Item>

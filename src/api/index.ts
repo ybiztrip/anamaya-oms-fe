@@ -1,10 +1,15 @@
+import type { AxiosRequestConfig } from 'axios';
+
 import {
   BOOKINGS_API,
   BOOKINGS_APPROVE_API,
+  BOOKINGS_ATTACHMENT_API,
   BOOKINGS_FLIGHT_API,
   BOOKINGS_HOTEL_API,
   BOOKINGS_NEED_APPROVAL_API,
   BOOKINGS_REJECT_API,
+  DOCUMENT_UPLOAD_API,
+  DOCUMENT_URL_API,
   FLIGHT_AIRLINES_API,
   FLIGHT_AIRPORTS_API,
   FLIGHT_BOOKING_ADD_ONS_API,
@@ -20,6 +25,8 @@ import type {
   AirlineType,
   AirportType,
   BookingApprovePayloadType,
+  BookingAttachmentPayloadType,
+  BookingAttachmentResponseType,
   BookingCreatePayloadType,
   BookingCreateResponseType,
   BookingFlightPayloadType,
@@ -163,5 +170,26 @@ export async function submitBookingsHotel(
   params: BookingHotelPayloadType,
 ): Promise<ResponseType<BookingHotelResponseType>> {
   const res = await axios.post(BOOKINGS_HOTEL_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function submitBookingsAttachment(
+  id: string,
+  params: BookingAttachmentPayloadType,
+): Promise<ResponseType<BookingAttachmentResponseType>> {
+  const res = await axios.post(BOOKINGS_ATTACHMENT_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function documentUpload(
+  params: FormData,
+  config: AxiosRequestConfig<FormData>,
+): Promise<ResponseType<any>> {
+  const res = await axios.post(DOCUMENT_UPLOAD_API, params, config);
+  return res.data;
+}
+
+export async function documentUrl(key: string): Promise<ResponseType<any>> {
+  const res = await axios.get(DOCUMENT_URL_API, { params: { key } });
   return res.data;
 }

@@ -1,14 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { message } from 'antd';
+import { message, type UploadFile } from 'antd';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 
-import { createBookings, submitBookingsFlight, submitBookingsHotel } from '@/api';
+import {
+  createBookings,
+  submitBookingsAttachment,
+  submitBookingsFlight,
+  submitBookingsHotel,
+} from '@/api';
 import { CLIENT_SOURCE, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { FLIGHT_ADD_ONS } from '@/constants/queryKey';
 import { APPROVAL_PATH } from '@/constants/routePath';
 import { BOOKING_PARAMS, USER } from '@/constants/storageKey';
 import type {
+  BookingAttachmentPayloadType,
   BookingCreatePayloadType,
   BookingFlightPayloadType,
   BookingHotelPayloadType,
@@ -49,8 +55,16 @@ export default function useBookingConfirm() {
     },
   });
 
+  const submitBookingsAttachmentMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: BookingAttachmentPayloadType }) =>
+      submitBookingsAttachment(id, payload),
+    onError: (e: any) => {
+      message.error(e?.response?.data?.message ?? DEFAULT_ERROR_MESSAGE);
+    },
+  });
+
   const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
-  const { flights = [], paxList = [], tripType, hotel } = bookingParams ?? {};
+  const { flights = [], paxList = [], tripType, hotel, attachments = [] } = bookingParams ?? {};
 
   const createBooking = async () => {
     const userProfile = localStorageGet<UserType>(USER);
@@ -205,6 +219,16 @@ export default function useBookingConfirm() {
     });
   };
 
+  const createBookingsAttachment = async (bookingId: string) => {
+    const bookingAttachmentPayload: BookingAttachmentPayloadType = {
+      files: attachments?.map((attachment: UploadFile) => attachment.response ?? ''),
+    };
+    return await submitBookingsAttachmentMutation.mutateAsync({
+      id: bookingId,
+      payload: bookingAttachmentPayload,
+    });
+  };
+
   const handleSubmitForApproval = async (values: any) => {
     try {
       const createBookingsResponse = await createBooking();
@@ -214,6 +238,9 @@ export default function useBookingConfirm() {
       }
       if (hotel) {
         await createBookingsHotel(bookingId, values);
+      }
+      if (attachments?.length) {
+        await createBookingsAttachment(bookingId);
       }
       message.success('Booking submitted for approval');
       sessionStorageRemove(BOOKING_PARAMS);

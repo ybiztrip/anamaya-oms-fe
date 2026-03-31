@@ -1,4 +1,4 @@
-import { MinusOutlined, SwapOutlined, UploadOutlined } from '@ant-design/icons';
+import { MinusOutlined, SwapOutlined } from '@ant-design/icons';
 import {
   Button,
   Card,
@@ -11,13 +11,13 @@ import {
   Row,
   Select,
   Space,
-  Upload,
   type UploadFile,
   type UploadProps,
 } from 'antd';
 import { useEffect } from 'react';
 
 import SelectAirport from '@/components/Select/SelectAirport';
+import Upload from '@/components/Upload';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import type { BookingParamsType } from '@/types';
 import dayjs from '@/utils/dayjs';
@@ -279,44 +279,43 @@ function FlightForm({
         )}
       </Card>
       <div className="space-y-4 mt-4">
-        <Row gutter={[16, 8]}>
-          <Col xs={24} md={8}>
-            <Form.Item label="Booker" name="bookerName">
-              <Input disabled />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} md={8}>
+        <Form.Item noStyle shouldUpdate={true}>
+          {({ getFieldValue }) => (
             <Form.Item
-              label="Flight Class"
-              name="flightClass"
-              rules={[{ required: true, message: 'Flight Class required' }]}
+              label="Booker"
+              name="bookerName"
+              rules={[{ required: true, message: 'Booker required' }]}
             >
-              <Select
-                options={[
-                  { label: 'First Class', value: 'FIRST_CLASS' },
-                  { label: 'Premium Economy', value: 'PREMIUM_ECONOMY' },
-                  { label: 'Economy', value: 'ECONOMY' },
-                  { label: 'Business', value: 'BUSINESS' },
-                ]}
-              />
+              <span style={{ fontSize: 14 }}>{getFieldValue('bookerName')}</span>
             </Form.Item>
-          </Col>
+          )}
+        </Form.Item>
 
-          <Col xs={24} md={24}>
-            <Form.Item
-              label="Attachment"
-              name="attachments"
-              valuePropName="fileList"
-              getValueFromEvent={normFile}
-            >
-              {/* TODO: upload attachment */}
-              <Upload beforeUpload={() => false} multiple>
-                <Button icon={<UploadOutlined />}>Upload</Button>
-              </Upload>
-            </Form.Item>
-          </Col>
-        </Row>
+        <Form.Item
+          label="Flight Class"
+          name="flightClass"
+          rules={[{ required: true, message: 'Flight Class required' }]}
+          style={{ width: '300px' }}
+        >
+          <Select
+            options={[
+              { label: 'First Class', value: 'FIRST_CLASS' },
+              { label: 'Premium Economy', value: 'PREMIUM_ECONOMY' },
+              { label: 'Economy', value: 'ECONOMY' },
+              { label: 'Business', value: 'BUSINESS' },
+            ]}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Attachment"
+          name="attachments"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
+          style={{ marginBottom: 16, marginLeft: 10, width: '400px' }}
+        >
+          <Upload />
+        </Form.Item>
       </div>
     </>
   );
