@@ -65,7 +65,11 @@ function HotelInfo({
             <div className="text-lg font-semibold">
               {currency} {formatIDR(total)}
             </div>
-            {includesTaxFees && <Tag color="green">Includes Tax & Fees</Tag>}
+            {includesTaxFees ? (
+              <Tag color="green">Includes Tax & Fees</Tag>
+            ) : (
+              <Tag color="red">Excludes Tax & Fees</Tag>
+            )}
           </Col>
         )}
         {withSelect && (
