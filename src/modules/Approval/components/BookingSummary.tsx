@@ -57,8 +57,11 @@ function BookingSummary({ data }: BookingSummaryProps) {
               <>
                 <Text>
                   {dayjs(hotel.checkInDate).format('ddd, MMM DD')} -{' '}
-                  {dayjs(hotel.checkOutDate).format('ddd, MMM DD')} {/* TODO: Hotel Info */}
-                  <Text strong>Hotel</Text>
+                  {dayjs(hotel.checkOutDate).format('ddd, MMM DD')}{' '}
+                </Text>
+                <Text>
+                  <Text strong>{hotel.metadata?.hotelName}</Text> -{' '}
+                  <Text type="secondary">{hotel.metadata?.hotelRoomName}</Text>
                 </Text>
               </>
             ))}

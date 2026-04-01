@@ -27,10 +27,11 @@ function BookingConfirmView() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
-  const { handleSubmitForApproval, bookingParams, isLoading } = useBookingConfirm();
   const isFetchingAddOns = useIsFetching({ queryKey: [FLIGHT_ADD_ONS] }) > 0;
   const [flightPrices, setFlightPrices] = useState<Record<number, BookingPriceItemType[]>>({});
   const [hotelPrices, setHotelPrices] = useState<BookingPriceItemType[]>([]);
+  
+  const { handleSubmitForApproval, bookingParams, isLoading } = useBookingConfirm({ flightPrices, hotelPrices });
 
   const handleBack = useCallback(() => {
     if (bookingParams?.flights?.length) {

@@ -9,6 +9,7 @@ import type { BookingNeedApprovalPayloadType } from '@/types';
 export default function useBookingNeedApproval() {
   const payload: BookingNeedApprovalPayloadType = {
     size: 10,
+    needAttachment: false,
   };
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: [BOOKINGS_NEED_APPROVAL],

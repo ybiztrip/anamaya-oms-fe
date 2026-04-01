@@ -1,12 +1,15 @@
 import { Alert, Button, Card, Col, List, Row, Space, Spin } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import { APPROVAL_PATH } from '@/constants/routePath';
 
 import useBookingMyRequest from '../hooks/useBookingMyRequest';
 import BookingSummary from './BookingSummary';
 
 function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
   const { data, isLoading, error } = useBookingMyRequest();
+  const navigate = useNavigate();
   return (
     <Card
       className="mt-4"
@@ -74,7 +77,16 @@ function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
                   <BookingSummary data={item} />
                   <Row gutter={[16, 8]} style={{ width: '100%' }} className="mt-2">
                     <Col>
-                      <Button type="link">View detail</Button>
+                      <Button
+                        type="link"
+                        onClick={() =>
+                          navigate(`${APPROVAL_PATH}/${item.id}`, {
+                            state: { booking: item, fromTab: 'my-approval' },
+                          })
+                        }
+                      >
+                        View detail
+                      </Button>
                     </Col>
                   </Row>
                 </div>

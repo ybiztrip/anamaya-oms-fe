@@ -1,6 +1,7 @@
 import { Alert, Button, Card, Checkbox, Col, List, Row, Space, Spin, Typography } from 'antd';
 
 import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import { APPROVAL_PATH } from '@/constants/routePath';
 import type { BookingApprovePayloadType, BookingType } from '@/types';
 
 import useBookingApprove from '../hooks/useBookingApprove';
@@ -10,10 +11,12 @@ import BookingSummary from './BookingSummary';
 const { Text } = Typography;
 
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
   const { data, isLoading, error } = useBookingNeedApproval();
   const { approveBooking, rejectBooking, isLoading: isActionLoading } = useBookingApprove();
+  const navigate = useNavigate();
 
   const [selectedBookings, setSelectedBookings] = useState<BookingType[]>([]);
 
@@ -25,8 +28,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
   const selectedPendingBookings = useMemo(
     () =>
       selectedBookings.filter(
-        (booking) =>
-          data?.find((item) => item.id === booking.id)?.status === BOOKING_STATUS_BOOKED,
+        (booking) => data?.find((item) => item.id === booking.id)?.status === BOOKING_STATUS_BOOKED,
       ),
     [selectedBookings, data],
   );
@@ -200,7 +202,16 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
                     <BookingSummary data={item} />
                     <Row gutter={[16, 8]} justify="space-between" className="mt-2">
                       <Col>
-                        <Button type="link">View detail</Button>
+                        <Button
+                          type="link"
+                          onClick={() =>
+                            navigate(`${APPROVAL_PATH}/${item.id}`, {
+                              state: { booking: item, fromTab: 'need-approval' },
+                            })
+                          }
+                        >
+                          View detail
+                        </Button>
                       </Col>
                       <Col>
                         <Space>

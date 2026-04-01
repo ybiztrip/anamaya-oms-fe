@@ -10,7 +10,10 @@ import { localStorageGet } from '@/utils/localStorage';
 export default function useBookingMyRequest() {
   const userProfile = localStorageGet<UserType>(USER);
 
-  const payload: BookingListPayloadType = { userId: String(userProfile?.id) };
+  const payload: BookingListPayloadType = {
+    userId: String(userProfile?.id),
+    needAttachment: false,
+  };
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: [BOOKINGS_MY_REQUEST],
     queryFn: () => fetchBookings(payload),

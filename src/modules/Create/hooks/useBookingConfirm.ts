@@ -19,6 +19,7 @@ import type {
   BookingFlightPayloadType,
   BookingHotelPayloadType,
   BookingParamsType,
+  BookingPriceItemType,
   FlightBookingAddOnsResponseType,
   FlightBookingAddOnType,
   PassengerGuestType,
@@ -28,7 +29,13 @@ import type {
 import { localStorageGet } from '@/utils/localStorage';
 import { sessionStorageGet, sessionStorageRemove } from '@/utils/sessionStorage';
 
-export default function useBookingConfirm() {
+export default function useBookingConfirm({
+  flightPrices,
+  hotelPrices,
+}: {
+  flightPrices?: Record<number, BookingPriceItemType[]>;
+  hotelPrices?: BookingPriceItemType[];
+}) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -116,7 +123,7 @@ export default function useBookingConfirm() {
 
   const createBookingsFlight = async (bookingId: string, values: any) => {
     const flightAddOns: FlightBookingAddOnType[] = [];
-    const flightsPayload = flights?.map((flight) => {
+    const flightsPayload = flights?.map((flight, flightIndex: number) => {
       const departure = flight.selectedFlight?.journeys?.[0]?.departureDetail;
       const arrival = flight.selectedFlight?.journeys?.[0]?.arrivalDetail;
       const cachedFlightAddOns = queryClient.getQueryData<
@@ -146,6 +153,11 @@ export default function useBookingConfirm() {
         paymentMethod: 'DEPOSIT',
         paymentReference1: '',
         paymentReference2: '',
+        metadata: {
+          prices: flightPrices?.[flightIndex] ?? [],
+          departureAirport: flight.selectedFlight?.departureAirport ?? '',
+          arrivalAirport: flight.selectedFlight?.arrivalAirport ?? '',
+        },
       };
     });
     const paxsPayload = paxList.map((pax: PassengerGuestType, paxIndex: number) => {
@@ -205,6 +217,13 @@ export default function useBookingConfirm() {
       paymentMethod: 'DEPOSIT',
       paymentReference1: '',
       paymentReference2: '',
+      metadata: {
+        prices: hotelPrices ?? [],
+        hotelName: hotel?.selectedHotel?.propertySummary?.name ?? '',
+        hotelAddress: hotel?.selectedHotel?.propertySummary?.address?.lines?.join(', ') ?? '',
+        hotelStarRating: hotel?.selectedHotel?.propertySummary?.starRating ?? '',
+        hotelRoomName: hotel?.selectedRoom?.roomName ?? '',
+      },
     };
     const paxsPayload = paxList.map((pax: PassengerGuestType) => {
       return getBookingPaxPayload(pax);
