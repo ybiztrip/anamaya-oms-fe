@@ -22,6 +22,7 @@ import Layout from '@/components/Layout';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { BOOKINGS_DETAIL } from '@/constants/queryKey';
 import { APPROVAL_PATH } from '@/constants/routePath';
+import useFlightAirport from '@/hooks/useFlightAirport';
 import PriceDetail from '@/modules/Create/components/PriceDetail';
 import type { BookingDetailResponseType, BookingType, ResponseType } from '@/types';
 
@@ -36,6 +37,7 @@ function BookingDetailView() {
   const navigate = useNavigate();
   const { id } = useParams();
   const location = useLocation();
+  const { airportsByCode } = useFlightAirport();
   const state = location.state as LocationState | null;
 
   const booking = state?.booking;
@@ -175,7 +177,13 @@ function BookingDetailView() {
                 <Row justify="space-between" align="top">
                   <Col>
                     <div>
-                      <Text strong>{flight.origin}</Text> → <Text strong>{flight.destination}</Text>
+                      <Text strong>
+                        {`${airportsByCode[flight.origin]?.localAirportName} (${flight.origin})`}
+                      </Text>
+                      {' → '}
+                      <Text strong>
+                        {`${airportsByCode[flight.destination]?.localAirportName} (${flight.destination})`}
+                      </Text>
                     </div>
                     <div className="text-sm text-gray-500">
                       {dayjs(flight.departureDatetime).format('ddd, MMM DD HH:mm')} -{' '}

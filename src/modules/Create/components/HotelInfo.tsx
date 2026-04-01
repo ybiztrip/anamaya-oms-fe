@@ -1,5 +1,5 @@
 import { StarFilled } from '@ant-design/icons';
-import { Button, Card, Col, Row } from 'antd';
+import { Button, Card, Col, Row, Tag } from 'antd';
 
 import type { HotelPropertyType } from '@/types';
 import { formatIDR } from '@/utils/formatter';
@@ -29,6 +29,8 @@ function HotelInfo({
   const rate = hotel.cheapestRoom?.chargeableRate;
   const currency = rate?.currencyCode ?? 'IDR';
   const total = rate?.total ?? '0';
+  const surcharges = rate?.surcharges ?? [];
+  const includesTaxFees = surcharges.length > 0 && surcharges.every((s) => s?.included);
 
   return (
     <Card key={hotel.propertyId} size="small">
@@ -63,6 +65,7 @@ function HotelInfo({
             <div className="text-lg font-semibold">
               {currency} {formatIDR(total)}
             </div>
+            {includesTaxFees && <Tag color="green">Includes Tax & Fees</Tag>}
           </Col>
         )}
         {withSelect && (

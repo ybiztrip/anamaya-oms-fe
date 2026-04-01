@@ -50,6 +50,24 @@ function HotelRoomView() {
     }
   }, [bookingParams, navigate]);
 
+  const roomsContent = (
+    <>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-40">
+          <Spin />
+        </div>
+      ) : data?.data?.length ? (
+        <div className="mt-4 space-y-3">
+          {data.data.map((room) => (
+            <HotelRoomInfo key={room.roomId} room={room} onSelect={selectRoom} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-gray-500">No rooms found</div>
+      )}
+    </>
+  );
+
   return (
     <Layout withSidebar={false}>
       <Row className="mb-4">
@@ -67,30 +85,9 @@ function HotelRoomView() {
 
       {selectedHotel && (
         <div className="mb-4">
-          <HotelDetail hotel={selectedHotel} />
+          <HotelDetail hotel={selectedHotel} roomsContent={roomsContent} />
         </div>
       )}
-
-      <Row gutter={[16, 16]}>
-        <Col span={24}>
-          <div className="text-lg font-semibold">Available Rooms</div>
-          {isLoading ? (
-            <div className="flex justify-center items-center h-40">
-              <Spin />
-            </div>
-          ) : (
-            <div className="mt-4 space-y-3">
-              {data?.data?.length ? (
-                data.data.map((room: HotelRoomRateType) => {
-                  return <HotelRoomInfo key={room.roomId} room={room} onSelect={selectRoom} />;
-                })
-              ) : (
-                <div className="text-gray-500">No rooms found</div>
-              )}
-            </div>
-          )}
-        </Col>
-      </Row>
     </Layout>
   );
 }

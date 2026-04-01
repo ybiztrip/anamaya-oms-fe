@@ -1,22 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
 import { Select, type SelectProps } from 'antd';
 import { useMemo } from 'react';
 
-import { fetchAirports } from '@/api';
-import { FLIGHT_AIRPORTS } from '@/constants/queryKey';
+import useFlightAirport from '@/hooks/useFlightAirport';
 
-export type SelectAirportProps = Omit<SelectProps, 'options' | 'loading'>
+export type SelectAirportProps = Omit<SelectProps, 'options' | 'loading'>;
 
-export default function SelectAirport({
-  ...props
-}: SelectAirportProps) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: [FLIGHT_AIRPORTS],
-    queryFn: fetchAirports,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
+export default function SelectAirport({ ...props }: SelectAirportProps) {
+  const { data, isLoading, error } = useFlightAirport();
 
   const options = useMemo(() => {
     const airports = data?.data ?? [];

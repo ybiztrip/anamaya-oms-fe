@@ -3,7 +3,13 @@ import { Card, Col, Image, Row, Space, Tabs, Tag } from 'antd';
 
 import type { HotelPropertyType } from '@/types';
 
-function HotelDetail({ hotel }: { hotel: HotelPropertyType }) {
+function HotelDetail({
+  hotel,
+  roomsContent,
+}: {
+  hotel: HotelPropertyType;
+  roomsContent?: React.ReactNode;
+}) {
   const summary = hotel?.propertySummary;
   const addressLines = summary?.address?.lines ?? [];
   const address = [addressLines.join(', '), summary?.address?.city, summary?.address?.country]
@@ -86,7 +92,10 @@ function HotelDetail({ hotel }: { hotel: HotelPropertyType }) {
       )}
 
       <Tabs>
-        <Tabs.TabPane tab="Map" key="1">
+        <Tabs.TabPane tab="Available Rooms" key="rooms">
+          {roomsContent ?? <div className="text-gray-500">No rooms</div>}
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="Map" key="map">
           {mapUrl ? (
             <div>
               <iframe
@@ -107,7 +116,7 @@ function HotelDetail({ hotel }: { hotel: HotelPropertyType }) {
             <div className="text-sm text-gray-500">Map location not available.</div>
           )}
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Check-in & Important Information" key="2"></Tabs.TabPane>
+        <Tabs.TabPane tab="Check-in & Important Information" key="check-in-info"></Tabs.TabPane>
       </Tabs>
     </Card>
   );
