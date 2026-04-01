@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 
 import {
+  APPROVAL_DETAIL_PATH,
   APPROVAL_PATH,
   CREATE_BOOKING_CONFIRM_PATH,
   CREATE_FLIGHT_SEARCH_PATH,
@@ -11,6 +12,7 @@ import {
   LOGIN_PATH,
 } from '@/constants/routePath';
 import ApprovalView from '@/modules/Approval/ApprovalView';
+import BookingDetailView from '@/modules/Approval/BookingDetailView';
 import BookingConfirmView from '@/modules/Create/BookingConfirmView';
 import CreateView from '@/modules/Create/CreateView';
 import FlightSearchView from '@/modules/Create/FlightSearchView';
@@ -78,6 +80,14 @@ function App() {
         element={
           <ProtectedRoute>
             <ApprovalView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={APPROVAL_DETAIL_PATH}
+        element={
+          <ProtectedRoute>
+            <BookingDetailView />
           </ProtectedRoute>
         }
       />

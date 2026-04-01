@@ -63,6 +63,7 @@ export type BookingFlightType = {
   paymentMethod: string;
   paymentReference1: string;
   paymentReference2: string;
+  metadata: any;
 };
 
 export type BookingPaxType = {
@@ -107,6 +108,7 @@ export type BookingHotelType = {
   paymentReference1: string;
   paymentReference2: string;
   specialRequest: string;
+  metadata: any;
 };
 
 export type BookingType = {
@@ -132,6 +134,14 @@ export type BookingType = {
   rejectedAt?: string;
   flights: (BookingFlightType & { paxs: BookingFlightPaxType[] })[];
   hotels: (BookingHotelType & { paxs: BookingHotelPaxType[] })[];
+  attachments?: {
+    id: number;
+    companyId: number;
+    bookingId: number;
+    bookingCode: string;
+    file: string;
+    type: string;
+  }[];
 };
 
 export type BookingPriceItemType = {
@@ -149,9 +159,12 @@ export type BookingListPayloadType = {
 export type BookingNeedApprovalPayloadType = {
   size?: number;
   page?: number;
+  needAttachment?: boolean;
 };
 
 export type BookingListResponseType = BookingType[];
+
+export type BookingDetailResponseType = BookingType;
 
 export type BookingCreatePayloadType = {
   startDate: string;
