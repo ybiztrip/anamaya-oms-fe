@@ -30,7 +30,7 @@ function PassengerGuestForm({
   const paxTitle = useMemo(() => {
     if (type === 'flight') return 'Passenger';
     if (type === 'hotel') return 'Guest';
-    return 'Passenger + Guest';
+    return 'Passenger/Guest';
   }, [type]);
 
   const phoneCodeOptions = useMemo(

@@ -54,7 +54,6 @@ export default function useFlightSearch({
       },
     };
     await mutateAsync(payload);
-    // TODO: filter and sort response data
   };
 
   return {

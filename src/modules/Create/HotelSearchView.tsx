@@ -4,11 +4,17 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Layout from '@/components/Layout';
-import { CREATE_HOTEL_ROOM_PATH, CREATE_PATH } from '@/constants/routePath';
+import {
+  CREATE_FLIGHT_SEARCH_PATH,
+  CREATE_HOTEL_ROOM_PATH,
+  CREATE_PATH,
+} from '@/constants/routePath';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import type { BookingParamsType, HotelPropertyType } from '@/types';
+import dayjs from '@/utils/dayjs';
 import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
 
+import HotelInfoSummary from './components/HotelInfoSummary';
 import HotelSearchForm from './components/HotelSearchForm';
 
 function HotelSearchView() {
@@ -32,6 +38,14 @@ function HotelSearchView() {
     navigate(CREATE_HOTEL_ROOM_PATH);
   };
 
+  const handleBack = () => {
+    if (bookingParams?.flights?.length) {
+      navigate(CREATE_FLIGHT_SEARCH_PATH);
+    } else {
+      navigate(CREATE_PATH);
+    }
+  };
+
   useEffect(() => {
     if (!bookingParams) {
       navigate(CREATE_PATH);
@@ -47,12 +61,26 @@ function HotelSearchView() {
             color="primary"
             variant="text"
             icon={<ArrowLeftOutlined />}
-            onClick={() => navigate(CREATE_PATH)}
+            onClick={handleBack}
           >
             Back
           </Button>
         </Col>
-        <Col flex="auto"></Col>
+        <Col flex="auto">
+          <Button className="p-10" size="large" type="primary">
+            <div className="text-center">
+              <div className="flex items-center gap-2 text-center">
+                <div className="font-semibold">Hotel</div>
+                <div>{`(${dayjs(bookingParams?.hotel?.checkInDate).format('DD MMM YYYY')} - ${dayjs(bookingParams?.hotel?.checkOutDate).format('DD MMM YYYY')})`}</div>
+              </div>
+              <div className="mt-2">
+                {bookingParams?.hotel?.selectedHotel && (
+                  <HotelInfoSummary hotel={bookingParams.hotel?.selectedHotel} />
+                )}
+              </div>
+            </div>
+          </Button>
+        </Col>
       </Row>
       {bookingParams && (
         <HotelSearchForm bookingParams={bookingParams} onSelectHotel={selectHotel} />

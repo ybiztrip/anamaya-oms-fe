@@ -64,8 +64,11 @@ function BookingConfirmView() {
       bookingParams?.flights?.every((flight) => !flight.selectedFlight)
     ) {
       navigate(CREATE_FLIGHT_SEARCH_PATH);
+    } else if (bookingParams?.hotel && !bookingParams?.hotel?.selectedHotel) {
+      navigate(CREATE_HOTEL_SEARCH_PATH);
+    } else {
+      navigate(CREATE_PATH);
     }
-    // TODO: redirect to hotel search page if hotel is not selected
   }, [bookingParams, navigate]);
 
   if (!bookingParams) return <Spin />;

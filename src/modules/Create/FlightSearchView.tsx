@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Layout from '@/components/Layout';
-import { CREATE_BOOKING_CONFIRM_PATH, CREATE_PATH } from '@/constants/routePath';
+import {
+  CREATE_BOOKING_CONFIRM_PATH,
+  CREATE_HOTEL_SEARCH_PATH,
+  CREATE_PATH,
+} from '@/constants/routePath';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import type { BookingParamsType, FlightSearchOneWayType } from '@/types';
 import dayjs from '@/utils/dayjs';
@@ -24,7 +28,9 @@ function FlightSearchView() {
       ...newFlights[flightIndex],
       origin: flight.departureAirport,
       destination: flight.arrivalAirport,
-      departureDate: dayjs(flight.journeys[0].departureDetail.departureDate, 'MM-DD-YYYY').format('YYYY-MM-DD'),
+      departureDate: dayjs(flight.journeys[0].departureDetail.departureDate, 'MM-DD-YYYY').format(
+        'YYYY-MM-DD',
+      ),
       selectedFlight: flight,
     };
     const newBookingParams = {
@@ -33,7 +39,11 @@ function FlightSearchView() {
     } as BookingParamsType;
     sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, newBookingParams);
     if (flightIndex === Number(bookingParams?.flights?.length ?? 0) - 1) {
-      navigate(CREATE_BOOKING_CONFIRM_PATH);
+      if (bookingParams?.hotel) {
+        navigate(CREATE_HOTEL_SEARCH_PATH);
+      } else {
+        navigate(CREATE_BOOKING_CONFIRM_PATH);
+      }
     } else {
       setActiveFlightIndex(flightIndex + 1);
     }

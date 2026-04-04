@@ -19,13 +19,11 @@ import { useEffect } from 'react';
 import SelectAirport from '@/components/Select/SelectAirport';
 import Upload from '@/components/Upload';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
-import type { BookingParamsType } from '@/types';
+import type { BookingParamsType, TripType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { sessionStorageGet } from '@/utils/sessionStorage';
 
 import { bookingParamsToFlightForm } from '../utils/bookingFormMapper';
-
-type TripType = 'roundTrip' | 'oneWay' | 'multiCity';
 
 function normFile(
   e: UploadProps['onChange'] extends (...args: any) => any

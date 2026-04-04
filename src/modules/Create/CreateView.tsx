@@ -3,21 +3,21 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Layout from '@/components/Layout';
-import {
-  CREATE_FLIGHT_HOTEL_SEARCH_PATH,
-  CREATE_FLIGHT_SEARCH_PATH,
-  CREATE_HOTEL_SEARCH_PATH,
-} from '@/constants/routePath';
-import { BOOKING_PARAMS, FLIGHT_HOTEL_SEARCH_PARAMS, USER } from '@/constants/storageKey';
+import { CREATE_FLIGHT_SEARCH_PATH, CREATE_HOTEL_SEARCH_PATH } from '@/constants/routePath';
+import { BOOKING_PARAMS, USER } from '@/constants/storageKey';
 import type { BookingParamsType, UserType } from '@/types';
 import { localStorageGet } from '@/utils/localStorage';
 import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
 
 import FlightForm from './components/FlightForm';
-import FlightHotelFilterForm from './components/FlightHotelFilterForm';
+import FlightHotelForm from './components/FlightHotelForm';
 import HotelForm from './components/HotelForm';
 import PassengerGuestForm from './components/PassengerGuestForm';
-import { flightFormToBookingParams, hotelFormToBookingParams } from './utils/bookingFormMapper';
+import {
+  flightFormToBookingParams,
+  flightHotelFormToBookingParams,
+  hotelFormToBookingParams,
+} from './utils/bookingFormMapper';
 
 function CreateView() {
   const navigate = useNavigate();
@@ -47,8 +47,9 @@ function CreateView() {
       sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_HOTEL_SEARCH_PATH);
     } else if (activeType === 'flight-hotel') {
-      sessionStorageSet(FLIGHT_HOTEL_SEARCH_PARAMS, values);
-      navigate(CREATE_FLIGHT_HOTEL_SEARCH_PATH);
+      const bookingParams = flightHotelFormToBookingParams(values);
+      sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
+      navigate(CREATE_FLIGHT_SEARCH_PATH);
     }
   };
 
@@ -81,7 +82,7 @@ function CreateView() {
         )}
         {activeType === 'flight-hotel' && (
           <>
-            <FlightHotelFilterForm form={form} onTypeChange={handleTypeChange} />
+            <FlightHotelForm form={form} onTypeChange={handleTypeChange} />
             <PassengerGuestForm form={form} type="flight-hotel" />
           </>
         )}

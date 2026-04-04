@@ -6,5 +6,4 @@ export const CREATE_PATH = '/create';
 export const CREATE_FLIGHT_SEARCH_PATH = '/create/flight/search';
 export const CREATE_HOTEL_SEARCH_PATH = '/create/hotel/search';
 export const CREATE_HOTEL_ROOM_PATH = '/create/hotel/room';
-export const CREATE_FLIGHT_HOTEL_SEARCH_PATH = '/create/flight-hotel/search';
 export const CREATE_BOOKING_CONFIRM_PATH = '/create/booking/confirm';

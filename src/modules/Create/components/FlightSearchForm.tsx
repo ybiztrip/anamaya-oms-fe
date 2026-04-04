@@ -148,79 +148,73 @@ function FlightSearchForm({
               },
             }}
           >
-            {bookingParams?.tripType !== 'multiCity' && (
-              <Row gutter={[16, 8]} align="top" wrap>
-                <Col span={12}>
-                  <Space.Compact block>
-                    <Form.Item
-                      name="origin"
-                      style={{ flex: 1, marginBottom: 0 }}
-                      rules={[
-                        { required: true, message: 'Origin required' },
-                        ({ getFieldValue }) => ({
-                          validator: (_, v) =>
-                            v && v === getFieldValue('destination')
-                              ? Promise.reject(
-                                  new Error('Origin and destination cannot be the same'),
-                                )
-                              : Promise.resolve(),
-                        }),
-                      ]}
-                    >
-                      <SelectAirport showSearch placeholder="From" />
-                    </Form.Item>
-                    <Input
-                      className="site-input-split"
-                      style={{
-                        width: 30,
-                        borderInlineStart: 0,
-                        borderInlineEnd: 0,
-                        pointerEvents: 'none',
-                      }}
-                      placeholder="~"
-                      disabled
+            <Row gutter={[16, 8]} align="top" wrap>
+              <Col span={12}>
+                <Space.Compact block>
+                  <Form.Item
+                    name="origin"
+                    style={{ flex: 1, marginBottom: 0 }}
+                    rules={[
+                      { required: true, message: 'Origin required' },
+                      ({ getFieldValue }) => ({
+                        validator: (_, v) =>
+                          v && v === getFieldValue('destination')
+                            ? Promise.reject(new Error('Origin and destination cannot be the same'))
+                            : Promise.resolve(),
+                      }),
+                    ]}
+                  >
+                    <SelectAirport showSearch placeholder="From" />
+                  </Form.Item>
+                  <Input
+                    className="site-input-split"
+                    style={{
+                      width: 30,
+                      borderInlineStart: 0,
+                      borderInlineEnd: 0,
+                      pointerEvents: 'none',
+                    }}
+                    placeholder="~"
+                    disabled
+                  />
+                  <Form.Item
+                    name="destination"
+                    style={{ flex: 1, marginBottom: 0 }}
+                    rules={[
+                      { required: true, message: 'Destination required' },
+                      ({ getFieldValue }) => ({
+                        validator: (_, v) =>
+                          v && v === getFieldValue('origin')
+                            ? Promise.reject(new Error('Origin and destination cannot be the same'))
+                            : Promise.resolve(),
+                      }),
+                    ]}
+                  >
+                    <SelectAirport showSearch placeholder="To" />
+                  </Form.Item>
+                </Space.Compact>
+              </Col>
+              <Col xs={24} md={8}>
+                <Space.Compact block>
+                  <Form.Item
+                    name="departureDate"
+                    rules={[{ required: true }]}
+                    style={{ flex: 1, marginBottom: 0 }}
+                  >
+                    <DatePicker
+                      style={{ width: '100%' }}
+                      placeholder="Departure date"
+                      format="DD MMM YYYY"
                     />
-                    <Form.Item
-                      name="destination"
-                      style={{ flex: 1, marginBottom: 0 }}
-                      rules={[
-                        { required: true, message: 'Destination required' },
-                        ({ getFieldValue }) => ({
-                          validator: (_, v) =>
-                            v && v === getFieldValue('origin')
-                              ? Promise.reject(
-                                  new Error('Origin and destination cannot be the same'),
-                                )
-                              : Promise.resolve(),
-                        }),
-                      ]}
-                    >
-                      <SelectAirport showSearch placeholder="To" />
-                    </Form.Item>
-                  </Space.Compact>
-                </Col>
-                <Col xs={24} md={8}>
-                  <Space.Compact block>
-                    <Form.Item
-                      name="departureDate"
-                      rules={[{ required: true }]}
-                      style={{ flex: 1, marginBottom: 0 }}
-                    >
-                      <DatePicker
-                        style={{ width: '100%' }}
-                        placeholder="Departure date"
-                        format="DD MMM YYYY"
-                      />
-                    </Form.Item>
-                  </Space.Compact>
-                </Col>
-                <Col xs={24} md={4}>
-                  <Button color="primary" variant="filled" htmlType="submit" block>
-                    Search
-                  </Button>
-                </Col>
-              </Row>
-            )}
+                  </Form.Item>
+                </Space.Compact>
+              </Col>
+              <Col xs={24} md={4}>
+                <Button color="primary" variant="filled" htmlType="submit" block>
+                  Search
+                </Button>
+              </Col>
+            </Row>
           </Card>
         </Col>
       </Row>

@@ -113,8 +113,8 @@ export function hotelFormToBookingParams(values: any): BookingParamsType {
     ...values,
     paxList,
     hotel: {
-      destinationGeo: values.destination.value,
-      destinationName: values.destination.label,
+      destinationGeo: values.destinationGeo.value,
+      destinationName: values.destinationGeo.label,
       checkInDate: values.checkInDate,
       checkOutDate: values.checkOutDate,
       hotelStars: values.hotelStars,
@@ -127,11 +127,33 @@ export function bookingParamsToHotelForm(bookingParams: BookingParamsType): any 
   const { hotel, paxList, ...rest } = bookingParams;
   return {
     ...rest,
-    destination: hotel?.destinationGeo ? { value: hotel.destinationGeo, label: hotel.destinationName } : undefined,
+    destinationGeo: hotel?.destinationGeo
+      ? { value: hotel.destinationGeo, label: hotel.destinationName }
+      : undefined,
     checkInDate: hotel?.checkInDate ? dayjs(hotel.checkInDate) : undefined,
     checkOutDate: hotel?.checkOutDate ? dayjs(hotel.checkOutDate) : undefined,
     hotelStars: hotel?.hotelStars,
     rooms: hotel?.rooms,
     paxList: paxParamsToPaxForm(paxList),
+  };
+}
+
+export function flightHotelFormToBookingParams(values: any): BookingParamsType {
+  const flightParams = flightFormToBookingParams(values);
+  const hotelParams = hotelFormToBookingParams(values);
+  return {
+    ...flightParams,
+    ...hotelParams,
+  };
+}
+
+export function bookingParamsToFlightHotelForm(bookingParams: BookingParamsType): any {
+  const hotelForm = bookingParamsToHotelForm(bookingParams);
+  const flightForm = bookingParamsToFlightForm(bookingParams);
+  return {
+    ...hotelForm,
+    ...flightForm,
+    checkInDate: hotelForm?.checkInDate ? dayjs(hotelForm.checkInDate) : undefined,
+    checkOutDate: hotelForm?.checkOutDate ? dayjs(hotelForm.checkOutDate) : undefined,
   };
 }
