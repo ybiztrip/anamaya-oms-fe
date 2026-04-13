@@ -22,6 +22,7 @@ export const HOTEL_ROOM_RATE_API = HOTEL_API + '/room-rate';
 
 export const BOOKINGS_API = API_V1 + '/bookings';
 export const BOOKINGS_DETAIL_API = BOOKINGS_API + '/:id';
+export const BOOKINGS_MY_APPROVAL_API = BOOKINGS_API + '/my-approved';
 export const BOOKINGS_NEED_APPROVAL_API = BOOKINGS_API + '/need-approval';
 export const BOOKINGS_FLIGHT_API = BOOKINGS_API + '/:id/flights';
 export const BOOKINGS_HOTEL_API = BOOKINGS_API + '/:id/hotels';

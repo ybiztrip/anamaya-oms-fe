@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { APPROVAL_PATH } from '@/constants/routePath';
 
-import useBookingMyRequest from '../hooks/useBookingMyRequest';
+import useBookingMyApproval from '../hooks/useBookingMyApproval';
 import BookingSummary from './BookingSummary';
 
 function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
-  const { data, isLoading, error } = useBookingMyRequest();
+  const { data, isLoading, error } = useBookingMyApproval();
   const navigate = useNavigate();
   return (
     <Card

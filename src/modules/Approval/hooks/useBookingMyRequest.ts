@@ -11,6 +11,7 @@ export default function useBookingMyRequest() {
   const userProfile = localStorageGet<UserType>(USER);
 
   const payload: BookingListPayloadType = {
+    size: 10,
     userId: String(userProfile?.id),
     needAttachment: false,
   };

@@ -156,6 +156,12 @@ export type BookingListPayloadType = {
   needAttachment?: boolean;
 };
 
+export type BookingMyApprovalPayloadType = {
+  size?: number;
+  page?: number;
+  needAttachment?: boolean;
+};
+
 export type BookingNeedApprovalPayloadType = {
   size?: number;
   page?: number;

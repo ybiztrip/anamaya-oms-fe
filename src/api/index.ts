@@ -7,6 +7,7 @@ import {
   BOOKINGS_DETAIL_API,
   BOOKINGS_FLIGHT_API,
   BOOKINGS_HOTEL_API,
+  BOOKINGS_MY_APPROVAL_API,
   BOOKINGS_NEED_APPROVAL_API,
   BOOKINGS_REJECT_API,
   DOCUMENT_UPLOAD_API,
@@ -37,6 +38,7 @@ import type {
   BookingHotelResponseType,
   BookingListPayloadType,
   BookingListResponseType,
+  BookingMyApprovalPayloadType,
   BookingNeedApprovalPayloadType,
   BookingRejectPayloadType,
   FlightBookingAddOnsPayloadType,
@@ -133,6 +135,13 @@ export async function fetchBookingDetail(
   id: string,
 ): Promise<ResponseType<BookingDetailResponseType>> {
   const res = await axios.get(BOOKINGS_DETAIL_API.replace(':id', id));
+  return res.data;
+}
+
+export async function fetchBookingsMyApproval(
+  params: BookingMyApprovalPayloadType,
+): Promise<ResponseType<BookingListResponseType>> {
+  const res = await axios.get(BOOKINGS_MY_APPROVAL_API, { params });
   return res.data;
 }
 
