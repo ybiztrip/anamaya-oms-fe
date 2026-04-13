@@ -57,7 +57,7 @@ function CreateView() {
     <Layout>
       <Form
         form={form}
-        layout="horizontal"
+        layout="vertical"
         initialValues={{
           tripType: 'oneWay',
           bookerName: `${userProfile?.firstName} ${userProfile?.lastName}`,

@@ -61,84 +61,86 @@ function HotelSearchForm({
       }}
       onFinish={handleSearchHotels}
     >
-      <Row>
-        <Col flex="300px"></Col>
-        <Col flex="auto">
-          <Card
-            className="mt-4"
-            style={{
-              border: 'none',
-              boxShadow: 'none',
-            }}
-            styles={{
-              body: {
-                border: '1px #8BB9FF solid',
-                borderRadius: 24,
-                backgroundColor: '#fff',
-                zIndex: 1,
-                position: 'relative',
-              },
-            }}
-          >
-            <Row gutter={[16, 8]}>
-              <Col xs={24} md={8}>
-                <Form.Item
-                  name="destination"
-                  label="Destination"
-                  layout="vertical"
-                  style={{ flex: 1, marginBottom: 0 }}
-                  rules={[{ required: true, message: 'Destination required' }]}
-                >
-                  <SelectHotelGeo placeholder="City, Hotel name" labelInValue />
-                </Form.Item>
-              </Col>
-              <Col xs={24} md={6}>
-                <Form.Item
-                  name="checkInDate"
-                  label="Check in"
-                  layout="vertical"
-                  rules={[{ required: true, message: 'Check in required' }]}
-                >
-                  <DatePicker
-                    style={{ width: '100%' }}
-                    disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
-                    format="DD MMM YYYY"
-                  />
-                </Form.Item>
-              </Col>
-              <Col xs={24} md={6}>
-                <Form.Item
-                  name="checkOutDate"
-                  label="Check out"
-                  layout="vertical"
-                  rules={[{ required: true, message: 'Check out required' }]}
-                >
-                  <DatePicker
-                    style={{ width: '100%' }}
-                    disabledDate={(d) =>
-                      checkInDate
-                        ? d.isBefore(checkInDate, 'day')
-                        : d.isBefore(dayjs().add(1, 'day'))
-                    }
-                    format="DD MMM YYYY"
-                  />
-                </Form.Item>
-              </Col>
-              {checkInDate && checkOutDate && (
-                <Col xs={24} md={4}>
-                  <div className="mt-8">{nights} nights</div>
+      <div className="sticky top-0 z-10 bg-white pb-3">
+        <Row>
+          <Col flex="300px"></Col>
+          <Col flex="auto">
+            <Card
+              className="mt-4"
+              style={{
+                border: 'none',
+                boxShadow: 'none',
+              }}
+              styles={{
+                body: {
+                  border: '1px #8BB9FF solid',
+                  borderRadius: 24,
+                  backgroundColor: '#fff',
+                  zIndex: 1,
+                  position: 'relative',
+                },
+              }}
+            >
+              <Row gutter={[16, 8]}>
+                <Col xs={24} md={8}>
+                  <Form.Item
+                    name="destination"
+                    label="Destination"
+                    layout="vertical"
+                    style={{ flex: 1, marginBottom: 0 }}
+                    rules={[{ required: true, message: 'Destination required' }]}
+                  >
+                    <SelectHotelGeo placeholder="City, Hotel name" labelInValue />
+                  </Form.Item>
                 </Col>
-              )}
+                <Col xs={24} md={6}>
+                  <Form.Item
+                    name="checkInDate"
+                    label="Check in"
+                    layout="vertical"
+                    rules={[{ required: true, message: 'Check in required' }]}
+                  >
+                    <DatePicker
+                      style={{ width: '100%' }}
+                      disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
+                      format="DD MMM YYYY"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={6}>
+                  <Form.Item
+                    name="checkOutDate"
+                    label="Check out"
+                    layout="vertical"
+                    rules={[{ required: true, message: 'Check out required' }]}
+                  >
+                    <DatePicker
+                      style={{ width: '100%' }}
+                      disabledDate={(d) =>
+                        checkInDate
+                          ? d.isBefore(checkInDate, 'day')
+                          : d.isBefore(dayjs().add(1, 'day'))
+                      }
+                      format="DD MMM YYYY"
+                    />
+                  </Form.Item>
+                </Col>
+                {checkInDate && checkOutDate && (
+                  <Col xs={24} md={4}>
+                    <div className="mt-8">{nights} nights</div>
+                  </Col>
+                )}
 
-              <Col xs={24} md={4}>
-                <Button color="primary" variant="filled" htmlType="submit" block>
-                  Search
-                </Button>
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-      </Row>
+                <Col xs={24} md={4}>
+                  <Button color="primary" variant="filled" htmlType="submit" block>
+                    Search
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
+      </div>
       <Row wrap={false}>
         <Col flex="300px" className="pr-8">
           <Form.Item className="mt-8" name="sortBy" label="Sort By">
@@ -164,32 +166,32 @@ function HotelSearchForm({
           </Form.Item>
         </Col>
         <Col flex="auto">
-          <div className="overflow-x-auto">
-            <div style={{ minWidth: 800 }} className="mt-4 space-y-3">
-              {isLoading ? (
+          {isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <Spin />
+            </div>
+          ) : (
+            <>
+              {data && data?.data?.properties?.length === 0 && (
                 <div className="flex justify-center items-center h-full">
-                  <Spin />
+                  <div className="text-gray-500">No hotels found</div>
                 </div>
-              ) : (
-                <>
-                  {data && data?.data?.properties?.length === 0 && (
-                    <div className="flex justify-center items-center h-full">
-                      <div className="text-gray-500">No hotels found</div>
-                    </div>
-                  )}
-                  {data?.data?.properties?.map((r: HotelPropertyType) => {
-                    return (
+              )}
+              {data?.data?.properties?.map((r: HotelPropertyType) => {
+                return (
+                  <div className="overflow-x-auto">
+                    <div style={{ minWidth: 800 }} className="mt-4 space-y-3">
                       <HotelInfo
                         key={r.propertyId}
                         hotel={r}
                         onSelect={() => onSelectHotel(r, form.getFieldsValue())}
                       />
-                    );
-                  })}
-                </>
-              )}
-            </div>
-          </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          )}
         </Col>
       </Row>
     </Form>

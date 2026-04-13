@@ -189,52 +189,60 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
             const checked = selectedBookings.some((booking) => booking.id === item.id);
             return (
               <List.Item style={{ paddingBlock: 24 }}>
-                <Row gutter={[16, 8]} align="top" style={{ width: '100%' }}>
-                  <Col flex="32px">
-                    <Checkbox
-                      checked={checked}
-                      disabled={item.status !== BOOKING_STATUS_BOOKED}
-                      onChange={(e) => toggleOne(item, e.target.checked)}
-                    />
-                  </Col>
+                <div className="w-full min-w-0 overflow-x-auto">
+                  <Row
+                    gutter={[16, 8]}
+                    align="top"
+                    wrap={false}
+                    className="min-w-0"
+                    style={{ width: '100%' }}
+                  >
+                    <Col flex="none" className="shrink-0 pt-0.5" style={{ width: 32 }}>
+                      <Checkbox
+                        checked={checked}
+                        disabled={item.status !== BOOKING_STATUS_BOOKED}
+                        onChange={(e) => toggleOne(item, e.target.checked)}
+                      />
+                    </Col>
 
-                  <Col flex="auto">
-                    <BookingSummary data={item} />
-                    <Row gutter={[16, 8]} justify="space-between" className="mt-2">
-                      <Col>
-                        <Button
-                          type="link"
-                          onClick={() =>
-                            navigate(`${APPROVAL_PATH}/${item.id}`, {
-                              state: { booking: item, fromTab: 'need-approval' },
-                            })
-                          }
-                        >
-                          View detail
-                        </Button>
-                      </Col>
-                      <Col>
-                        <Space>
+                    <Col flex="1 1 0%" style={{ minWidth: 0 }}>
+                      <BookingSummary data={item} />
+                      <Row gutter={[16, 8]} justify="space-between" className="mt-2">
+                        <Col>
                           <Button
                             type="link"
-                            danger
-                            loading={isActionLoading}
-                            onClick={() => reject([item])}
+                            onClick={() =>
+                              navigate(`${APPROVAL_PATH}/${item.id}`, {
+                                state: { booking: item, fromTab: 'need-approval' },
+                              })
+                            }
                           >
-                            Reject
+                            View detail
                           </Button>
-                          <Button
-                            type="primary"
-                            loading={isActionLoading}
-                            onClick={() => approve([item])}
-                          >
-                            Approve
-                          </Button>
-                        </Space>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
+                        </Col>
+                        <Col>
+                          <Space>
+                            <Button
+                              type="link"
+                              danger
+                              loading={isActionLoading}
+                              onClick={() => reject([item])}
+                            >
+                              Reject
+                            </Button>
+                            <Button
+                              type="primary"
+                              loading={isActionLoading}
+                              onClick={() => approve([item])}
+                            >
+                              Approve
+                            </Button>
+                          </Space>
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                </div>
               </List.Item>
             );
           }}

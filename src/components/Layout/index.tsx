@@ -48,22 +48,31 @@ const AppLayout = ({
       </Header>
       <Layout>
         {withSidebar && (
-          <Sider trigger={null} width={300} theme="light">
+          <Sider
+            width={300}
+            theme="light"
+            collapsible
+            breakpoint="lg"
+            collapsedWidth={80}
+            style={{ overflow: 'auto' }}
+          >
             <Menu
               className="mt-8"
               mode="inline"
               selectedKeys={[selectedMenuKey]}
               items={menus.map((menu) => {
-                const { name, title, path, childs } = menu;
+                const { name, title, path, childs, Icon } = menu;
                 const children = childs.map((child) => {
-                  const { name, title, path } = child;
+                  const { name, title, path, Icon: ChildIcon } = child;
                   return {
                     key: name,
+                    ...(ChildIcon ? { icon: <ChildIcon /> } : {}),
                     label: <Link to={path}>{title}</Link>,
                   };
                 });
                 return {
                   key: name,
+                  ...(Icon ? { icon: <Icon /> } : {}),
                   label: path ? <Link to={path}>{title}</Link> : title,
                   ...(children.length ? { children } : {}),
                 };

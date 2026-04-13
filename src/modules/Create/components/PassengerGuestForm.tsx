@@ -86,7 +86,7 @@ function PassengerGuestForm({
                                 [field.name]: {
                                   id: 0,
                                   email: '',
-                                  title: '',
+                                  title: 'MR',
                                   firstName: '',
                                   lastName: '',
                                   phoneNumber: '',
@@ -192,6 +192,7 @@ function PassengerGuestForm({
                               rules={[{ required: true, message: 'Title required' }]}
                             >
                               <Select
+                                placeholder="Select Title"
                                 options={[
                                   { label: 'Mr', value: 'MR' },
                                   { label: 'Mrs', value: 'MRS' },
@@ -208,7 +209,10 @@ function PassengerGuestForm({
                               name={[field.name, 'firstName']}
                               rules={[{ required: true, message: 'First Name required' }]}
                             >
-                              <Input disabled={sourceType === 'fromEmployee'} />
+                              <Input
+                                placeholder="First Name"
+                                disabled={sourceType === 'fromEmployee'}
+                              />
                             </Form.Item>
                           </Col>
 
@@ -218,7 +222,10 @@ function PassengerGuestForm({
                               name={[field.name, 'lastName']}
                               rules={[{ required: true, message: 'Last Name required' }]}
                             >
-                              <Input disabled={sourceType === 'fromEmployee'} />
+                              <Input
+                                placeholder="Last Name"
+                                disabled={sourceType === 'fromEmployee'}
+                              />
                             </Form.Item>
                           </Col>
                           <Col xs={24} md={12}>
@@ -236,13 +243,16 @@ function PassengerGuestForm({
                                   />
                                 </Form.Item>
                                 <Form.Item name={[field.name, 'phoneNumber']} noStyle>
-                                  <Input disabled={sourceType === 'fromEmployee'} />
+                                  <Input
+                                    placeholder="Phone Number"
+                                    disabled={sourceType === 'fromEmployee'}
+                                  />
                                 </Form.Item>
                               </Space.Compact>
                             </Form.Item>
                           </Col>
 
-                          <Col xs={24} md={8}>
+                          <Col xs={24} md={12}>
                             <Form.Item
                               label="Date of Birth"
                               name={[field.name, 'dob']}
@@ -256,15 +266,21 @@ function PassengerGuestForm({
                             </Form.Item>
                           </Col>
 
-                          <Col xs={24} md={8}>
+                          <Col xs={24} md={12}>
                             <Form.Item label="ID#" name={[field.name, 'idNumber']}>
-                              <Input disabled={sourceType === 'fromEmployee'} />
+                              <Input
+                                placeholder="ID Number"
+                                disabled={sourceType === 'fromEmployee'}
+                              />
                             </Form.Item>
                           </Col>
 
                           <Col xs={24} md={12}>
                             <Form.Item label="Passport" name={[field.name, 'passportNumber']}>
-                              <Input disabled={sourceType === 'fromEmployee'} />
+                              <Input
+                                placeholder="Passport Number"
+                                disabled={sourceType === 'fromEmployee'}
+                              />
                             </Form.Item>
                           </Col>
 

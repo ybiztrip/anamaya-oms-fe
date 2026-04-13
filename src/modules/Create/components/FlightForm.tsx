@@ -208,8 +208,9 @@ function FlightForm({
           <Form.List name="flights" initialValue={[{}, {}]}>
             {(fields, { add, remove }) => (
               <>
-                {fields.map((field) => (
-                  <div key={field.key}>
+                <div className="space-y-3">
+                  {fields.map((field) => (
+                    <div key={field.key}>
                     <Row gutter={[16, 8]} align="top" wrap>
                       <Col xs={24} md={16}>
                         <Space.Compact block>
@@ -265,8 +266,9 @@ function FlightForm({
                         </Space.Compact>
                       </Col>
                     </Row>
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
 
                 <Button className="mt-4" type="dashed" onClick={() => add({})}>
                   Add another flight
@@ -282,6 +284,7 @@ function FlightForm({
             <Form.Item
               label="Booker"
               name="bookerName"
+              layout="horizontal"
               rules={[{ required: true, message: 'Booker required' }]}
             >
               <span style={{ fontSize: 14 }}>{getFieldValue('bookerName')}</span>

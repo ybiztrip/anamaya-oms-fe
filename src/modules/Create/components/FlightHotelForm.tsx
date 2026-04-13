@@ -214,7 +214,6 @@ function FlightHotelForm({
             <Form.Item
               name="destinationGeo"
               label="Destination"
-              layout="vertical"
               style={{ flex: 1, marginBottom: 0 }}
               rules={[{ required: true, message: 'Destination required' }]}
             >
@@ -225,7 +224,6 @@ function FlightHotelForm({
             <Form.Item
               name="checkInDate"
               label="Check in"
-              layout="vertical"
               rules={[{ required: true, message: 'Check in required' }]}
             >
               <DatePicker
@@ -239,7 +237,6 @@ function FlightHotelForm({
             <Form.Item
               name="checkOutDate"
               label="Check out"
-              layout="vertical"
               rules={[{ required: true, message: 'Check out required' }]}
             >
               <DatePicker
@@ -263,6 +260,7 @@ function FlightHotelForm({
           {({ getFieldValue }) => (
             <Form.Item
               label="Booker"
+              layout="horizontal"
               name="bookerName"
               rules={[{ required: true, message: 'Booker required' }]}
             >
@@ -347,7 +345,7 @@ function FlightHotelForm({
                 }),
               ]}
             >
-              <InputNumber min={1} />
+              <InputNumber placeholder="Total Rooms" style={{ width: '160px' }} min={1} />
             </Form.Item>
           )}
         </Form.Item>
