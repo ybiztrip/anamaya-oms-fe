@@ -47,7 +47,7 @@ function PassengerGuestForm({
 
   return (
     <div className="space-y-4">
-      <Form.Item name="paxList" rules={[{ required: true, message: 'Add minimum 1 passenger' }]}>
+      <Form.Item name="paxList" rules={[{ required: true, message: `Add minimum 1 ${paxTitle}` }]}>
         <Form.List name="paxList">
           {(fields, { add, remove }) => (
             <>

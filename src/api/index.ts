@@ -18,6 +18,7 @@ import {
   FLIGHT_SEARCH_ONE_WAY_API,
   HOTEL_DISCOVERY_API,
   HOTEL_GEO_LIST_API,
+  HOTEL_PROPERTY_DETAIL_API,
   HOTEL_ROOM_API,
   HOTEL_ROOM_RATE_API,
   USERS_API,
@@ -49,6 +50,8 @@ import type {
   HotelDiscoveryResponseType,
   HotelGeoListPayloadType,
   HotelGeoListType,
+  HotelPropertyDetailPayloadType,
+  HotelPropertyDetailResponseType,
   HotelRoomPayloadType,
   HotelRoomRatePayloadType,
   HotelRoomRateResponseType,
@@ -107,6 +110,13 @@ export async function fetchHotelDiscovery(
   params: HotelDiscoveryPayloadType,
 ): Promise<ResponseType<HotelDiscoveryResponseType>> {
   const res = await axios.post(HOTEL_DISCOVERY_API, params);
+  return res.data;
+}
+
+export async function fetchHotelPropertyDetail(
+  params: HotelPropertyDetailPayloadType,
+): Promise<ResponseType<HotelPropertyDetailResponseType>> {
+  const res = await axios.post(HOTEL_PROPERTY_DETAIL_API, params);
   return res.data;
 }
 

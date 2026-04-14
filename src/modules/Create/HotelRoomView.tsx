@@ -8,6 +8,7 @@ import { CREATE_BOOKING_CONFIRM_PATH, CREATE_HOTEL_SEARCH_PATH } from '@/constan
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import HotelDetail from '@/modules/Create/components/HotelDetail';
 import HotelRoomInfo from '@/modules/Create/components/HotelRoomInfo';
+import useHotelPropertyDetail from '@/modules/Create/hooks/useHotelPropertyDetail';
 import useHotelRoomRate from '@/modules/Create/hooks/useHotelRoomRate';
 import type { BookingParamsType, HotelPropertyType, HotelRoomRateType } from '@/types';
 import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
@@ -19,10 +20,17 @@ function HotelRoomView() {
   const selectedHotel = bookingParams?.hotel?.selectedHotel as HotelPropertyType | undefined;
   const propertyId = selectedHotel?.propertyId ?? '';
 
-  const { data, isLoading, getHotelRoomRates } = useHotelRoomRate({
-    propertyId,
-    bookingParams: bookingParams ?? ({} as BookingParamsType),
-  });
+  const {
+    data: propertyDetailData,
+    isLoading: propertyDetailLoading,
+    getHotelPropertyDetails,
+  } = useHotelPropertyDetail({ propertyId });
+
+  const {
+    data: roomRatesData,
+    isLoading: roomRatesLoading,
+    getHotelRoomRates,
+  } = useHotelRoomRate({ propertyId, bookingParams: bookingParams ?? ({} as BookingParamsType) });
 
   const selectRoom = (room: HotelRoomRateType) => {
     const newBookingParams = {
@@ -38,6 +46,7 @@ function HotelRoomView() {
 
   useEffect(() => {
     if (propertyId) {
+      getHotelPropertyDetails();
       getHotelRoomRates();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,13 +61,13 @@ function HotelRoomView() {
 
   const roomsContent = (
     <>
-      {isLoading ? (
+      {roomRatesLoading ? (
         <div className="flex justify-center items-center h-40">
           <Spin />
         </div>
-      ) : data?.data?.length ? (
+      ) : roomRatesData?.data?.length ? (
         <div className="mt-4 space-y-3">
-          {data.data.map((room) => (
+          {roomRatesData.data.map((room) => (
             <HotelRoomInfo key={room.roomId} room={room} onSelect={selectRoom} />
           ))}
         </div>
@@ -67,6 +76,8 @@ function HotelRoomView() {
       )}
     </>
   );
+
+  const hotel = propertyDetailData?.data?.propertyDatas?.[0];
 
   return (
     <Layout withSidebar={false}>
@@ -83,10 +94,16 @@ function HotelRoomView() {
         </Col>
       </Row>
 
-      {selectedHotel && (
-        <div className="mb-4">
-          <HotelDetail hotel={selectedHotel} roomsContent={roomsContent} />
+      {propertyDetailLoading ? (
+        <div className="flex justify-center items-center h-40">
+          <Spin />
         </div>
+      ) : (
+        hotel && (
+          <div className="mb-4">
+            <HotelDetail hotel={hotel} roomsContent={roomsContent} />
+          </div>
+        )
       )}
     </Layout>
   );

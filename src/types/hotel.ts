@@ -153,6 +153,78 @@ export type HotelRoomType = {
   unit: string;
 };
 
+export type HotelPropertyDetailPayloadType = {
+  propertyIds: string[];
+};
+
+export type HotelPropertyDetailType = {
+  status: 'available' | 'unavailable';
+  propertyId: string;
+  propertySummary: {
+    name: string;
+    formerName: string;
+    address: {
+      lines: string[];
+      city: string;
+      province: string;
+      postalCode: string;
+      country: string;
+    };
+    phoneNumber: string;
+    localAddress: {
+      lines: string[];
+      city: string;
+      province: string;
+      postalCode: string;
+      country: string;
+    };
+    starRating: string;
+    reviewScore: number | null;
+    accommodationType: string;
+    geoLocation: {
+      lat: string;
+      lon: string;
+    };
+    countryISO: string;
+    geoId: string;
+  };
+  propertyDetail: any;
+  propertyImages: {
+    entries: {
+      imageType: 'SMALL' | 'MEDIUM' | 'LARGE';
+      url: string;
+    }[];
+    main: false;
+    isMain: false;
+  }[];
+  propertyAmenities: {
+    id: string | null;
+    category: string;
+    name: string;
+  }[];
+  checkInInfo: {
+    instructions: string;
+    special_instructions: string;
+    begin_time: string;
+    min_age: number;
+  };
+  checkOutInfo: {
+    time: string;
+  };
+  feesInfo: {
+    optional: string;
+    mandatory: string;
+  };
+  policiesInfo: {
+    instructions: string;
+    know_before_you_go: string;
+  };
+};
+
+export type HotelPropertyDetailResponseType = {
+  propertyDatas: HotelPropertyDetailType[];
+};
+
 export type HotelRoomResponseType = HotelRoomType[];
 
 export type HotelRoomRatePayloadType = {
