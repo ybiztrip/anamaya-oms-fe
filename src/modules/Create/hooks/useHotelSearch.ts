@@ -45,7 +45,7 @@ export default function useHotelSearch({ bookingParams }: { bookingParams: Booki
       page: values.page ?? 1,
       limit: values.limit ?? 10,
     };
-    await mutateAsync(payload);
+    return await mutateAsync(payload);
   };
 
   return {

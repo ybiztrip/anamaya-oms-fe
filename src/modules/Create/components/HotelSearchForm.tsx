@@ -11,7 +11,7 @@ import {
   Spin,
   Typography,
 } from 'antd';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
 import type { BookingParamsType, HotelPropertyType } from '@/types';
@@ -28,13 +28,22 @@ function HotelSearchForm({
   onSelectHotel: (hotel: HotelPropertyType, formValues: any) => void;
 }) {
   const [form] = Form.useForm();
+  const [items, setItems] = useState<HotelPropertyType[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProperties, setTotalProperties] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const lastSearchRef = useRef<any>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
   const checkInDate = Form.useWatch('checkInDate', form);
   const checkOutDate = Form.useWatch('checkOutDate', form);
   const nights = checkInDate && checkOutDate ? checkOutDate.diff(checkInDate, 'day') : 0;
 
-  const { hotelParams, handleSearchHotels, data, isLoading } = useHotelSearch({
+  const { hotelParams, handleSearchHotels, isLoading } = useHotelSearch({
     bookingParams,
   });
+  const LIMIT = 10;
 
   const autoSearchRef = useRef(false);
   useEffect(() => {
@@ -45,6 +54,48 @@ function HotelSearchForm({
       autoSearchRef.current = true;
     }
   }, [hotelParams, form]);
+
+  const runSearch = useCallback(
+    async (values: any, nextPage: number, append: boolean) => {
+      const response = await handleSearchHotels({ ...values, page: nextPage, limit: LIMIT });
+      const { properties = [], totalPages = 1, totalProperties = 0 } = response?.data ?? {};
+      setItems((prev) => (append ? [...prev, ...properties] : properties));
+      setPage(nextPage);
+      setTotalPages(Number(totalPages));
+      setTotalProperties(Number(totalProperties));
+      return properties.length;
+    },
+    [handleSearchHotels],
+  );
+
+  const loadMore = useCallback(async () => {
+    if (isLoading || isLoadingMore) return;
+    if (!lastSearchRef.current) return;
+    if (page >= totalPages) return;
+    setIsLoadingMore(true);
+    const nextPage = page + 1;
+    try {
+      await runSearch(lastSearchRef.current, nextPage, true);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [isLoading, isLoadingMore, page, totalPages, runSearch]);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    if (page >= totalPages) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          loadMore();
+        }
+      },
+      { root: null, rootMargin: '300px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore, page, totalPages]);
 
   return (
     <Form
@@ -59,7 +110,12 @@ function HotelSearchForm({
         checkOutDate: hotelParams?.checkOutDate ? dayjs(hotelParams.checkOutDate) : undefined,
         sortBy: 'HIGHEST_PRICE',
       }}
-      onFinish={handleSearchHotels}
+      onFinish={async (values) => {
+        lastSearchRef.current = values;
+        setIsLoadingMore(false);
+        setHasSearched(true);
+        await runSearch(values, 1, false);
+      }}
     >
       <div className="sticky top-0 z-10 bg-white pb-3">
         <Row>
@@ -166,23 +222,22 @@ function HotelSearchForm({
           </Form.Item>
         </Col>
         <Col flex="auto">
-          {isLoading ? (
+          {isLoading && items.length === 0 ? (
             <div className="flex justify-center items-center h-full">
               <Spin />
             </div>
           ) : (
             <>
-              {data && data?.data?.properties?.length === 0 && (
+              {hasSearched && !isLoading && items.length === 0 && (
                 <div className="flex justify-center items-center h-full">
                   <div className="text-gray-500">No hotels found</div>
                 </div>
               )}
-              {data?.data?.properties?.map((r: HotelPropertyType) => {
+              {items.map((r: HotelPropertyType) => {
                 return (
-                  <div className="overflow-x-auto">
+                  <div key={r.propertyId} className="overflow-x-auto">
                     <div style={{ minWidth: 800 }} className="mt-4 space-y-3">
                       <HotelInfo
-                        key={r.propertyId}
                         hotel={r}
                         onSelect={() => onSelectHotel(r, form.getFieldsValue())}
                       />
@@ -190,6 +245,17 @@ function HotelSearchForm({
                   </div>
                 );
               })}
+              {hasSearched && items.length > 0 && page < totalPages && (
+                <div className="flex justify-center py-6 text-sm text-gray-500">
+                  {isLoadingMore ? <Spin /> : 'Scroll to load more'}
+                </div>
+              )}
+              {hasSearched && items.length > 0 && page >= totalPages && totalProperties > 0 && (
+                <div className="flex justify-center py-4 text-xs text-gray-400">
+                  Showing {items.length} of {totalProperties}
+                </div>
+              )}
+              <div ref={sentinelRef} />
             </>
           )}
         </Col>

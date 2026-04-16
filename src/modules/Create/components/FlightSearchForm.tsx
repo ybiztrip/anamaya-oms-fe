@@ -209,6 +209,7 @@ function FlightSearchForm({
                       <DatePicker
                         style={{ width: '100%' }}
                         placeholder="Departure date"
+                        disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
                         format="DD MMM YYYY"
                       />
                     </Form.Item>
@@ -235,6 +236,14 @@ function FlightSearchForm({
                 { label: 'Earliest Arrival', value: 'ARRIVAL_TIME' },
               ]}
               style={{ width: 'fit-content' }}
+              onChange={async () => {
+                try {
+                  await form.validateFields(['origin', 'destination', 'departureDate']);
+                  form.submit();
+                } catch {
+                  // Don't auto-submit when required fields are incomplete.
+                }
+              }}
             />
           </Form.Item>
           <Form.Item className="mb-0" name="isDirect" valuePropName="checked">
