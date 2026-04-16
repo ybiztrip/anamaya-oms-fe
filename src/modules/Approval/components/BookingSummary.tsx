@@ -31,7 +31,7 @@ function BookingSummary({ data }: BookingSummaryProps) {
   const paxs = data.flights.length > 0 ? data.flights[0]?.paxs : (data.hotels[0]?.paxs ?? []);
 
   return (
-    <div className="w-full min-w-0 overflow-x-auto">
+    <div className="w-full min-w-0">
       <Row wrap={false} gutter={[12, 0]} align="top" justify="space-between" className="min-w-0">
         <Col flex="1 1 0%" style={{ minWidth: 'min(100%, 260px)' }}>
           <Space direction="vertical" size={4} style={{ width: '100%' }}>

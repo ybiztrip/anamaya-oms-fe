@@ -153,6 +153,7 @@ export type BookingPriceItemType = {
 export type BookingListPayloadType = {
   userId?: string;
   size?: number;
+  page?: number;
   needAttachment?: boolean;
 };
 
@@ -167,8 +168,6 @@ export type BookingNeedApprovalPayloadType = {
   page?: number;
   needAttachment?: boolean;
 };
-
-export type BookingListResponseType = BookingType[];
 
 export type BookingDetailResponseType = BookingType;
 

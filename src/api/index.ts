@@ -38,10 +38,10 @@ import type {
   BookingHotelPayloadType,
   BookingHotelResponseType,
   BookingListPayloadType,
-  BookingListResponseType,
   BookingMyApprovalPayloadType,
   BookingNeedApprovalPayloadType,
   BookingRejectPayloadType,
+  BookingType,
   FlightBookingAddOnsPayloadType,
   FlightBookingAddOnsResponseType,
   FlightSearchOneWayPayloadType,
@@ -136,7 +136,7 @@ export async function fetchHotelRoomRate(
 
 export async function fetchBookings(
   params: BookingListPayloadType,
-): Promise<ResponseType<BookingListResponseType>> {
+): Promise<PaginationResponseType<BookingType>> {
   const res = await axios.get(BOOKINGS_API, { params });
   return res.data;
 }
@@ -150,14 +150,14 @@ export async function fetchBookingDetail(
 
 export async function fetchBookingsMyApproval(
   params: BookingMyApprovalPayloadType,
-): Promise<ResponseType<BookingListResponseType>> {
+): Promise<PaginationResponseType<BookingType>> {
   const res = await axios.get(BOOKINGS_MY_APPROVAL_API, { params });
   return res.data;
 }
 
 export async function fetchBookingsNeedApproval(
   params: BookingNeedApprovalPayloadType,
-): Promise<ResponseType<BookingListResponseType>> {
+): Promise<PaginationResponseType<BookingType>> {
   const res = await axios.get(BOOKINGS_NEED_APPROVAL_API, { params });
   return res.data;
 }

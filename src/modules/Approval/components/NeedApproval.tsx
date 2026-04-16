@@ -10,27 +10,30 @@ import BookingSummary from './BookingSummary';
 
 const { Text } = Typography;
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
-  const { data, isLoading, error } = useBookingNeedApproval();
+  const { items, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error } =
+    useBookingNeedApproval();
   const { approveBooking, rejectBooking, isLoading: isActionLoading } = useBookingApprove();
   const navigate = useNavigate();
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const [selectedBookings, setSelectedBookings] = useState<BookingType[]>([]);
 
   const allPendingBookings = useMemo(
-    () => data?.filter((x) => x.status === BOOKING_STATUS_BOOKED) ?? [],
-    [data],
+    () => items?.filter((x) => x.status === BOOKING_STATUS_BOOKED) ?? [],
+    [items],
   );
 
   const selectedPendingBookings = useMemo(
     () =>
       selectedBookings.filter(
-        (booking) => data?.find((item) => item.id === booking.id)?.status === BOOKING_STATUS_BOOKED,
+        (booking) =>
+          items?.find((item) => item.id === booking.id)?.status === BOOKING_STATUS_BOOKED,
       ),
-    [selectedBookings, data],
+    [selectedBookings, items],
   );
 
   const toggleOne = (booking: BookingType, checked: boolean) => {
@@ -84,6 +87,28 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
     );
     setSelectedBookings((prev) => prev.filter((item) => !bookings.some((b) => b.id === item.id)));
   };
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    if (!hasNextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (!first?.isIntersecting) return;
+        if (!hasNextPage || isFetchingNextPage) return;
+        fetchNextPage();
+      },
+      {
+        root: null,
+        rootMargin: '200px',
+        threshold: 0.1,
+      },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   return (
     <Card
       className="mt-4"
@@ -175,7 +200,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
           </Col>
         </Row>
       </Card>
-      {isLoading && (
+      {isLoading && items.length === 0 && (
         <div className="w-full text-center">
           <Spin />
         </div>
@@ -183,7 +208,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
       {error && <Alert message={error?.message ?? DEFAULT_ERROR_MESSAGE} type="error" />}
       {!isLoading && !error && (
         <List
-          dataSource={data}
+          dataSource={items}
           rowKey="id"
           renderItem={(item) => {
             const checked = selectedBookings.some((booking) => booking.id === item.id);
@@ -246,6 +271,20 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
               </List.Item>
             );
           }}
+          loadMore={
+            items && items.length > 0 ? (
+              <div className="flex justify-center py-4">
+                {hasNextPage ? (
+                  <>
+                    {isFetchingNextPage && <Spin size="small" />}
+                    <div ref={sentinelRef} style={{ height: 1 }} />
+                  </>
+                ) : (
+                  <span className="text-xs text-gray-400">No more data</span>
+                )}
+              </div>
+            ) : null
+          }
         />
       )}
     </Card>

@@ -1,4 +1,5 @@
 import { Alert, Button, Card, Col, List, Row, Space, Spin } from 'antd';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
@@ -8,8 +9,32 @@ import useBookingMyApproval from '../hooks/useBookingMyApproval';
 import BookingSummary from './BookingSummary';
 
 function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
-  const { data, isLoading, error } = useBookingMyApproval();
+  const { items, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error } =
+    useBookingMyApproval();
   const navigate = useNavigate();
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    if (!hasNextPage) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (!first?.isIntersecting) return;
+        if (!hasNextPage || isFetchingNextPage) return;
+        fetchNextPage();
+      },
+      {
+        root: null,
+        rootMargin: '200px',
+        threshold: 0.1,
+      },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   return (
     <Card
       className="mt-4"
@@ -60,7 +85,7 @@ function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
         },
       }}
     >
-      {isLoading && (
+      {isLoading && items.length === 0 && (
         <div className="w-full text-center">
           <Spin />
         </div>
@@ -68,7 +93,7 @@ function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
       {error && <Alert message={error?.message ?? DEFAULT_ERROR_MESSAGE} type="error" />}
       {!isLoading && !error && (
         <List
-          dataSource={data}
+          dataSource={items}
           rowKey="id"
           renderItem={(item) => {
             return (
@@ -93,6 +118,20 @@ function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
               </List.Item>
             );
           }}
+          loadMore={
+            items && items.length > 0 ? (
+              <div className="flex justify-center py-4">
+                {hasNextPage ? (
+                  <>
+                    {isFetchingNextPage && <Spin size="small" />}
+                    <div ref={sentinelRef} style={{ height: 1 }} />
+                  </>
+                ) : (
+                  <span className="text-xs text-gray-400">No more data</span>
+                )}
+              </div>
+            ) : null
+          }
         />
       )}
     </Card>

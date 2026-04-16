@@ -1,33 +1,46 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { message } from 'antd';
 
 import { fetchBookingsMyApproval } from '@/api';
-import { BOOKING_STATUS_BOOKED } from '@/constants/common';
 import { BOOKINGS_MY_APPROVAL } from '@/constants/queryKey';
-import type { BookingMyApprovalPayloadType } from '@/types';
+import type { BookingMyApprovalPayloadType, BookingType } from '@/types';
 
 export default function useBookingMyApproval() {
-  const payload: BookingMyApprovalPayloadType = {
+  const basePayload: BookingMyApprovalPayloadType = {
     size: 10,
     needAttachment: false,
   };
-  const { data, isLoading, isFetching, error } = useQuery({
-    queryKey: [BOOKINGS_MY_APPROVAL],
-    queryFn: () => fetchBookingsMyApproval(payload),
-    select: (data) => {
-      if (!data.success) {
-        message.error(data.message);
-      }
-      return data.data.map((x) => ({
-        ...x,
-        status: BOOKING_STATUS_BOOKED,
-      }));
-    },
-  });
+
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage, error } =
+    useInfiniteQuery({
+      queryKey: [BOOKINGS_MY_APPROVAL, basePayload],
+      queryFn: async ({ pageParam = 0 }) => {
+        const payload: BookingMyApprovalPayloadType = {
+          ...basePayload,
+          page: pageParam,
+        };
+        const res = await fetchBookingsMyApproval(payload);
+        if (!res.success) {
+          message.error(res.message);
+          throw new Error(res.message);
+        }
+        return res;
+      },
+      getNextPageParam: (lastPage) => {
+        if (lastPage.last) return undefined;
+        return lastPage.number + 1;
+      },
+      initialPageParam: 0,
+    });
+
+  const items: BookingType[] = data?.pages.flatMap((page) => page.data) ?? [];
 
   return {
-    data,
-    isLoading: isLoading || isFetching,
+    items,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
     error,
   };
 }
