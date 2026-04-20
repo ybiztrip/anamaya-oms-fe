@@ -1,7 +1,6 @@
 import { MinusOutlined, SwapOutlined } from '@ant-design/icons';
 import {
   Button,
-  Card,
   Col,
   DatePicker,
   Form,
@@ -16,6 +15,7 @@ import {
 } from 'antd';
 import { useEffect } from 'react';
 
+import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
 import Upload from '@/components/Upload';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
@@ -60,7 +60,7 @@ function FlightForm({
 
   return (
     <>
-      <Card
+      <SectionCard
         className="mt-4"
         title={
           <Space>
@@ -85,29 +85,6 @@ function FlightForm({
             </Button>
           </Space>
         }
-        style={{
-          border: 'none',
-          boxShadow: 'none',
-        }}
-        styles={{
-          header: {
-            margin: '0 auto -24px auto',
-            width: 'fit-content',
-            borderRadius: 24,
-            border: '1px #8BB9FF solid',
-            backgroundColor: 'white',
-            zIndex: 10,
-            position: 'relative',
-          },
-          body: {
-            border: '1px #8BB9FF solid',
-            borderRadius: 24,
-            paddingTop: 40,
-            backgroundColor: '#fff',
-            zIndex: 1,
-            position: 'relative',
-          },
-        }}
       >
         <Form.Item name="tripType">
           <Radio.Group
@@ -211,61 +188,65 @@ function FlightForm({
                 <div className="space-y-3">
                   {fields.map((field) => (
                     <div key={field.key}>
-                    <Row gutter={[16, 8]} align="top" wrap>
-                      <Col xs={24} md={16}>
-                        <Space.Compact block>
-                          <Form.Item
-                            name={[field.name, 'origin']}
-                            rules={[{ required: true, message: 'Origin required' }]}
-                            style={{ flex: 1, marginBottom: 0 }}
-                          >
-                            <SelectAirport showSearch placeholder="From" />
-                          </Form.Item>
+                      <Row gutter={[16, 8]} align="top" wrap>
+                        <Col xs={24} md={16}>
+                          <Space.Compact block>
+                            <Form.Item
+                              name={[field.name, 'origin']}
+                              rules={[{ required: true, message: 'Origin required' }]}
+                              style={{ flex: 1, marginBottom: 0 }}
+                            >
+                              <SelectAirport showSearch placeholder="From" />
+                            </Form.Item>
 
-                          <Button
-                            icon={<SwapOutlined />}
-                            onClick={() => {
-                              const origin = form.getFieldValue(['flights', field.name, 'origin']);
-                              const destination = form.getFieldValue([
-                                'flights',
-                                field.name,
-                                'destination',
-                              ]);
-                              form.setFieldValue(['flights', field.name, 'origin'], destination);
-                              form.setFieldValue(['flights', field.name, 'destination'], origin);
-                            }}
-                          />
-
-                          <Form.Item
-                            name={[field.name, 'destination']}
-                            rules={[{ required: true, message: 'Destination required' }]}
-                            style={{ flex: 1, marginBottom: 0 }}
-                          >
-                            <SelectAirport showSearch placeholder="To" />
-                          </Form.Item>
-                        </Space.Compact>
-                      </Col>
-                      <Col xs={24} md={8}>
-                        <Space.Compact block>
-                          <Form.Item
-                            name={[field.name, 'departureDate']}
-                            rules={[{ required: true, message: 'Departure date required' }]}
-                            style={{ flex: 1, marginBottom: 0 }}
-                          >
-                            <DatePicker
-                              style={{ width: '100%' }}
-                              placeholder="Departure date"
-                              disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
-                              format="DD MMM YYYY"
+                            <Button
+                              icon={<SwapOutlined />}
+                              onClick={() => {
+                                const origin = form.getFieldValue([
+                                  'flights',
+                                  field.name,
+                                  'origin',
+                                ]);
+                                const destination = form.getFieldValue([
+                                  'flights',
+                                  field.name,
+                                  'destination',
+                                ]);
+                                form.setFieldValue(['flights', field.name, 'origin'], destination);
+                                form.setFieldValue(['flights', field.name, 'destination'], origin);
+                              }}
                             />
-                          </Form.Item>
 
-                          {fields.length > 1 && (
-                            <Button icon={<MinusOutlined />} onClick={() => remove(field.name)} />
-                          )}
-                        </Space.Compact>
-                      </Col>
-                    </Row>
+                            <Form.Item
+                              name={[field.name, 'destination']}
+                              rules={[{ required: true, message: 'Destination required' }]}
+                              style={{ flex: 1, marginBottom: 0 }}
+                            >
+                              <SelectAirport showSearch placeholder="To" />
+                            </Form.Item>
+                          </Space.Compact>
+                        </Col>
+                        <Col xs={24} md={8}>
+                          <Space.Compact block>
+                            <Form.Item
+                              name={[field.name, 'departureDate']}
+                              rules={[{ required: true, message: 'Departure date required' }]}
+                              style={{ flex: 1, marginBottom: 0 }}
+                            >
+                              <DatePicker
+                                style={{ width: '100%' }}
+                                placeholder="Departure date"
+                                disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
+                                format="DD MMM YYYY"
+                              />
+                            </Form.Item>
+
+                            {fields.length > 1 && (
+                              <Button icon={<MinusOutlined />} onClick={() => remove(field.name)} />
+                            )}
+                          </Space.Compact>
+                        </Col>
+                      </Row>
                     </div>
                   ))}
                 </div>
@@ -277,7 +258,7 @@ function FlightForm({
             )}
           </Form.List>
         )}
-      </Card>
+      </SectionCard>
       <div className="space-y-4 mt-4">
         <Form.Item noStyle shouldUpdate={true}>
           {({ getFieldValue }) => (

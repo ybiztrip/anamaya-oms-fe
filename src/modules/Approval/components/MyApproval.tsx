@@ -1,7 +1,8 @@
-import { Alert, Button, Card, Col, List, Row, Space, Spin } from 'antd';
+import { Alert, Button, Col, List, Row, Space, Spin } from 'antd';
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import SectionCard from '@/components/SectionCard';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { APPROVAL_PATH } from '@/constants/routePath';
 
@@ -36,7 +37,7 @@ function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
-    <Card
+    <SectionCard
       className="mt-4"
       title={
         <Space>
@@ -61,29 +62,6 @@ function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
           </Button>
         </Space>
       }
-      style={{
-        border: 'none',
-        boxShadow: 'none',
-      }}
-      styles={{
-        header: {
-          margin: '0 auto -24px auto',
-          width: 'fit-content',
-          borderRadius: 24,
-          border: '1px #8BB9FF solid',
-          backgroundColor: 'white',
-          zIndex: 10,
-          position: 'relative',
-        },
-        body: {
-          border: '1px #8BB9FF solid',
-          borderRadius: 24,
-          paddingTop: 40,
-          backgroundColor: '#fff',
-          zIndex: 1,
-          position: 'relative',
-        },
-      }}
     >
       {isLoading && items.length === 0 && (
         <div className="w-full text-center">
@@ -134,7 +112,7 @@ function MyApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
           }
         />
       )}
-    </Card>
+    </SectionCard>
   );
 }
 export default MyApproval;

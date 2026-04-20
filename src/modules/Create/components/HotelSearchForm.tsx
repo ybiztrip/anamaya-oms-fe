@@ -1,6 +1,5 @@
 import {
   Button,
-  Card,
   Col,
   DatePicker,
   Form,
@@ -13,6 +12,7 @@ import {
 } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import SectionCard from '@/components/SectionCard';
 import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
 import type { BookingParamsType, HotelPropertyType } from '@/types';
 import dayjs from '@/utils/dayjs';
@@ -121,22 +121,7 @@ function HotelSearchForm({
         <Row>
           <Col flex="300px"></Col>
           <Col flex="auto">
-            <Card
-              className="mt-4"
-              style={{
-                border: 'none',
-                boxShadow: 'none',
-              }}
-              styles={{
-                body: {
-                  border: '1px #8BB9FF solid',
-                  borderRadius: 24,
-                  backgroundColor: '#fff',
-                  zIndex: 1,
-                  position: 'relative',
-                },
-              }}
-            >
+            <SectionCard className="mt-4">
               <Row gutter={[16, 8]}>
                 <Col xs={24} md={8}>
                   <Form.Item
@@ -193,7 +178,7 @@ function HotelSearchForm({
                   </Button>
                 </Col>
               </Row>
-            </Card>
+            </SectionCard>
           </Col>
         </Row>
       </div>

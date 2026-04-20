@@ -1,5 +1,6 @@
 import { Alert, Button, Card, Checkbox, Col, List, Row, Space, Spin, Typography } from 'antd';
 
+import SectionCard from '@/components/SectionCard';
 import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { APPROVAL_PATH } from '@/constants/routePath';
 import type { BookingApprovePayloadType, BookingType } from '@/types';
@@ -110,7 +111,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
-    <Card
+    <SectionCard
       className="mt-4"
       title={
         <Space>
@@ -135,29 +136,6 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
           </Button>
         </Space>
       }
-      style={{
-        border: 'none',
-        boxShadow: 'none',
-      }}
-      styles={{
-        header: {
-          margin: '0 auto -24px auto',
-          width: 'fit-content',
-          borderRadius: 24,
-          border: '1px #8BB9FF solid',
-          backgroundColor: 'white',
-          zIndex: 10,
-          position: 'relative',
-        },
-        body: {
-          border: '1px #8BB9FF solid',
-          borderRadius: 24,
-          paddingTop: 40,
-          backgroundColor: '#fff',
-          zIndex: 1,
-          position: 'relative',
-        },
-      }}
     >
       <Card size="small" className="mt-[-8px]">
         <Row justify="space-between">
@@ -287,7 +265,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
           }
         />
       )}
-    </Card>
+    </SectionCard>
   );
 }
 export default NeedApproval;

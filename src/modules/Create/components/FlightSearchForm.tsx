@@ -1,18 +1,7 @@
-import {
-  Button,
-  Card,
-  Checkbox,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Row,
-  Select,
-  Space,
-  Spin,
-} from 'antd';
+import { Button, Checkbox, Col, DatePicker, Form, Input, Row, Select, Space, Spin } from 'antd';
 import { useEffect, useMemo, useRef } from 'react';
 
+import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
 import type { BookingParamsType, FlightSearchOneWayType } from '@/types';
 import dayjs from '@/utils/dayjs';
@@ -133,22 +122,7 @@ function FlightSearchForm({
         <Row>
           <Col flex="300px"></Col>
           <Col flex="auto">
-            <Card
-              className="mt-4"
-              style={{
-                border: 'none',
-                boxShadow: 'none',
-              }}
-              styles={{
-                body: {
-                  border: '1px #8BB9FF solid',
-                  borderRadius: 24,
-                  backgroundColor: '#fff',
-                  zIndex: 1,
-                  position: 'relative',
-                },
-              }}
-            >
+            <SectionCard className="mt-4">
               <Row gutter={[16, 8]} align="top" wrap>
                 <Col span={12}>
                   <Space.Compact block>
@@ -221,7 +195,7 @@ function FlightSearchForm({
                   </Button>
                 </Col>
               </Row>
-            </Card>
+            </SectionCard>
           </Col>
         </Row>
       </div>

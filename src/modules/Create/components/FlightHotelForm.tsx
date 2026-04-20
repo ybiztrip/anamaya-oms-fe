@@ -1,7 +1,6 @@
 import { StarFilled, SwapOutlined } from '@ant-design/icons';
 import {
   Button,
-  Card,
   Checkbox,
   Col,
   DatePicker,
@@ -18,6 +17,7 @@ import {
 } from 'antd';
 import { useEffect } from 'react';
 
+import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
 import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
 import Upload from '@/components/Upload';
@@ -68,7 +68,7 @@ function FlightHotelForm({
 
   return (
     <>
-      <Card
+      <SectionCard
         className="mt-4"
         title={
           <Space>
@@ -93,29 +93,6 @@ function FlightHotelForm({
             </Button>
           </Space>
         }
-        style={{
-          border: 'none',
-          boxShadow: 'none',
-        }}
-        styles={{
-          header: {
-            margin: '0 auto -24px auto',
-            width: 'fit-content',
-            borderRadius: 24,
-            border: '1px #8BB9FF solid',
-            backgroundColor: 'white',
-            zIndex: 10,
-            position: 'relative',
-          },
-          body: {
-            border: '1px #8BB9FF solid',
-            borderRadius: 24,
-            paddingTop: 40,
-            backgroundColor: '#fff',
-            zIndex: 1,
-            position: 'relative',
-          },
-        }}
       >
         <Form.Item name="tripType">
           <Radio.Group
@@ -254,7 +231,7 @@ function FlightHotelForm({
             </Col>
           )}
         </Row>
-      </Card>
+      </SectionCard>
       <div className="space-y-4 mt-4">
         <Form.Item noStyle shouldUpdate={true}>
           {({ getFieldValue }) => (
