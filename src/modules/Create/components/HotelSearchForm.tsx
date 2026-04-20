@@ -14,6 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import SectionCard from '@/components/SectionCard';
 import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
+import { DEFAULT_PAGE_SIZE } from '@/constants/common';
 import type { BookingParamsType, HotelPropertyType } from '@/types';
 import dayjs from '@/utils/dayjs';
 
@@ -43,7 +44,6 @@ function HotelSearchForm({
   const { hotelParams, handleSearchHotels, isLoading } = useHotelSearch({
     bookingParams,
   });
-  const LIMIT = 10;
 
   const autoSearchRef = useRef(false);
   useEffect(() => {
@@ -57,7 +57,11 @@ function HotelSearchForm({
 
   const runSearch = useCallback(
     async (values: any, nextPage: number, append: boolean) => {
-      const response = await handleSearchHotels({ ...values, page: nextPage, limit: LIMIT });
+      const response = await handleSearchHotels({
+        ...values,
+        page: nextPage,
+        limit: DEFAULT_PAGE_SIZE,
+      });
       const { properties = [], totalPages = 1, totalProperties = 0 } = response?.data ?? {};
       setItems((prev) => (append ? [...prev, ...properties] : properties));
       setPage(nextPage);

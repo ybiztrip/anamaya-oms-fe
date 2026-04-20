@@ -3,6 +3,7 @@ import { Select, type SelectProps } from 'antd';
 import { useMemo, useState } from 'react';
 
 import { fetchUsers } from '@/api';
+import { DEFAULT_PAGE_SIZE } from '@/constants/common';
 import { USERS } from '@/constants/queryKey';
 import useDebouncedValue from '@/hooks/useDebouncedValue';
 import type { UserType } from '@/types';
@@ -10,8 +11,6 @@ import type { UserType } from '@/types';
 export type SelectUserProps = Omit<SelectProps, 'options' | 'loading' | 'onSearch'> & {
   onSearch?: SelectProps['onSearch'];
 };
-
-const DEFAULT_LIMIT = 20;
 
 function SelectUser({ onSearch, ...props }: SelectUserProps) {
   const [searchInput, setSearchInput] = useState('');
@@ -23,8 +22,8 @@ function SelectUser({ onSearch, ...props }: SelectUserProps) {
     queryFn: () =>
       fetchUsers({
         email: searchKey,
-        size: String(DEFAULT_LIMIT),
-        page: '0',
+        size: DEFAULT_PAGE_SIZE,
+        page: 0,
       }),
     enabled: !!searchKey,
     refetchOnMount: false,

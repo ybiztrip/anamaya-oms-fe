@@ -3,6 +3,7 @@ import { Select, type SelectProps } from 'antd';
 import { useMemo, useState } from 'react';
 
 import { fetchHotelGeoList } from '@/api';
+import { DEFAULT_PAGE_SIZE } from '@/constants/common';
 import { HOTEL_GEO_LIST } from '@/constants/queryKey';
 import useDebouncedValue from '@/hooks/useDebouncedValue';
 import type { HotelGeoListType } from '@/types';
@@ -10,8 +11,6 @@ import type { HotelGeoListType } from '@/types';
 export type SelectHotelGeoProps = Omit<SelectProps, 'options' | 'loading' | 'onSearch'> & {
   onSearch?: SelectProps['onSearch'];
 };
-
-const DEFAULT_LIMIT = 20;
 
 export default function SelectHotelGeo({ onSearch, ...props }: SelectHotelGeoProps) {
   const [searchInput, setSearchInput] = useState('');
@@ -25,7 +24,7 @@ export default function SelectHotelGeo({ onSearch, ...props }: SelectHotelGeoPro
         countryCode: 'ID',
         offset: '0',
         key: searchKey,
-        limit: String(DEFAULT_LIMIT),
+        limit: String(DEFAULT_PAGE_SIZE),
       }),
     enabled: !!searchKey,
     refetchOnMount: false,

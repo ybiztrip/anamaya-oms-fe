@@ -3,7 +3,7 @@ import { message } from 'antd';
 import dayjs from 'dayjs';
 
 import { fetchHotelDiscovery } from '@/api';
-import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import { DEFAULT_ERROR_MESSAGE, DEFAULT_PAGE_SIZE } from '@/constants/common';
 import type { BookingHotelParamsType, BookingParamsType, HotelDiscoveryPayloadType } from '@/types';
 
 export default function useHotelSearch({ bookingParams }: { bookingParams: BookingParamsType }) {
@@ -43,7 +43,7 @@ export default function useHotelSearch({ bookingParams }: { bookingParams: Booki
         ],
       },
       page: values.page ?? 1,
-      limit: values.limit ?? 10,
+      limit: values.limit ?? DEFAULT_PAGE_SIZE,
     };
     return await mutateAsync(payload);
   };

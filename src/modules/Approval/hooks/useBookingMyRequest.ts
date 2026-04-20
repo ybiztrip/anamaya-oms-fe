@@ -2,6 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { message } from 'antd';
 
 import { fetchBookings } from '@/api';
+import { DEFAULT_PAGE_SIZE } from '@/constants/common';
 import { BOOKINGS_MY_REQUEST } from '@/constants/queryKey';
 import { USER } from '@/constants/storageKey';
 import type { BookingListPayloadType, BookingType, UserType } from '@/types';
@@ -11,7 +12,7 @@ export default function useBookingMyRequest() {
   const userProfile = localStorageGet<UserType>(USER);
 
   const basePayload: BookingListPayloadType = {
-    size: 10,
+    size: DEFAULT_PAGE_SIZE,
     userId: String(userProfile?.id),
     needAttachment: false,
   };

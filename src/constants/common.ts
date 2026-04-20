@@ -2,6 +2,8 @@ export const DEFAULT_ERROR_MESSAGE = 'Sorry, something went wrong.';
 
 export const CLIENT_SOURCE = 'BIZTRIP';
 
+export const DEFAULT_PAGE_SIZE = 10;
+
 export const ADULT_AGE = 12;
 export const CHILD_AGE = 2;
 export const INFANT_AGE = 0;

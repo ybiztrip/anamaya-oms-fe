@@ -2,12 +2,13 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { message } from 'antd';
 
 import { fetchBookingsNeedApproval } from '@/api';
+import { DEFAULT_PAGE_SIZE } from '@/constants/common';
 import { BOOKINGS_NEED_APPROVAL } from '@/constants/queryKey';
 import type { BookingNeedApprovalPayloadType, BookingType } from '@/types';
 
 export default function useBookingNeedApproval() {
   const basePayload: BookingNeedApprovalPayloadType = {
-    size: 10,
+    size: DEFAULT_PAGE_SIZE,
     needAttachment: false,
   };
 
