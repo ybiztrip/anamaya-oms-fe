@@ -1,4 +1,5 @@
 export const USERS = 'users';
+export const ROLES = 'roles';
 export const BOOKINGS_MY_REQUEST = 'bookings-my-request';
 export const BOOKINGS_MY_APPROVAL = 'bookings-my-approval';
 export const BOOKINGS_NEED_APPROVAL = 'bookings-need-approval';

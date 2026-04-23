@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import {
   APPROVAL_DETAIL_PATH,
   APPROVAL_PATH,
+  CONFIGURATION_EMPLOYEES_PATH,
   CREATE_BOOKING_CONFIRM_PATH,
   CREATE_FLIGHT_SEARCH_PATH,
   CREATE_HOTEL_ROOM_PATH,
@@ -18,6 +19,7 @@ import CreateView from '@/modules/Create/CreateView';
 import FlightSearchView from '@/modules/Create/FlightSearchView';
 import HotelRoomView from '@/modules/Create/HotelRoomView';
 import HotelSearchView from '@/modules/Create/HotelSearchView';
+import EmployeeView from '@/modules/Employee/EmployeeView';
 import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
 
@@ -88,6 +90,14 @@ function App() {
         element={
           <ProtectedRoute>
             <BookingDetailView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={CONFIGURATION_EMPLOYEES_PATH}
+        element={
+          <ProtectedRoute>
+            <EmployeeView />
           </ProtectedRoute>
         }
       />

@@ -1,24 +1,12 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Form,
-  type FormInstance,
-  Input,
-  Radio,
-  Row,
-  Select,
-  Space,
-} from 'antd';
-import { getCountries, getCountryCallingCode, parsePhoneNumber } from 'libphonenumber-js';
+import { Button, Card, Col, Form, type FormInstance, Input, Radio, Row, Space } from 'antd';
+import { parsePhoneNumber } from 'libphonenumber-js';
 import { useMemo } from 'react';
 
+import SelectUser from '@/components/Select/SelectUser';
+import EmployeeForm, { PassengerGuestFields } from '@/modules/Employee/components/EmployeeForm';
 import type { UserType } from '@/types';
 import dayjs from '@/utils/dayjs';
-
-import SelectUser from '../../../components/Select/SelectUser';
 
 function PassengerGuestForm({
   form,
@@ -32,18 +20,6 @@ function PassengerGuestForm({
     if (type === 'hotel') return 'Guest';
     return 'Passenger/Guest';
   }, [type]);
-
-  const phoneCodeOptions = useMemo(
-    () =>
-      getCountries().map((country) => {
-        const code = `+${getCountryCallingCode(country)}`;
-        return {
-          label: `${country} (${code})`,
-          value: code,
-        };
-      }),
-    [],
-  );
 
   return (
     <div className="space-y-4">
@@ -157,7 +133,9 @@ function PassengerGuestForm({
                                             : '',
                                           idNumber: u.identityNo,
                                           passportNumber: u.passportNo,
-                                          passportExpiry: u.passportExpiry,
+                                          passportExpiry: u.passportExpiry
+                                            ? dayjs(u.passportExpiry, 'YYYY-MM-DD')
+                                            : '',
                                         },
                                       },
                                     });
@@ -179,121 +157,11 @@ function PassengerGuestForm({
                       if (sourceType === 'fromEmployee' && !selectedEmail) return null;
 
                       return (
-                        <Row gutter={[16, 8]}>
-                          <Col xs={24} hidden>
-                            <Form.Item name={[field.name, 'id']}>
-                              <Input />
-                            </Form.Item>
-                          </Col>
-                          <Col xs={24}>
-                            <Form.Item
-                              label="Title"
-                              name={[field.name, 'title']}
-                              rules={[{ required: true, message: 'Title required' }]}
-                            >
-                              <Select
-                                placeholder="Select Title"
-                                options={[
-                                  { label: 'Mr', value: 'MR' },
-                                  { label: 'Mrs', value: 'MRS' },
-                                  { label: 'Ms', value: 'MS' },
-                                ]}
-                                disabled={sourceType === 'fromEmployee'}
-                                style={{ width: '100px' }}
-                              />
-                            </Form.Item>
-                          </Col>
-                          <Col xs={24} md={12}>
-                            <Form.Item
-                              label="First Name"
-                              name={[field.name, 'firstName']}
-                              rules={[{ required: true, message: 'First Name required' }]}
-                            >
-                              <Input
-                                placeholder="First Name"
-                                disabled={sourceType === 'fromEmployee'}
-                              />
-                            </Form.Item>
-                          </Col>
-
-                          <Col xs={24} md={12}>
-                            <Form.Item
-                              label="Last Name"
-                              name={[field.name, 'lastName']}
-                              rules={[{ required: true, message: 'Last Name required' }]}
-                            >
-                              <Input
-                                placeholder="Last Name"
-                                disabled={sourceType === 'fromEmployee'}
-                              />
-                            </Form.Item>
-                          </Col>
-                          <Col xs={24} md={12}>
-                            <Form.Item label="Phone">
-                              <Space.Compact block>
-                                <Form.Item
-                                  name={[field.name, 'phoneCode']}
-                                  noStyle
-                                  initialValue="+62"
-                                >
-                                  <Select
-                                    style={{ width: 130 }}
-                                    options={phoneCodeOptions}
-                                    disabled={sourceType === 'fromEmployee'}
-                                  />
-                                </Form.Item>
-                                <Form.Item name={[field.name, 'phoneNumber']} noStyle>
-                                  <Input
-                                    placeholder="Phone Number"
-                                    disabled={sourceType === 'fromEmployee'}
-                                  />
-                                </Form.Item>
-                              </Space.Compact>
-                            </Form.Item>
-                          </Col>
-
-                          <Col xs={24} md={12}>
-                            <Form.Item
-                              label="Date of Birth"
-                              name={[field.name, 'dob']}
-                              rules={[{ required: true, message: 'Date of Birth required' }]}
-                            >
-                              <DatePicker
-                                style={{ width: '100%' }}
-                                format="DD MMM YYYY"
-                                disabled={sourceType === 'fromEmployee'}
-                              />
-                            </Form.Item>
-                          </Col>
-
-                          <Col xs={24} md={12}>
-                            <Form.Item label="ID#" name={[field.name, 'idNumber']}>
-                              <Input
-                                placeholder="ID Number"
-                                disabled={sourceType === 'fromEmployee'}
-                              />
-                            </Form.Item>
-                          </Col>
-
-                          <Col xs={24} md={12}>
-                            <Form.Item label="Passport" name={[field.name, 'passportNumber']}>
-                              <Input
-                                placeholder="Passport Number"
-                                disabled={sourceType === 'fromEmployee'}
-                              />
-                            </Form.Item>
-                          </Col>
-
-                          <Col xs={24} md={12}>
-                            <Form.Item label="Expiry Date" name={[field.name, 'passportExpiry']}>
-                              <DatePicker
-                                style={{ width: '100%' }}
-                                disabled={sourceType === 'fromEmployee'}
-                                format="DD MMM YYYY"
-                              />
-                            </Form.Item>
-                          </Col>
-                        </Row>
+                        <EmployeeForm
+                          namePrefix={[field.name]}
+                          fields={PassengerGuestFields}
+                          disabledFields={sourceType === 'fromEmployee' ? PassengerGuestFields : []}
+                        />
                       );
                     }}
                   </Form.Item>

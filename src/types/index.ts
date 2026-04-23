@@ -1,6 +1,7 @@
 export * from './booking';
 export * from './flight';
 export * from './hotel';
+export * from './user';
 
 export type ResponseType<T> = {
   data: T;
@@ -17,33 +18,4 @@ export type PaginationResponseType<T> = {
   last: boolean;
   size: number;
   number: number;
-};
-
-export type UserType = {
-  id: number;
-  companyId: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  gender: string;
-  positionId: number;
-  countryCode: string;
-  phoneNo: string;
-  title: string;
-  identityNo: string;
-  passportNo: string;
-  passportExpiry: string;
-  dateOfBirth: string;
-  nationality: string;
-  status: number;
-  createdBy: number;
-  createdAt: string;
-  updatedBy: number;
-  updatedAt: string;
-};
-
-export type UsersPayloadType = {
-  page: string;
-  size: string;
-  email: string;
 };

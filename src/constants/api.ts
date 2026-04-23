@@ -5,8 +5,12 @@ export const API_V1 = '/api/v1';
 export const AUTH_API = API_V1 + '/auth';
 export const AUTH_LOGIN_API = AUTH_API + '/login';
 
+export const ROLES_API = API_V1 + '/roles';
+
 export const USERS_API = API_V1 + '/users';
 export const USERS_DETAIL_API = USERS_API + '/:id';
+export const USERS_ROLES_API = USERS_DETAIL_API + '/roles';
+export const USERS_UPDATE_PASSWORD_API = USERS_DETAIL_API + '/update-password';
 
 export const FLIGHT_API = API_V1 + '/flight';
 export const FLIGHT_AIRLINES_API = FLIGHT_API + '/airlines';

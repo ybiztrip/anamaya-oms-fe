@@ -21,8 +21,11 @@ import {
   HOTEL_PROPERTY_DETAIL_API,
   HOTEL_ROOM_API,
   HOTEL_ROOM_RATE_API,
+  ROLES_API,
   USERS_API,
   USERS_DETAIL_API,
+  USERS_ROLES_API,
+  USERS_UPDATE_PASSWORD_API,
 } from '@/constants/api';
 import type {
   AirlineType,
@@ -58,13 +61,21 @@ import type {
   HotelRoomResponseType,
   PaginationResponseType,
   ResponseType,
-  UsersPayloadType,
+  RoleType,
+  UserListPayloadType,
+  UserRolesUpsertPayloadType,
   UserType,
+  UserUpdatePasswordPayloadType,
 } from '@/types';
 import axios from '@/utils/api';
 
+export async function fetchRoles(): Promise<ResponseType<RoleType[]>> {
+  const res = await axios.get(ROLES_API);
+  return res.data;
+}
+
 export async function fetchUsers(
-  params: UsersPayloadType,
+  params: UserListPayloadType,
 ): Promise<PaginationResponseType<UserType>> {
   const res = await axios.get(USERS_API, { params });
   return res.data;
@@ -72,6 +83,32 @@ export async function fetchUsers(
 
 export async function fetchUserDetail(id: string): Promise<ResponseType<UserType>> {
   const res = await axios.get(USERS_DETAIL_API.replace(':id', id));
+  return res.data;
+}
+
+export async function createUser(params: UserType): Promise<ResponseType<UserType>> {
+  const res = await axios.post(USERS_API, params);
+  return res.data;
+}
+
+export async function updateUser(id: string, params: UserType): Promise<ResponseType<UserType>> {
+  const res = await axios.put(USERS_DETAIL_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function upsertUserRoles(
+  id: string,
+  params: UserRolesUpsertPayloadType,
+): Promise<ResponseType<any>> {
+  const res = await axios.post(USERS_ROLES_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function updateUserPassword(
+  id: string,
+  params: UserUpdatePasswordPayloadType,
+): Promise<ResponseType<any>> {
+  const res = await axios.put(USERS_UPDATE_PASSWORD_API.replace(':id', id), params);
   return res.data;
 }
 

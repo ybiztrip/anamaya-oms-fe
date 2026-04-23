@@ -7,3 +7,5 @@ export const CREATE_FLIGHT_SEARCH_PATH = '/create/flight/search';
 export const CREATE_HOTEL_SEARCH_PATH = '/create/hotel/search';
 export const CREATE_HOTEL_ROOM_PATH = '/create/hotel/room';
 export const CREATE_BOOKING_CONFIRM_PATH = '/create/booking/confirm';
+export const CONFIGURATION_PATH = '/configuration';
+export const CONFIGURATION_EMPLOYEES_PATH = '/configuration/employees';

@@ -1,7 +1,12 @@
-import { CheckSquareOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  CheckSquareOutlined,
+  PlusOutlined,
+  SettingOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import type { ComponentType } from 'react';
 
-import { APPROVAL_PATH, CREATE_PATH } from '@/constants/routePath';
+import { APPROVAL_PATH, CONFIGURATION_EMPLOYEES_PATH, CREATE_PATH } from '@/constants/routePath';
 
 export type MenuChild = {
   name: string;
@@ -32,5 +37,19 @@ export const menus: Menu[] = [
     path: APPROVAL_PATH,
     childs: [],
     Icon: CheckSquareOutlined,
+  },
+  {
+    name: 'configuration',
+    title: 'Configuration',
+    path: '',
+    childs: [
+      {
+        name: 'employees',
+        title: 'Employees',
+        path: CONFIGURATION_EMPLOYEES_PATH,
+        Icon: UserOutlined,
+      },
+    ],
+    Icon: SettingOutlined,
   },
 ];
