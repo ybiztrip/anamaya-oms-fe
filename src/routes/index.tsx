@@ -11,6 +11,7 @@ import {
   CREATE_PATH,
   HOME_PATH,
   LOGIN_PATH,
+  PROFILE_PATH,
 } from '@/constants/routePath';
 import ApprovalView from '@/modules/Approval/ApprovalView';
 import BookingDetailView from '@/modules/Approval/BookingDetailView';
@@ -22,6 +23,7 @@ import HotelSearchView from '@/modules/Create/HotelSearchView';
 import EmployeeView from '@/modules/Employee/EmployeeView';
 import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
+import ProfileView from '@/modules/Profile/ProfileView';
 
 import ProtectedRoute from './ProtectedRoute';
 
@@ -34,6 +36,14 @@ function App() {
         element={
           <ProtectedRoute>
             <HomeView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={PROFILE_PATH}
+        element={
+          <ProtectedRoute>
+            <ProfileView />
           </ProtectedRoute>
         }
       />

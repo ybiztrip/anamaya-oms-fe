@@ -64,6 +64,19 @@ export const PassengerGuestFields: EmployeeFieldKey[] = [
   'passportNumber',
   'passportExpiry',
 ];
+// eslint-disable-next-line react-refresh/only-export-components
+export const ProfileFields: EmployeeFieldKey[] = [
+  'email',
+  'title',
+  'firstName',
+  'lastName',
+  'phoneCode',
+  'phoneNumber',
+  'dob',
+  'idNumber',
+  'passportNumber',
+  'passportExpiry',
+];
 
 export default function EmployeeForm({
   namePrefix = [],

@@ -28,9 +28,9 @@ export type UserType = {
   dateOfBirth: string;
   nationality: string;
   status: number;
-  createdBy: number;
+  createdBy?: number;
   createdAt?: string;
-  updatedBy: number;
+  updatedBy?: number;
   updatedAt?: string;
   password?: string;
   enableChatEngine?: boolean;

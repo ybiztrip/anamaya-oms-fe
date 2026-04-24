@@ -1,4 +1,5 @@
-import { Button, Image, Layout, Menu, Typography } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+import { Avatar, Button, Image, Layout, Menu, Popover, Typography } from 'antd';
 import { type ReactNode, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -6,7 +7,10 @@ import AnamayaLogo from '@/assets/anamaya.webp';
 import Background from '@/assets/background.jpg';
 import { menus } from '@/constants/menu';
 import { HOME_PATH } from '@/constants/routePath';
+import { USER } from '@/constants/storageKey';
 import useAuth from '@/hooks/useAuth';
+import type { UserType } from '@/types';
+import { localStorageGet } from '@/utils/localStorage';
 
 const { Header, Sider } = Layout;
 const { Title } = Typography;
@@ -20,6 +24,7 @@ const AppLayout = ({
 }) => {
   const { pathname } = useLocation();
   const { logout } = useAuth();
+  const currentUser = localStorageGet<UserType>(USER);
 
   const selectedMenuKey = useMemo(() => {
     const selectedMenu = menus.find((menu) => menu.path === pathname);
@@ -42,9 +47,38 @@ const AppLayout = ({
         <Title level={4} className="flex-grow text-center">
           Anamaya Travel Platform
         </Title>
-        <Button type="primary" onClick={logout}>
-          Logout
-        </Button>
+        <div className="flex items-center justify-end gap-4">
+          <Popover
+            trigger="click"
+            placement="bottomRight"
+            content={
+              <div className="min-w-[240px]">
+                <div className="flex items-center gap-3 mb-3">
+                  <Avatar size="large" icon={<UserOutlined />} />
+                  <div className="flex flex-col">
+                    <span className="font-semibold leading-tight">
+                      {currentUser?.firstName} {currentUser?.lastName}
+                    </span>
+                    <span className="text-xs text-gray-500 break-all">{currentUser?.email}</span>
+                  </div>
+                </div>
+                <div className="h-px bg-gray-200 mb-3" />
+                <div className="flex flex-col gap-2">
+                  <Link to="/profile">
+                    <Button block type="default">
+                      Profile
+                    </Button>
+                  </Link>
+                  <Button block type="primary" danger onClick={logout}>
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            }
+          >
+            <Avatar className="cursor-pointer" icon={<UserOutlined />} />
+          </Popover>
+        </div>
       </Header>
       <Layout>
         {withSidebar && (

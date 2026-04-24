@@ -1,5 +1,4 @@
 import { Button, Card, Col, Form, Input, message, Modal, Row } from 'antd';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { useState } from 'react';
 
 import Layout from '@/components/Layout';
@@ -7,6 +6,7 @@ import SectionCard from '@/components/SectionCard';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import type { UserRolesUpsertPayloadType, UserType } from '@/types';
 import dayjs from '@/utils/dayjs';
+import { getPhoneParts } from '@/utils/phone';
 
 import EmployeeForm, {
   CreateEmployeeFields,
@@ -17,25 +17,8 @@ import useEmployee from './hooks/useEmployee';
 
 type ModalMode = 'create' | 'update';
 
-const buildPhoneParts = (user?: UserType) => {
-  if (!user?.phoneNo) {
-    return { phoneCode: user?.countryCode ?? '+62', phoneNumber: '' };
-  }
-  const parsed = user.phoneNo.startsWith('+')
-    ? parsePhoneNumberFromString(user.phoneNo)
-    : undefined;
-  const phoneCode =
-    user.countryCode ?? (parsed?.countryCallingCode ? `+${parsed.countryCallingCode}` : '+62');
-  let phoneNumber = parsed?.nationalNumber ?? user.phoneNo;
-  if (user.countryCode) {
-    const rawCode = user.countryCode.replace('+', '');
-    phoneNumber = phoneNumber.replace(user.countryCode, '').replace(rawCode, '').trim();
-  }
-  return { phoneCode, phoneNumber };
-};
-
 const buildPaxFromUser = (user?: UserType) => {
-  const { phoneCode, phoneNumber } = buildPhoneParts(user);
+  const { phoneCode, phoneNumber } = getPhoneParts(user?.phoneNo, user?.countryCode);
   return {
     id: user?.id ?? 0,
     status: user?.status ?? 1,

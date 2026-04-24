@@ -1,12 +1,12 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Form, type FormInstance, Input, Radio, Row, Space } from 'antd';
-import { parsePhoneNumber } from 'libphonenumber-js';
 import { useMemo } from 'react';
 
 import SelectUser from '@/components/Select/SelectUser';
 import EmployeeForm, { PassengerGuestFields } from '@/modules/Employee/components/EmployeeForm';
 import type { UserType } from '@/types';
 import dayjs from '@/utils/dayjs';
+import { getPhoneParts } from '@/utils/phone';
 
 function PassengerGuestForm({
   form,
@@ -99,24 +99,10 @@ function PassengerGuestForm({
                                     const u = option.user as UserType;
                                     if (!u) return;
 
-                                    const normalizedCountryCode = u.countryCode ?? '';
-                                    const parsedPhone = u.phoneNo?.startsWith('+')
-                                      ? parsePhoneNumber(u.phoneNo)
-                                      : undefined;
-                                    const phoneCode =
-                                      normalizedCountryCode ||
-                                      (parsedPhone?.countryCallingCode
-                                        ? `+${parsedPhone.countryCallingCode}`
-                                        : '+62');
-                                    let phoneNumber =
-                                      parsedPhone?.nationalNumber ?? u.phoneNo ?? '';
-                                    if (normalizedCountryCode && u.phoneNo) {
-                                      const rawCode = normalizedCountryCode.replace('+', '');
-                                      phoneNumber = phoneNumber
-                                        .replace(normalizedCountryCode, '')
-                                        .replace(rawCode, '')
-                                        .trim();
-                                    }
+                                    const { phoneCode, phoneNumber } = getPhoneParts(
+                                      u.phoneNo,
+                                      u.countryCode,
+                                    );
 
                                     form.setFieldsValue({
                                       paxList: {

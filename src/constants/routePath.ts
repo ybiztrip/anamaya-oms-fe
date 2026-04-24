@@ -1,5 +1,6 @@
 export const HOME_PATH = '/';
 export const LOGIN_PATH = '/login';
+export const PROFILE_PATH = '/profile';
 export const APPROVAL_PATH = '/approval';
 export const APPROVAL_DETAIL_PATH = '/approval/:id';
 export const CREATE_PATH = '/create';
