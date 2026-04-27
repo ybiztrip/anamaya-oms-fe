@@ -11,6 +11,7 @@ import { USER } from '@/constants/storageKey';
 import useAuth from '@/hooks/useAuth';
 import type { UserType } from '@/types';
 import { localStorageGet } from '@/utils/localStorage';
+import { isPermittedAny } from '@/utils/permission';
 
 const { Header, Sider } = Layout;
 const { Title } = Typography;
@@ -95,7 +96,8 @@ const AppLayout = ({
               mode="inline"
               selectedKeys={[selectedMenuKey]}
               items={menus.map((menu) => {
-                const { name, title, path, childs, Icon } = menu;
+                const { name, title, path, childs, Icon, permissions } = menu;
+                if (permissions && !isPermittedAny(permissions)) return null;
                 const children = childs.map((child) => {
                   const { name, title, path, Icon: ChildIcon } = child;
                   return {

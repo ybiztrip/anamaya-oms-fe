@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 import SectionCard from '@/components/SectionCard';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import { PERMISSIONS } from '@/constants/permission';
 import { APPROVAL_PATH } from '@/constants/routePath';
+import { isPermitted } from '@/utils/permission';
 
 import useBookingMyRequest from '../hooks/useBookingMyRequest';
 import BookingSummary from './BookingSummary';
@@ -41,25 +43,29 @@ function MyRequest({ onChangeTab }: { onChangeTab: (key: string) => void }) {
       className="mt-4"
       title={
         <Space>
-          <Button
-            variant="link"
-            size="large"
-            color="default"
-            onClick={() => onChangeTab('need-approval')}
-          >
-            Need Approval
-          </Button>
+          {isPermitted(PERMISSIONS.APPROVAL) && (
+            <Button
+              variant="link"
+              size="large"
+              color="default"
+              onClick={() => onChangeTab('need-approval')}
+            >
+              Need Approval
+            </Button>
+          )}
           <Button variant="link" size="large" color="primary">
             My Request
           </Button>
-          <Button
-            variant="link"
-            size="large"
-            color="default"
-            onClick={() => onChangeTab('my-approval')}
-          >
-            My Approval
-          </Button>
+          {isPermitted(PERMISSIONS.APPROVAL) && (
+            <Button
+              variant="link"
+              size="large"
+              color="default"
+              onClick={() => onChangeTab('my-approval')}
+            >
+              My Approval
+            </Button>
+          )}
         </Space>
       }
     >

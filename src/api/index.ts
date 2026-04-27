@@ -64,6 +64,7 @@ import type {
   RoleType,
   UserListPayloadType,
   UserRolesUpsertPayloadType,
+  UserRoleType,
   UserType,
   UserUpdatePasswordPayloadType,
 } from '@/types';
@@ -93,6 +94,11 @@ export async function createUser(params: UserType): Promise<ResponseType<UserTyp
 
 export async function updateUser(id: string, params: UserType): Promise<ResponseType<UserType>> {
   const res = await axios.put(USERS_DETAIL_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function fetchUserRoles(id: string): Promise<ResponseType<UserRoleType[]>> {
+  const res = await axios.get(USERS_ROLES_API.replace(':id', id));
   return res.data;
 }
 

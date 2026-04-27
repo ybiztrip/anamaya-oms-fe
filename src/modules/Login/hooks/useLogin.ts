@@ -2,7 +2,7 @@ import { Form, type FormInstance, message } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { fetchUserDetail } from '@/api';
+import { fetchUserDetail, fetchUserRoles } from '@/api';
 import { AUTH_LOGIN_API } from '@/constants/api';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { HOME_PATH } from '@/constants/routePath';
@@ -38,7 +38,9 @@ const useLogin = () => {
         const { token, id } = response.data.data;
         localStorageSet(ACCESS_TOKEN, token);
         const userDetail = await fetchUserDetail(id);
-        localStorageSet<UserType>(USER, userDetail.data);
+        // TODO: remove fetch user roles after roles are inserted to user detail
+        const userRoles = await fetchUserRoles(id);
+        localStorageSet<UserType>(USER, { ...userDetail.data, roles: userRoles.data });
         navigate(HOME_PATH);
       })
       .catch((e: any) => {

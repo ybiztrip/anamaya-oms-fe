@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 
+import { PERMISSIONS } from '@/constants/permission';
 import {
   APPROVAL_DETAIL_PATH,
   APPROVAL_PATH,
@@ -25,6 +26,7 @@ import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
 import ProfileView from '@/modules/Profile/ProfileView';
 
+import PermittedRoute from './PermittedRoute';
 import ProtectedRoute from './ProtectedRoute';
 
 function App() {
@@ -107,7 +109,9 @@ function App() {
         path={CONFIGURATION_EMPLOYEES_PATH}
         element={
           <ProtectedRoute>
-            <EmployeeView />
+            <PermittedRoute permission={PERMISSIONS.CONFIG_EMPLOYEE}>
+              <EmployeeView />
+            </PermittedRoute>
           </ProtectedRoute>
         }
       />

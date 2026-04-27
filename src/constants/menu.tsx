@@ -8,10 +8,13 @@ import type { ComponentType } from 'react';
 
 import { APPROVAL_PATH, CONFIGURATION_EMPLOYEES_PATH, CREATE_PATH } from '@/constants/routePath';
 
+import { PERMISSIONS } from './permission';
+
 export type MenuChild = {
   name: string;
   title: string;
   path: string;
+  permissions?: string[];
   Icon?: ComponentType;
 };
 
@@ -20,6 +23,7 @@ export type Menu = {
   title: string;
   path: string;
   childs: MenuChild[];
+  permissions?: string[];
   Icon?: ComponentType;
 };
 
@@ -42,11 +46,13 @@ export const menus: Menu[] = [
     name: 'configuration',
     title: 'Configuration',
     path: '',
+    permissions: [PERMISSIONS.CONFIG_EMPLOYEE],
     childs: [
       {
         name: 'employees',
         title: 'Employees',
         path: CONFIGURATION_EMPLOYEES_PATH,
+        permissions: [PERMISSIONS.CONFIG_EMPLOYEE],
         Icon: UserOutlined,
       },
     ],

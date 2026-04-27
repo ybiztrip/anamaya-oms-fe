@@ -4,6 +4,10 @@ export const CLIENT_SOURCE = 'BIZTRIP';
 
 export const DEFAULT_PAGE_SIZE = 10;
 
+export const ROLE_COMPANY_ADMIN = 'COMPANY_ADMIN';
+export const ROLE_USER = 'USER';
+export const ROLE_APPROVER = 'APPROVER';
+
 export const ADULT_AGE = 12;
 export const CHILD_AGE = 2;
 export const INFANT_AGE = 0;
