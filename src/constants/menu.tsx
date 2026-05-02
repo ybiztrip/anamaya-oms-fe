@@ -1,12 +1,18 @@
 import {
   CheckSquareOutlined,
+  ControlOutlined,
   PlusOutlined,
   SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import type { ComponentType } from 'react';
 
-import { APPROVAL_PATH, CONFIGURATION_EMPLOYEES_PATH, CREATE_PATH } from '@/constants/routePath';
+import {
+  APPROVAL_PATH,
+  CONFIGURATION_COMPANY_PATH,
+  CONFIGURATION_EMPLOYEES_PATH,
+  CREATE_PATH,
+} from '@/constants/routePath';
 
 import { PERMISSIONS } from './permission';
 
@@ -46,7 +52,7 @@ export const menus: Menu[] = [
     name: 'configuration',
     title: 'Configuration',
     path: '',
-    permissions: [PERMISSIONS.CONFIG_EMPLOYEE],
+    permissions: [PERMISSIONS.CONFIG_EMPLOYEE, PERMISSIONS.CONFIG_COMPANY],
     childs: [
       {
         name: 'employees',
@@ -54,6 +60,13 @@ export const menus: Menu[] = [
         path: CONFIGURATION_EMPLOYEES_PATH,
         permissions: [PERMISSIONS.CONFIG_EMPLOYEE],
         Icon: UserOutlined,
+      },
+      {
+        name: 'company',
+        title: 'Company',
+        path: CONFIGURATION_COMPANY_PATH,
+        permissions: [PERMISSIONS.CONFIG_COMPANY],
+        Icon: ControlOutlined,
       },
     ],
     Icon: SettingOutlined,

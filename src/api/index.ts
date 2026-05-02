@@ -10,6 +10,7 @@ import {
   BOOKINGS_MY_APPROVAL_API,
   BOOKINGS_NEED_APPROVAL_API,
   BOOKINGS_REJECT_API,
+  COMPANY_CONFIGS_API,
   DOCUMENT_UPLOAD_API,
   DOCUMENT_URL_API,
   FLIGHT_AIRLINES_API,
@@ -45,6 +46,8 @@ import type {
   BookingNeedApprovalPayloadType,
   BookingRejectPayloadType,
   BookingType,
+  CompanyConfigsUpdatePayloadType,
+  CompanyConfigType,
   FlightBookingAddOnsPayloadType,
   FlightBookingAddOnsResponseType,
   FlightSearchOneWayPayloadType,
@@ -115,6 +118,18 @@ export async function updateUserPassword(
   params: UserUpdatePasswordPayloadType,
 ): Promise<ResponseType<any>> {
   const res = await axios.put(USERS_UPDATE_PASSWORD_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function fetchCompanyConfigs(): Promise<ResponseType<CompanyConfigType[]>> {
+  const res = await axios.get(COMPANY_CONFIGS_API);
+  return res.data;
+}
+
+export async function updateCompanyConfigs(
+  params: CompanyConfigsUpdatePayloadType,
+): Promise<ResponseType<any>> {
+  const res = await axios.put(COMPANY_CONFIGS_API, params);
   return res.data;
 }
 

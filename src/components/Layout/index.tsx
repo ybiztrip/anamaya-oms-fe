@@ -99,7 +99,8 @@ const AppLayout = ({
                 const { name, title, path, childs, Icon, permissions } = menu;
                 if (permissions && !isPermittedAny(permissions)) return null;
                 const children = childs.map((child) => {
-                  const { name, title, path, Icon: ChildIcon } = child;
+                  const { name, title, path, Icon: ChildIcon, permissions: childPermissions } = child;
+                  if (childPermissions && !isPermittedAny(childPermissions)) return null;
                   return {
                     key: name,
                     ...(ChildIcon ? { icon: <ChildIcon /> } : {}),

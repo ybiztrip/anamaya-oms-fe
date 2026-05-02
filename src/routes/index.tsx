@@ -4,6 +4,7 @@ import { PERMISSIONS } from '@/constants/permission';
 import {
   APPROVAL_DETAIL_PATH,
   APPROVAL_PATH,
+  CONFIGURATION_COMPANY_PATH,
   CONFIGURATION_EMPLOYEES_PATH,
   CREATE_BOOKING_CONFIRM_PATH,
   CREATE_FLIGHT_SEARCH_PATH,
@@ -16,6 +17,7 @@ import {
 } from '@/constants/routePath';
 import ApprovalView from '@/modules/Approval/ApprovalView';
 import BookingDetailView from '@/modules/Approval/BookingDetailView';
+import CompanyView from '@/modules/Company/CompanyView';
 import BookingConfirmView from '@/modules/Create/BookingConfirmView';
 import CreateView from '@/modules/Create/CreateView';
 import FlightSearchView from '@/modules/Create/FlightSearchView';
@@ -111,6 +113,16 @@ function App() {
           <ProtectedRoute>
             <PermittedRoute permission={PERMISSIONS.CONFIG_EMPLOYEE}>
               <EmployeeView />
+            </PermittedRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={CONFIGURATION_COMPANY_PATH}
+        element={
+          <ProtectedRoute>
+            <PermittedRoute permission={PERMISSIONS.CONFIG_COMPANY}>
+              <CompanyView />
             </PermittedRoute>
           </ProtectedRoute>
         }

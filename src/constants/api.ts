@@ -12,6 +12,8 @@ export const USERS_DETAIL_API = USERS_API + '/:id';
 export const USERS_ROLES_API = USERS_DETAIL_API + '/roles';
 export const USERS_UPDATE_PASSWORD_API = USERS_DETAIL_API + '/update-password';
 
+export const COMPANY_CONFIGS_API = API_V1 + '/company-configs';
+
 export const FLIGHT_API = API_V1 + '/flight';
 export const FLIGHT_AIRLINES_API = FLIGHT_API + '/airlines';
 export const FLIGHT_AIRPORTS_API = FLIGHT_API + '/airports';
