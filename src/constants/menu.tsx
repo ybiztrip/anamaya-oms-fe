@@ -3,6 +3,7 @@ import {
   ControlOutlined,
   PlusOutlined,
   SettingOutlined,
+  SolutionOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import type { ComponentType } from 'react';
@@ -11,6 +12,7 @@ import {
   APPROVAL_PATH,
   CONFIGURATION_COMPANY_PATH,
   CONFIGURATION_EMPLOYEES_PATH,
+  CONFIGURATION_TRAVEL_POLICIES_PATH,
   CREATE_PATH,
 } from '@/constants/routePath';
 
@@ -60,6 +62,13 @@ export const menus: Menu[] = [
         path: CONFIGURATION_EMPLOYEES_PATH,
         permissions: [PERMISSIONS.CONFIG_EMPLOYEE],
         Icon: UserOutlined,
+      },
+      {
+        name: 'travel-policies',
+        title: 'Travel Policies',
+        path: CONFIGURATION_TRAVEL_POLICIES_PATH,
+        permissions: [PERMISSIONS.CONFIG_TRAVEL_POLICY],
+        Icon: SolutionOutlined,
       },
       {
         name: 'company',

@@ -29,6 +29,7 @@ function EmployeeList({
       rowKey="id"
       loading={loading}
       dataSource={data}
+      scroll={{ x: 'max-content' }}
       pagination={{
         current: page,
         pageSize,

@@ -10,4 +10,5 @@ export const CREATE_HOTEL_ROOM_PATH = '/create/hotel/room';
 export const CREATE_BOOKING_CONFIRM_PATH = '/create/booking/confirm';
 export const CONFIGURATION_PATH = '/configuration';
 export const CONFIGURATION_EMPLOYEES_PATH = '/configuration/employees';
+export const CONFIGURATION_TRAVEL_POLICIES_PATH = '/configuration/travel-policies';
 export const CONFIGURATION_COMPANY_PATH = '/configuration/company';

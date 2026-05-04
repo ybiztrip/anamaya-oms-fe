@@ -23,6 +23,8 @@ import {
   HOTEL_ROOM_API,
   HOTEL_ROOM_RATE_API,
   ROLES_API,
+  TRAVEL_POLICY_API,
+  TRAVEL_POLICY_BY_ID_API,
   USERS_API,
   USERS_DETAIL_API,
   USERS_ROLES_API,
@@ -65,6 +67,8 @@ import type {
   PaginationResponseType,
   ResponseType,
   RoleType,
+  TravelPolicyListPayloadType,
+  TravelPolicyType,
   UserListPayloadType,
   UserRolesUpsertPayloadType,
   UserRoleType,
@@ -118,6 +122,23 @@ export async function updateUserPassword(
   params: UserUpdatePasswordPayloadType,
 ): Promise<ResponseType<any>> {
   const res = await axios.put(USERS_UPDATE_PASSWORD_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function fetchTravelPolicies(
+  params: TravelPolicyListPayloadType,
+): Promise<PaginationResponseType<TravelPolicyType>> {
+  const res = await axios.get(TRAVEL_POLICY_API, { params });
+  return res.data;
+}
+
+export async function createTravelPolicy(params: TravelPolicyType): Promise<ResponseType<TravelPolicyType>> {
+  const res = await axios.post(TRAVEL_POLICY_API, params);
+  return res.data;
+}
+
+export async function updateTravelPolicy(id: string, params: TravelPolicyType): Promise<ResponseType<TravelPolicyType>> {
+  const res = await axios.put(TRAVEL_POLICY_BY_ID_API.replace(':id', id), params);
   return res.data;
 }
 

@@ -14,6 +14,9 @@ export const USERS_UPDATE_PASSWORD_API = USERS_DETAIL_API + '/update-password';
 
 export const COMPANY_CONFIGS_API = API_V1 + '/company-configs';
 
+export const TRAVEL_POLICY_API = API_V1 + '/travel-policies';
+export const TRAVEL_POLICY_BY_ID_API = TRAVEL_POLICY_API + '/:id';
+
 export const FLIGHT_API = API_V1 + '/flight';
 export const FLIGHT_AIRLINES_API = FLIGHT_API + '/airlines';
 export const FLIGHT_AIRPORTS_API = FLIGHT_API + '/airports';

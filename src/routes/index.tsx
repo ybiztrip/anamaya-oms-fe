@@ -6,6 +6,7 @@ import {
   APPROVAL_PATH,
   CONFIGURATION_COMPANY_PATH,
   CONFIGURATION_EMPLOYEES_PATH,
+  CONFIGURATION_TRAVEL_POLICIES_PATH,
   CREATE_BOOKING_CONFIRM_PATH,
   CREATE_FLIGHT_SEARCH_PATH,
   CREATE_HOTEL_ROOM_PATH,
@@ -27,6 +28,7 @@ import EmployeeView from '@/modules/Employee/EmployeeView';
 import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
 import ProfileView from '@/modules/Profile/ProfileView';
+import TravelPolicyView from '@/modules/TravelPolicy/TravelPolicyView';
 
 import PermittedRoute from './PermittedRoute';
 import ProtectedRoute from './ProtectedRoute';
@@ -113,6 +115,16 @@ function App() {
           <ProtectedRoute>
             <PermittedRoute permission={PERMISSIONS.CONFIG_EMPLOYEE}>
               <EmployeeView />
+            </PermittedRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={CONFIGURATION_TRAVEL_POLICIES_PATH}
+        element={
+          <ProtectedRoute>
+            <PermittedRoute permission={PERMISSIONS.CONFIG_TRAVEL_POLICY}>
+              <TravelPolicyView />
             </PermittedRoute>
           </ProtectedRoute>
         }

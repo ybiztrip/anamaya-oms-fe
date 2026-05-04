@@ -18,6 +18,7 @@ import { useEffect } from 'react';
 import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
 import Upload from '@/components/Upload';
+import { FLIGHT_CLASS_OPTIONS } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import type { BookingParamsType, TripType } from '@/types';
 import dayjs from '@/utils/dayjs';
@@ -279,14 +280,7 @@ function FlightForm({
           rules={[{ required: true, message: 'Flight Class required' }]}
           style={{ width: '300px' }}
         >
-          <Select
-            options={[
-              { label: 'First Class', value: 'FIRST_CLASS' },
-              { label: 'Premium Economy', value: 'PREMIUM_ECONOMY' },
-              { label: 'Economy', value: 'ECONOMY' },
-              { label: 'Business', value: 'BUSINESS' },
-            ]}
-          />
+          <Select options={FLIGHT_CLASS_OPTIONS} />
         </Form.Item>
 
         <Form.Item

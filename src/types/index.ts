@@ -2,6 +2,7 @@ export * from './booking';
 export * from './company';
 export * from './flight';
 export * from './hotel';
+export * from './travelPolicy';
 export * from './user';
 
 export type ResponseType<T> = {
