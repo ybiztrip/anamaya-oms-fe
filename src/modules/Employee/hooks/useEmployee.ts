@@ -38,6 +38,7 @@ export default function useEmployee() {
       companyId: existing?.companyId ?? currentUser?.companyId ?? 0,
       status: values.status,
       email: values.email ?? existing?.email ?? '',
+      travelPolicyId: values.travelPolicy ?? existing?.travelPolicyId ?? 0,
       firstName: values.firstName ?? existing?.firstName ?? '',
       lastName: values.lastName ?? existing?.lastName ?? '',
       title: values.title ?? existing?.title ?? '',

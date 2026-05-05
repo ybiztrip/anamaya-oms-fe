@@ -43,6 +43,7 @@ export default function useProfile() {
       companyId: Number(currentUser?.companyId),
       status: currentUser?.status ?? 1,
       email: values.email ?? currentUser?.email ?? '',
+      travelPolicyId: currentUser?.travelPolicyId ?? 0,
       firstName: values.firstName ?? currentUser?.firstName ?? '',
       lastName: values.lastName ?? currentUser?.lastName ?? '',
       title: values.title ?? currentUser?.title ?? '',

@@ -1,5 +1,4 @@
-import { EditOutlined } from '@ant-design/icons';
-import { Button, Table, Tag, Typography } from 'antd';
+import { Table, Tag, Typography } from 'antd';
 
 import type { UserType } from '@/types';
 
@@ -37,6 +36,10 @@ function EmployeeList({
         showSizeChanger: true,
         onChange: onPageChange,
       }}
+      onRow={(record) => ({
+        onClick: () => onEdit(record),
+      })}
+      rowClassName="cursor-pointer"
       columns={[
         {
           title: 'Name',
@@ -70,19 +73,6 @@ function EmployeeList({
           key: 'status',
           render: (value: number) => (
             <Tag color={value === 1 ? 'green' : 'red'}>{value === 1 ? 'Active' : 'Inactive'}</Tag>
-          ),
-        },
-        {
-          title: 'Actions',
-          key: 'actions',
-          align: 'right',
-          render: (_, record: UserType) => (
-            <Button
-              shape="circle"
-              icon={<EditOutlined />}
-              loading={loading}
-              onClick={() => onEdit(record)}
-            />
           ),
         },
       ]}

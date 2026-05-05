@@ -1,5 +1,4 @@
-import { EditOutlined } from '@ant-design/icons';
-import { Button, Table, Tag } from 'antd';
+import { Table, Tag } from 'antd';
 import dayjs from 'dayjs';
 
 import { FLIGHT_CLASS_LABELS } from '@/constants/common';
@@ -38,6 +37,10 @@ function TravelPolicyList({
         showSizeChanger: true,
         onChange: onPageChange,
       }}
+      onRow={(record) => ({
+        onClick: () => onEdit(record),
+      })}
+      rowClassName="cursor-pointer"
       columns={[
         {
           title: 'Travel Policy',
@@ -102,19 +105,6 @@ function TravelPolicyList({
           dataIndex: 'updatedAt',
           key: 'updatedAt',
           render: (value: string) => <span>{dayjs(value).format('DD-MMM-YYYY')}</span>,
-        },
-        {
-          title: 'Actions',
-          key: 'actions',
-          align: 'right',
-          render: (_, record: TravelPolicyType) => (
-            <Button
-              shape="circle"
-              icon={<EditOutlined />}
-              loading={loading}
-              onClick={() => onEdit(record)}
-            />
-          ),
         },
       ]}
     />

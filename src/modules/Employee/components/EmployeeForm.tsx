@@ -3,6 +3,7 @@ import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
 import { useMemo } from 'react';
 
 import SelectRole from '@/components/Select/SelectRole';
+import SelectTravelPolicy from '@/components/Select/SelectTravelPolicy';
 
 export type EmployeeFieldKey =
   | 'id'
@@ -10,6 +11,7 @@ export type EmployeeFieldKey =
   | 'email'
   | 'password'
   | 'roles'
+  | 'travelPolicy'
   | 'title'
   | 'firstName'
   | 'lastName'
@@ -25,6 +27,7 @@ export const CreateEmployeeFields: EmployeeFieldKey[] = [
   'email',
   'password',
   'roles',
+  'travelPolicy',
   'title',
   'firstName',
   'lastName',
@@ -41,6 +44,7 @@ export const UpdateEmployeeFields: EmployeeFieldKey[] = [
   'status',
   'email',
   'roles',
+  'travelPolicy',
   'title',
   'firstName',
   'lastName',
@@ -163,6 +167,19 @@ export default function EmployeeForm({
                   placeholder="Password"
                   disabled={disabledFields.includes('password')}
                 />
+              </Form.Item>
+            </Col>
+          )}
+        </Row>
+        <Row gutter={[16, 8]}>
+          {fields.includes('travelPolicy') && (
+            <Col xs={24} md={12}>
+              <Form.Item
+                label="Travel Policy"
+                name={[...namePrefix, 'travelPolicy']}
+                rules={[{ required: true, message: 'Travel Policy required' }]}
+              >
+                <SelectTravelPolicy placeholder="Select Travel Policy" disabled={disabledFields.includes('travelPolicy')} />
               </Form.Item>
             </Col>
           )}

@@ -15,6 +15,7 @@ export type UserType = {
   id: number;
   companyId: number;
   email: string;
+  travelPolicyId: number;
   firstName: string;
   lastName: string;
   gender: string;

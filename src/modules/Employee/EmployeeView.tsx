@@ -23,6 +23,7 @@ const buildPaxFromUser = (user?: UserType) => {
     id: user?.id ?? 0,
     status: user?.status ?? 1,
     roles: user?.roles?.map((r) => r.roleId) ?? [],
+    travelPolicy: user?.travelPolicyId ?? null,
     email: user?.email ?? '',
     title: user?.title ?? 'MR',
     firstName: user?.firstName ?? '',
