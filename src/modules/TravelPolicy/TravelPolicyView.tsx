@@ -1,6 +1,7 @@
-import { Button, Form, message, Modal, Row } from 'antd';
+import { Button, Col, Form, message, Modal, Row, Typography } from 'antd';
 import { useState } from 'react';
 
+import ActivityLogs from '@/components/ActivityLogs';
 import Layout from '@/components/Layout';
 import SectionCard from '@/components/SectionCard';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
@@ -127,11 +128,21 @@ export default function TravelPolicyView() {
           onOk={handleSubmit}
           okText={modalMode === 'create' ? 'Create' : 'Update'}
           confirmLoading={createMutation.isPending || updateMutation.isPending}
-          width={900}
+          width={1200}
         >
-          <Form form={form} layout="vertical" className="mt-4">
-            <TravelPolicyForm mode={modalMode} />
-          </Form>
+          <Row gutter={[32, 16]}>
+            <Col span={16}>
+              <Form form={form} layout="vertical" className="mt-4">
+                <TravelPolicyForm mode={modalMode} />
+              </Form>
+            </Col>
+            <Col span={8} className="border-l border-gray-200">
+              <div className="mb-4 mt-4">
+                <Typography.Title level={5}>Activity Logs</Typography.Title>
+              </div>
+              <ActivityLogs type="TRAVEL_POLICY" referenceId={selectedTravelPolicy?.id ?? 0} />
+            </Col>
+          </Row>
         </Modal>
       </SectionCard>
     </Layout>

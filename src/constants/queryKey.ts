@@ -1,6 +1,7 @@
 export const USERS = 'users';
 export const COMPANY_CONFIGS = 'company-configs';
 export const TRAVEL_POLICIES = 'travel-policies';
+export const ACTIVITY_LOGS = 'activity-logs';
 export const ROLES = 'roles';
 export const BOOKINGS_MY_REQUEST = 'bookings-my-request';
 export const BOOKINGS_MY_APPROVAL = 'bookings-my-approval';

@@ -1,6 +1,7 @@
 import type { AxiosRequestConfig } from 'axios';
 
 import {
+  ACTIVITY_LOGS_API,
   BOOKINGS_API,
   BOOKINGS_APPROVE_API,
   BOOKINGS_ATTACHMENT_API,
@@ -31,6 +32,8 @@ import {
   USERS_UPDATE_PASSWORD_API,
 } from '@/constants/api';
 import type {
+  ActivityLogDetailType,
+  ActivityLogListPayloadType,
   AirlineType,
   AirportType,
   BookingApprovePayloadType,
@@ -132,13 +135,25 @@ export async function fetchTravelPolicies(
   return res.data;
 }
 
-export async function createTravelPolicy(params: TravelPolicyType): Promise<ResponseType<TravelPolicyType>> {
+export async function createTravelPolicy(
+  params: TravelPolicyType,
+): Promise<ResponseType<TravelPolicyType>> {
   const res = await axios.post(TRAVEL_POLICY_API, params);
   return res.data;
 }
 
-export async function updateTravelPolicy(id: string, params: TravelPolicyType): Promise<ResponseType<TravelPolicyType>> {
+export async function updateTravelPolicy(
+  id: string,
+  params: TravelPolicyType,
+): Promise<ResponseType<TravelPolicyType>> {
   const res = await axios.put(TRAVEL_POLICY_BY_ID_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function fetchActivityLogs(
+  params: ActivityLogListPayloadType,
+): Promise<PaginationResponseType<ActivityLogDetailType>> {
+  const res = await axios.get(ACTIVITY_LOGS_API, { params });
   return res.data;
 }
 
