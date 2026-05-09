@@ -66,8 +66,6 @@ function BookingConfirmView() {
       navigate(CREATE_FLIGHT_SEARCH_PATH);
     } else if (bookingParams?.hotel && !bookingParams?.hotel?.selectedHotel) {
       navigate(CREATE_HOTEL_SEARCH_PATH);
-    } else {
-      navigate(CREATE_PATH);
     }
   }, [bookingParams, navigate]);
 

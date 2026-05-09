@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { createTravelPolicy, fetchTravelPolicies, updateTravelPolicy } from '@/api';
-import { DEFAULT_PAGE_SIZE } from '@/constants/common';
+import { AIRLINE_CODE_GARUDA, DEFAULT_PAGE_SIZE } from '@/constants/common';
 import { TRAVEL_POLICIES } from '@/constants/queryKey';
 import type { TravelPolicyListPayloadType, TravelPolicyType } from '@/types';
 
@@ -27,7 +27,7 @@ export default function useTravelPolicy() {
       name: values.name,
       flights: [
         {
-          name: 'Garuda',
+          name: AIRLINE_CODE_GARUDA,
           isActive: values.includingGarudaAirline,
         },
       ],

@@ -13,15 +13,17 @@ import {
   type UploadProps,
 } from 'antd';
 import dayjs from 'dayjs';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import SectionCard from '@/components/SectionCard';
 import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
 import Upload from '@/components/Upload';
 import { ADULT_AGE } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
+import useTravelPolicy from '@/hooks/useTravelPolicy';
 import type { BookingParamsType, PassengerGuestType } from '@/types';
 import { sessionStorageGet } from '@/utils/sessionStorage';
+import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
 
 import { bookingParamsToHotelForm } from '../utils/bookingFormMapper';
 
@@ -44,6 +46,22 @@ function HotelForm({
   const checkInDate = Form.useWatch('checkInDate', form);
   const checkOutDate = Form.useWatch('checkOutDate', form);
   const nights = checkInDate && checkOutDate ? checkOutDate.diff(checkInDate, 'day') : 0;
+  const watchedPaxList = Form.useWatch('paxList', form) as PassengerGuestType[] | undefined;
+  const paxList = useMemo(() => watchedPaxList ?? [], [watchedPaxList]);
+  const { travelPoliciesById } = useTravelPolicy();
+
+  const policyLimits = useMemo(
+    () => getTravelPolicyLimits(paxList, travelPoliciesById),
+    [paxList, travelPoliciesById],
+  );
+
+  const hotelStarOptions = useMemo(() => {
+    if (!policyLimits) return [1, 2, 3, 4, 5];
+
+    return [1, 2, 3, 4, 5].filter(
+      (n) => n >= policyLimits.hotelMinClass && n <= policyLimits.hotelMaxClass,
+    );
+  }, [policyLimits]);
 
   useEffect(() => {
     const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
@@ -52,6 +70,20 @@ function HotelForm({
       form.setFieldsValue(hotelForm);
     }
   }, [form]);
+
+  useEffect(() => {
+    if (!hotelStarOptions.length) return;
+    const currentStars = form.getFieldValue('hotelStars') ?? [];
+    const filteredStars = currentStars.filter((value: string | number) =>
+      hotelStarOptions.includes(Number(value)),
+    );
+    if (filteredStars.length !== currentStars.length) {
+      form.setFieldValue(
+        'hotelStars',
+        filteredStars.length ? filteredStars.map(String) : hotelStarOptions.map(String),
+      );
+    }
+  }, [form, hotelStarOptions]);
 
   return (
     <>
@@ -151,7 +183,7 @@ function HotelForm({
         >
           <Checkbox.Group>
             <Space size={16} wrap>
-              {[1, 2, 3, 4, 5].map((n) => (
+              {hotelStarOptions.map((n) => (
                 <Checkbox
                   key={n}
                   value={String(n)}

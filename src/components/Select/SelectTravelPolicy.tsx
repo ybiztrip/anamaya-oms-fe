@@ -1,26 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
 import { Select, type SelectProps } from 'antd';
 import { useMemo } from 'react';
 
-import { fetchTravelPolicies } from '@/api';
-import { DEFAULT_PAGE_SIZE } from '@/constants/common';
-import { TRAVEL_POLICIES } from '@/constants/queryKey';
+import useTravelPolicy from '@/hooks/useTravelPolicy';
 import type { TravelPolicyType } from '@/types';
 
 export type SelectTravelPolicyProps = Omit<SelectProps, 'options' | 'loading'>;
 
 function SelectTravelPolicy({ ...props }: SelectTravelPolicyProps) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: [TRAVEL_POLICIES],
-    queryFn: () =>
-      fetchTravelPolicies({
-        size: DEFAULT_PAGE_SIZE,
-        page: 0,
-      }),
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-  });
+  const { data, isLoading, error } = useTravelPolicy();
 
   const options = useMemo(() => {
     const list = data?.data ?? [];

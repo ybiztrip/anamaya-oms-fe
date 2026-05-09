@@ -65,40 +65,40 @@ export const mockFetchFlightSearchOneWay: ResponseType<FlightSearchOneWayRespons
         numOfTransits: '0',
         tripDuration: '02h10m',
         journeys: [
-          {
-            numOfTransits: '0',
-            journeyDuration: '02h10m',
-            daysOffset: '0',
-            refundableStatus: 'REFUNDABLE',
-            departureDetail: {
-              airportCode: 'CGK',
-              departureDate: '20-02-2026',
-              departureTime: '07:30',
-              departureTerminal: '3',
-            },
-            arrivalDetail: {
-              airportCode: 'DPS',
-              arrivalDate: '20-02-2026',
-              arrivalTime: '09:40',
-              arrivalTerminal: 'D',
-            },
-            fareInfo: {
-              currency: 'IDR',
-              total: 1850000,
-              cabinClass: 'ECONOMY',
-            },
-            segments: [
-              {
-                marketingAirline: 'GA',
-                flightNumber: 'GA412',
-                aircraft: 'B738',
-                from: 'CGK',
-                to: 'DPS',
-                dep: '2026-02-10T07:30:00+07:00',
-                arr: '2026-02-10T09:40:00+08:00',
-              },
-            ],
-          },
+          // {
+          //   numOfTransits: '0',
+          //   journeyDuration: '02h10m',
+          //   daysOffset: '0',
+          //   refundableStatus: 'REFUNDABLE',
+          //   departureDetail: {
+          //     airportCode: 'CGK',
+          //     departureDate: '20-02-2026',
+          //     departureTime: '07:30',
+          //     departureTerminal: '3',
+          //   },
+          //   arrivalDetail: {
+          //     airportCode: 'DPS',
+          //     arrivalDate: '20-02-2026',
+          //     arrivalTime: '09:40',
+          //     arrivalTerminal: 'D',
+          //   },
+          //   fareInfo: {
+          //     currency: 'IDR',
+          //     total: 1850000,
+          //     cabinClass: 'ECONOMY',
+          //   },
+          //   segments: [
+          //     {
+          //       marketingAirline: 'GA',
+          //       flightNumber: 'GA412',
+          //       aircraft: 'B738',
+          //       from: 'CGK',
+          //       to: 'DPS',
+          //       dep: '2026-02-10T07:30:00+07:00',
+          //       arr: '2026-02-10T09:40:00+08:00',
+          //     },
+          //   ],
+          // },
         ],
       },
       {
@@ -108,29 +108,29 @@ export const mockFetchFlightSearchOneWay: ResponseType<FlightSearchOneWayRespons
         numOfTransits: '1',
         tripDuration: '04h30m',
         journeys: [
-          {
-            numOfTransits: '1',
-            journeyDuration: '04h30m',
-            daysOffset: '0',
-            refundableStatus: 'NON_REFUNDABLE',
-            departureDetail: {
-              airportCode: 'CGK',
-              departureDate: '20-02-2026',
-              departureTime: '10:00',
-              departureTerminal: '2',
-            },
-            arrivalDetail: {
-              airportCode: 'DPS',
-              arrivalDate: '20-02-2026',
-              arrivalTime: '14:30',
-              arrivalTerminal: 'I',
-            },
-            fareInfo: { currency: 'IDR', total: 1450000, cabinClass: 'ECONOMY' },
-            segments: [
-              { from: 'CGK', to: 'SUB', flightNumber: 'ID6578' },
-              { from: 'SUB', to: 'DPS', flightNumber: 'ID6891' },
-            ],
-          },
+          // {
+            // numOfTransits: '1',
+            // journeyDuration: '04h30m',
+            // daysOffset: '0',
+            // refundableStatus: 'NON_REFUNDABLE',
+            // departureDetail: {
+            //   airportCode: 'CGK',
+            //   departureDate: '20-02-2026',
+            //   departureTime: '10:00',
+            //   departureTerminal: '2',
+            // },
+            // arrivalDetail: {
+            //   airportCode: 'DPS',
+            //   arrivalDate: '20-02-2026',
+            //   arrivalTime: '14:30',
+            //   arrivalTerminal: 'I',
+            // },
+            // fareInfo: { currency: 'IDR', total: 1450000, cabinClass: 'ECONOMY' },
+            // segments: [
+            //   { from: 'CGK', to: 'SUB', flightNumber: 'ID6578' },
+            //   { from: 'SUB', to: 'DPS', flightNumber: 'ID6891' },
+            // ],
+          // },
         ],
       },
     ],

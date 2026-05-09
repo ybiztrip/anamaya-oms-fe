@@ -13,16 +13,18 @@ import {
   type UploadFile,
   type UploadProps,
 } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
 import Upload from '@/components/Upload';
-import { FLIGHT_CLASS_OPTIONS } from '@/constants/common';
+import { FLIGHT_CLASS_OPTIONS, FLIGHT_CLASS_RANK } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
+import useTravelPolicy from '@/hooks/useTravelPolicy';
 import type { BookingParamsType, TripType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { sessionStorageGet } from '@/utils/sessionStorage';
+import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
 
 import { bookingParamsToFlightForm } from '../utils/bookingFormMapper';
 
@@ -44,12 +46,35 @@ function FlightForm({
 }) {
   const tripType = Form.useWatch('tripType', form) as TripType | undefined;
   const depart = Form.useWatch('departureDate', form);
+  const watchedPaxList = Form.useWatch('paxList', form);
+  const paxList = useMemo(() => watchedPaxList ?? [], [watchedPaxList]);
+  const { travelPoliciesById } = useTravelPolicy();
 
   const onSwap = () => {
     const origin = form.getFieldValue('origin');
     const destination = form.getFieldValue('destination');
     form.setFieldsValue({ origin: destination, destination: origin });
   };
+
+  const policyLimits = useMemo(
+    () => getTravelPolicyLimits(paxList, travelPoliciesById),
+    [paxList, travelPoliciesById],
+  );
+
+  const flightClassOptions = useMemo(() => {
+    if (!policyLimits) return FLIGHT_CLASS_OPTIONS;
+
+    return FLIGHT_CLASS_OPTIONS.filter((option) => {
+      const rank = FLIGHT_CLASS_RANK[option.value];
+      if (policyLimits.flightMinClass && rank < FLIGHT_CLASS_RANK[policyLimits.flightMinClass]) {
+        return false;
+      }
+      if (policyLimits.flightMaxClass && rank > FLIGHT_CLASS_RANK[policyLimits.flightMaxClass]) {
+        return false;
+      }
+      return true;
+    });
+  }, [policyLimits]);
 
   useEffect(() => {
     const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
@@ -58,6 +83,14 @@ function FlightForm({
       form.setFieldsValue(flightForm);
     }
   }, [form]);
+
+  useEffect(() => {
+    if (!flightClassOptions.length) return;
+    const currentClass = form.getFieldValue('flightClass');
+    if (!flightClassOptions.some((option) => option.value === currentClass)) {
+      form.setFieldValue('flightClass', flightClassOptions[0].value);
+    }
+  }, [flightClassOptions, form]);
 
   return (
     <>
@@ -280,7 +313,7 @@ function FlightForm({
           rules={[{ required: true, message: 'Flight Class required' }]}
           style={{ width: '300px' }}
         >
-          <Select options={FLIGHT_CLASS_OPTIONS} />
+          <Select options={flightClassOptions} />
         </Form.Item>
 
         <Form.Item

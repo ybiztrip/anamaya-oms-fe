@@ -6,6 +6,7 @@ import type { HotelPropertyType, HotelRoomRateType } from './hotel';
 export type PassengerGuestType = {
   id: string;
   companyId: number;
+  travelPolicyId?: number;
   email: string;
   title: string;
   firstName: string;

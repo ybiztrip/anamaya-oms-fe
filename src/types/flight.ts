@@ -35,6 +35,39 @@ export type FlightSearchOneWayPayloadType = {
   };
 };
 
+export type FareType = {
+  baseFareWithCurrency: {
+    amount: string;
+    currency: string;
+  };
+  vatWithCurrency: {
+    amount: string;
+    currency: string;
+  };
+  pscWithCurrency: {
+    amount: string;
+    currency: string;
+  };
+  fuelSurchargeWithCurrency: {
+    amount: string;
+    currency: string;
+  };
+  adminFeeWithCurrency: {
+    amount: string;
+    currency: string;
+  };
+  additionalFeeWithCurrency: {
+    amount: string;
+    currency: string;
+  };
+  totalFareWithCurrency: {
+    amount: string;
+    currency: string;
+  };
+};
+
+export type AddOnBaggageType = {};
+
 export type FlightSearchOneWayType = {
   flightId: string;
   departureAirport: string;
@@ -57,8 +90,61 @@ export type FlightSearchOneWayType = {
       arrivalTime: string;
       arrivalTerminal: string;
     };
-    fareInfo: any;
-    segments: any[];
+    fareInfo: {
+      partnerFare: {
+        adultFare: FareType;
+        childFare: any;
+        infantFare: any;
+      };
+      airlineFare: {
+        adultFare: FareType;
+        childFare: any;
+        infantFare: any;
+      };
+      netToAgent: {
+        adultFare: {
+          amount: string;
+          currency: string;
+        };
+        childFare: any;
+        infantFare: any;
+      };
+    };
+    segments: {
+      flightCode: string;
+      marketingAirline: string;
+      brandAirline: string;
+      operatingAirline: string;
+      subClass: string;
+      seatClass: string;
+      flightDurationInMinutes: string;
+      transitDurationInMinutes: string | null;
+      departureDetail: {
+        airportCode: string;
+        departureDate: string;
+        departureTime: string;
+        departureTerminal: string;
+      };
+      arrivalDetail: {
+        airportCode: string;
+        arrivalDate: string;
+        arrivalTime: string;
+        arrivalTerminal: string;
+      };
+      stopInfo: any;
+      addOns: {
+        baggageOptions: AddOnBaggageType[];
+        mealOptions: any[];
+        fareBasisCode: string;
+      };
+      fareBasisCode: any;
+      visaRequired: boolean;
+      mayNeedReCheckIn: boolean;
+      sourceAirport: string;
+      destinationAirport: string;
+      departureDate: string;
+      arrivalDate: string;
+    }[];
   }[];
   tripDuration: string;
 };
@@ -76,20 +162,7 @@ export type FlightBookingAddOnsPayloadType = {
 export type FlightBookingAddOnType = {
   segmentsWithAvailableAddOns: [];
   availableAddOnsOptions: {
-    baggageOptions: {
-      id: string;
-      baggageType: string;
-      baggageQuantity: string;
-      baggageWeight: string;
-      priceWithCurrency: {
-        amount: string;
-        currency: string;
-      };
-      netToAgent: {
-        amount: string;
-        currency: string;
-      };
-    }[];
+    baggageOptions: AddOnBaggageType[];
     // TODO: meal options type
     mealOptions: {
       id: string;

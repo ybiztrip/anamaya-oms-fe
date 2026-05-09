@@ -3,8 +3,11 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
+import { AIRLINE_CODES_WITH_POLICY_LIMITS } from '@/constants/common';
+import useTravelPolicy from '@/hooks/useTravelPolicy';
 import type { BookingParamsType, FlightSearchOneWayType } from '@/types';
 import dayjs from '@/utils/dayjs';
+import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
 
 import useFlightSearch from '../hooks/useFlightSearch';
 import FlightInfo from './FlightInfo';
@@ -19,6 +22,8 @@ function FlightSearchForm({
   onSelectFlight: (flight: FlightSearchOneWayType, flightIndex: number) => void;
 }) {
   const [form] = Form.useForm();
+
+  const { travelPoliciesById } = useTravelPolicy();
 
   const { flightParams, handleSearchFlights, data, isLoading } = useFlightSearch({
     bookingParams,
@@ -41,6 +46,11 @@ function FlightSearchForm({
       autoSearchRef.current = true;
     }
   }, [flightParams, form]);
+
+  const policyLimits = useMemo(
+    () => getTravelPolicyLimits(bookingParams?.paxList, travelPoliciesById),
+    [bookingParams?.paxList, travelPoliciesById],
+  );
 
   const filteredResults = useMemo(() => {
     const results = data?.data?.oneWayFlightSearchResults ?? [];
@@ -73,11 +83,32 @@ function FlightSearchForm({
 
     return results.filter((flight: FlightSearchOneWayType) => {
       const journey = flight?.journeys?.[0];
+      const marketingAirline = journey?.segments?.[0]?.marketingAirline;
       const numTransits = flight?.numOfTransits ?? journey?.numOfTransits;
 
       if (isDirect && String(numTransits) !== '0') return false;
       if (isFreeRefund && journey?.refundableStatus !== 'REFUNDABLE') return false;
       if (isIncludeCheckedBaggage && !hasCheckedBaggage(journey?.fareInfo)) return false;
+
+      if (policyLimits) {
+        const total =
+          journey?.fareInfo?.partnerFare?.adultFare?.totalFareWithCurrency ??
+          journey?.fareInfo?.airlineFare?.adultFare?.totalFareWithCurrency;
+        const price = Number(total?.amount ?? 0);
+
+        if (Number.isFinite(policyLimits.flightMinPrice) && price < policyLimits.flightMinPrice) {
+          return false;
+        }
+        if (Number.isFinite(policyLimits.flightMaxPrice) && price > policyLimits.flightMaxPrice) {
+          return false;
+        }
+
+        if (AIRLINE_CODES_WITH_POLICY_LIMITS.includes(marketingAirline)) {
+          if (!policyLimits.flightIncludedAirlines.includes(marketingAirline)) {
+            return false;
+          }
+        }
+      }
 
       if (hasTimeFilter) {
         const minutes = parseMinutes(journey?.departureDetail?.departureTime);
@@ -105,6 +136,7 @@ function FlightSearchForm({
     isMorningFlight,
     isNoonFlight,
     isEveningFlight,
+    policyLimits,
   ]);
 
   return (

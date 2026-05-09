@@ -4,7 +4,7 @@ import { useState } from 'react';
 import ActivityLogs from '@/components/ActivityLogs';
 import Layout from '@/components/Layout';
 import SectionCard from '@/components/SectionCard';
-import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import { AIRLINE_CODE_GARUDA, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import type { TravelPolicyType } from '@/types';
 
 import TravelPolicyForm from './components/TravelPolicyForm';
@@ -18,7 +18,8 @@ const buildTravelPolicyFormValues = (travelPolicy?: TravelPolicyType) => {
     id: travelPolicy?.id ?? 0,
     status: travelPolicy?.status ?? 1,
     name: travelPolicy?.name ?? '',
-    includingGarudaAirline: travelPolicy?.flights?.some((f) => f.name === 'Garuda') ?? false,
+    includingGarudaAirline:
+      travelPolicy?.flights?.some((f) => f.name === AIRLINE_CODE_GARUDA && f.isActive) ?? false,
     flightMinimumPrice: travelPolicy?.flightMinimumPrice ?? 0,
     flightMaximumPrice: travelPolicy?.flightMaximumPrice ?? 0,
     flightMinimumClass: travelPolicy?.flightMinimumClass ?? '',

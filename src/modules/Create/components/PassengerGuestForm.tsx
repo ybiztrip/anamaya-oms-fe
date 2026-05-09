@@ -61,6 +61,7 @@ function PassengerGuestForm({
                               paxList: {
                                 [field.name]: {
                                   id: 0,
+                                  travelPolicyId: '',
                                   email: '',
                                   title: 'MR',
                                   firstName: '',
@@ -108,6 +109,7 @@ function PassengerGuestForm({
                                       paxList: {
                                         [field.name]: {
                                           id: u.id,
+                                          travelPolicyId: u.travelPolicyId,
                                           email: u.email,
                                           title: u.title,
                                           firstName: u.firstName,

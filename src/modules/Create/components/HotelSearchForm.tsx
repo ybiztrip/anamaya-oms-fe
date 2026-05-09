@@ -10,13 +10,15 @@ import {
   Spin,
   Typography,
 } from 'antd';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import SectionCard from '@/components/SectionCard';
 import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
 import { DEFAULT_PAGE_SIZE } from '@/constants/common';
+import useTravelPolicy from '@/hooks/useTravelPolicy';
 import type { BookingParamsType, HotelPropertyType } from '@/types';
 import dayjs from '@/utils/dayjs';
+import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
 
 import useHotelSearch from '../hooks/useHotelSearch';
 import HotelInfo from './HotelInfo';
@@ -44,6 +46,7 @@ function HotelSearchForm({
   const { hotelParams, handleSearchHotels, isLoading } = useHotelSearch({
     bookingParams,
   });
+  const { travelPoliciesById } = useTravelPolicy();
 
   const autoSearchRef = useRef(false);
   useEffect(() => {
@@ -54,6 +57,37 @@ function HotelSearchForm({
       autoSearchRef.current = true;
     }
   }, [hotelParams, form]);
+
+  const priceLimits = useMemo(() => {
+    const policyLimits = getTravelPolicyLimits(bookingParams?.paxList, travelPoliciesById);
+    if (!policyLimits) return null;
+    return {
+      minPrice: policyLimits.hotelMinPrice,
+      maxPrice: policyLimits.hotelMaxPrice,
+    };
+  }, [bookingParams?.paxList, travelPoliciesById]);
+
+  useEffect(() => {
+    if (!priceLimits) return;
+
+    const currentMin = form.getFieldValue('minPrice');
+    const currentMax = form.getFieldValue('maxPrice');
+    const nextMin =
+      typeof currentMin === 'number'
+        ? Math.max(currentMin, priceLimits.minPrice)
+        : priceLimits.minPrice;
+    const nextMax =
+      typeof currentMax === 'number'
+        ? Math.min(currentMax, priceLimits.maxPrice)
+        : priceLimits.maxPrice;
+
+    if (nextMin !== currentMin || nextMax !== currentMax) {
+      form.setFieldsValue({
+        minPrice: nextMin,
+        maxPrice: nextMax,
+      });
+    }
+  }, [form, priceLimits]);
 
   const runSearch = useCallback(
     async (values: any, nextPage: number, append: boolean) => {

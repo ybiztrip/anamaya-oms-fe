@@ -15,17 +15,19 @@ import {
   type UploadFile,
   type UploadProps,
 } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
 import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
 import Upload from '@/components/Upload';
-import { ADULT_AGE } from '@/constants/common';
+import { ADULT_AGE, FLIGHT_CLASS_OPTIONS, FLIGHT_CLASS_RANK } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
+import useTravelPolicy from '@/hooks/useTravelPolicy';
 import type { BookingParamsType, PassengerGuestType, TripType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { sessionStorageGet } from '@/utils/sessionStorage';
+import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
 
 import { bookingParamsToFlightHotelForm } from '../utils/bookingFormMapper';
 
@@ -47,6 +49,9 @@ function FlightHotelForm({
 }) {
   const tripType = Form.useWatch('tripType', form) as TripType | undefined;
   const depart = Form.useWatch('departureDate', form);
+  const watchedPaxList = Form.useWatch('paxList', form) as PassengerGuestType[] | undefined;
+  const paxList = useMemo(() => watchedPaxList ?? [], [watchedPaxList]);
+  const { travelPoliciesById } = useTravelPolicy();
 
   const onSwap = () => {
     const origin = form.getFieldValue('origin');
@@ -58,6 +63,34 @@ function FlightHotelForm({
   const checkOutDate = Form.useWatch('checkOutDate', form);
   const nights = checkInDate && checkOutDate ? checkOutDate.diff(checkInDate, 'day') : 0;
 
+  const policyLimits = useMemo(
+    () => getTravelPolicyLimits(paxList, travelPoliciesById),
+    [paxList, travelPoliciesById],
+  );
+
+  const flightClassOptions = useMemo(() => {
+    if (!policyLimits) return FLIGHT_CLASS_OPTIONS;
+
+    return FLIGHT_CLASS_OPTIONS.filter((option) => {
+      const rank = FLIGHT_CLASS_RANK[option.value];
+      if (policyLimits.flightMinClass && rank < FLIGHT_CLASS_RANK[policyLimits.flightMinClass]) {
+        return false;
+      }
+      if (policyLimits.flightMaxClass && rank > FLIGHT_CLASS_RANK[policyLimits.flightMaxClass]) {
+        return false;
+      }
+      return true;
+    });
+  }, [policyLimits]);
+
+  const hotelStarOptions = useMemo(() => {
+    if (!policyLimits) return [1, 2, 3, 4, 5];
+
+    return [1, 2, 3, 4, 5].filter(
+      (n) => n >= policyLimits.hotelMinClass && n <= policyLimits.hotelMaxClass,
+    );
+  }, [policyLimits]);
+
   useEffect(() => {
     const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
     if (bookingParams) {
@@ -65,6 +98,28 @@ function FlightHotelForm({
       form.setFieldsValue(flightHotelForm);
     }
   }, [form]);
+
+  useEffect(() => {
+    if (!flightClassOptions.length) return;
+    const currentClass = form.getFieldValue('flightClass');
+    if (!flightClassOptions.some((option) => option.value === currentClass)) {
+      form.setFieldValue('flightClass', flightClassOptions[0].value);
+    }
+  }, [flightClassOptions, form]);
+
+  useEffect(() => {
+    if (!hotelStarOptions.length) return;
+    const currentStars = form.getFieldValue('hotelStars') ?? [];
+    const filteredStars = currentStars.filter((value: string | number) =>
+      hotelStarOptions.includes(Number(value)),
+    );
+    if (filteredStars.length !== currentStars.length) {
+      form.setFieldValue(
+        'hotelStars',
+        filteredStars.length ? filteredStars.map(String) : hotelStarOptions.map(String),
+      );
+    }
+  }, [form, hotelStarOptions]);
 
   return (
     <>
@@ -252,14 +307,7 @@ function FlightHotelForm({
           rules={[{ required: true, message: 'Flight Class required' }]}
           style={{ width: '300px' }}
         >
-          <Select
-            options={[
-              { label: 'First Class', value: 'FIRST_CLASS' },
-              { label: 'Premium Economy', value: 'PREMIUM_ECONOMY' },
-              { label: 'Economy', value: 'ECONOMY' },
-              { label: 'Business', value: 'BUSINESS' },
-            ]}
-          />
+          <Select options={flightClassOptions} />
         </Form.Item>
 
         <Form.Item
@@ -269,7 +317,7 @@ function FlightHotelForm({
         >
           <Checkbox.Group>
             <Space size={16} wrap>
-              {[1, 2, 3, 4, 5].map((n) => (
+              {hotelStarOptions.map((n) => (
                 <Checkbox
                   key={n}
                   value={String(n)}
