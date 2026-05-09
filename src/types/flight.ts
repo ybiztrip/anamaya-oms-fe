@@ -66,7 +66,20 @@ export type FareType = {
   };
 };
 
-export type AddOnBaggageType = {};
+export type AddOnBaggageType = {
+  id: string;
+  baggageType: string;
+  baggageQuantity: string;
+  baggageWeight: string;
+  priceWithCurrency: {
+    amount: string;
+    currency: string;
+  };
+  netToAgent: {
+    amount: string;
+    currency: string;
+  };
+};
 
 export type FlightSearchOneWayType = {
   flightId: string;
