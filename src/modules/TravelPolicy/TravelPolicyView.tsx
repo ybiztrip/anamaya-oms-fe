@@ -130,6 +130,7 @@ export default function TravelPolicyView() {
           okText={modalMode === 'create' ? 'Create' : 'Update'}
           confirmLoading={createMutation.isPending || updateMutation.isPending}
           width={1200}
+          destroyOnHidden
         >
           <Row gutter={[32, 16]}>
             <Col span={16}>

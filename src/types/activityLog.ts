@@ -6,6 +6,7 @@ export type ActivityLogDetailType = {
   type: ActivityLogType;
   referenceId: number;
   status: number;
+  changeSummary?: string[];
   createdBy?: number;
   createdAt?: string;
   updatedBy?: number;

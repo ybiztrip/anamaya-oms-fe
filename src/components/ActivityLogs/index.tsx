@@ -29,7 +29,7 @@ export default function ActivityLogs({ type, referenceId }: ActivityLogsProps) {
     const list =
       data?.data.map((item) => ({
         title: dayjs(item.createdAt).format('DD MMM YYYY HH:mm'),
-        content: item.createdBy,
+        content: item.changeSummary?.join(', ') ?? 'No changes',
       })) ?? [];
     if (isLoading) {
       return [

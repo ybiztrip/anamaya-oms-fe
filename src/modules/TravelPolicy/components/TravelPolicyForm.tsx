@@ -1,6 +1,6 @@
 import { Col, Divider, Form, Input, InputNumber, Row, Select, Switch, Typography } from 'antd';
 
-import { FLIGHT_CLASS_OPTIONS } from '@/constants/common';
+import { FLIGHT_CLASS_OPTIONS, FLIGHT_CLASS_RANK } from '@/constants/common';
 import { rupiahFormatter, rupiahParser } from '@/utils/formatter';
 
 export default function TravelPolicyForm({ mode = 'create' }: { mode?: 'create' | 'update' }) {
@@ -64,7 +64,18 @@ export default function TravelPolicyForm({ mode = 'create' }: { mode?: 'create' 
             <Form.Item
               label="Flight Maximum Price"
               name="flightMaximumPrice"
-              rules={[{ required: true, message: 'Maximum Price required' }]}
+              rules={[
+                { required: true, message: 'Maximum Price required' },
+                ({ getFieldValue }) => ({
+                  validator: (_, value) => {
+                    const min = getFieldValue('flightMinimumPrice');
+                    if (value === undefined || min === undefined) return Promise.resolve();
+                    return value >= min
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Maximum price must be >= minimum price'));
+                  },
+                }),
+              ]}
             >
               <InputNumber
                 placeholder="Flight Maximum Price"
@@ -84,7 +95,18 @@ export default function TravelPolicyForm({ mode = 'create' }: { mode?: 'create' 
             <Form.Item
               label="Flight Maximum Class"
               name="flightMaximumClass"
-              rules={[{ required: true, message: 'Flight Class required' }]}
+              rules={[
+                { required: true, message: 'Flight Class required' },
+                ({ getFieldValue }) => ({
+                  validator: (_, value) => {
+                    const min = getFieldValue('flightMinimumClass');
+                    if (value === undefined || min === undefined) return Promise.resolve();
+                    return FLIGHT_CLASS_RANK[value] >= FLIGHT_CLASS_RANK[min]
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Maximum class must be >= minimum class'));
+                  },
+                }),
+              ]}
             >
               <Select options={FLIGHT_CLASS_OPTIONS} placeholder="Select Flight Maximum Class" />
             </Form.Item>
@@ -111,7 +133,18 @@ export default function TravelPolicyForm({ mode = 'create' }: { mode?: 'create' 
             <Form.Item
               label="Hotel Maximum Price"
               name="hotelMaximumPrice"
-              rules={[{ required: true, message: 'Maximum Price required' }]}
+              rules={[
+                { required: true, message: 'Maximum Price required' },
+                ({ getFieldValue }) => ({
+                  validator: (_, value) => {
+                    const min = getFieldValue('hotelMinimumPrice');
+                    if (value === undefined || min === undefined) return Promise.resolve();
+                    return value >= min
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Maximum price must be >= minimum price'));
+                  },
+                }),
+              ]}
             >
               <InputNumber
                 placeholder="Hotel Maximum Price"
@@ -134,7 +167,18 @@ export default function TravelPolicyForm({ mode = 'create' }: { mode?: 'create' 
             <Form.Item
               label="Hotel Maximum Class"
               name="hotelMaximumClass"
-              rules={[{ required: true, message: 'Hotel Class required' }]}
+              rules={[
+                { required: true, message: 'Hotel Class required' },
+                ({ getFieldValue }) => ({
+                  validator: (_, value) => {
+                    const min = getFieldValue('hotelMinimumClass');
+                    if (value === undefined || min === undefined) return Promise.resolve();
+                    return value >= min
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Maximum class must be >= minimum class'));
+                  },
+                }),
+              ]}
             >
               <Select
                 options={[1, 2, 3, 4, 5].map((n) => ({ label: n, value: n }))}
