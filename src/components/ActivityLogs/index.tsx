@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Timeline } from 'antd';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { fetchActivityLogs } from '@/api';
 import { DEFAULT_PAGE_SIZE } from '@/constants/common';
@@ -14,23 +14,52 @@ export type ActivityLogsProps = {
 };
 
 export default function ActivityLogs({ type, referenceId }: ActivityLogsProps) {
-  const { data, isLoading } = useQuery({
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: [ACTIVITY_LOGS, type, referenceId],
-    queryFn: () =>
+    enabled: referenceId > 0,
+    initialPageParam: 0,
+    queryFn: ({ pageParam }) =>
       fetchActivityLogs({
-        type: type,
-        referenceId: referenceId,
-        page: 0,
+        type,
+        referenceId,
+        page: pageParam,
         size: DEFAULT_PAGE_SIZE,
       }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.last) return undefined;
+      return lastPage.number + 1;
+    },
   });
+
+  useEffect(() => {
+    const root = scrollRef.current;
+    const el = sentinelRef.current;
+    if (!root || !el || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { root, rootMargin: '80px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, data?.pages.length]);
 
   const items = useMemo(() => {
     const list =
-      data?.data.map((item) => ({
-        title: dayjs(item.createdAt).format('DD MMM YYYY HH:mm'),
-        content: item.changeSummary?.join(', ') ?? 'No changes',
-      })) ?? [];
+      data?.pages.flatMap((page) =>
+        page.data.map((item) => ({
+          title: dayjs(item.createdAt).format('DD MMM YYYY HH:mm'),
+          content: item.changeSummary?.join(', ') ?? 'No changes',
+        })),
+      ) ?? [];
+
     if (isLoading) {
       return [
         ...list,
@@ -40,8 +69,33 @@ export default function ActivityLogs({ type, referenceId }: ActivityLogsProps) {
         },
       ];
     }
-    return list;
-  }, [data?.data, isLoading]);
 
-  return <Timeline mode="start" items={items} />;
+    if (isFetchingNextPage) {
+      return [
+        ...list,
+        {
+          loading: true,
+          content: 'Loading more...',
+        },
+      ];
+    }
+
+    return list;
+  }, [data?.pages, isLoading, isFetchingNextPage]);
+
+  const hasLogs = (data?.pages.flatMap((p) => p.data).length ?? 0) > 0;
+
+  if (referenceId <= 0) {
+    return null;
+  }
+
+  return (
+    <div ref={scrollRef} style={{ maxHeight: 'calc(80vh - 200px)', overflowY: 'auto' }}>
+      {isLoading || hasLogs ? <Timeline mode="start" items={items} /> : null}
+      {!isLoading && !hasLogs && (
+        <div className="text-center text-sm text-gray-500 py-4">No activity yet</div>
+      )}
+      {hasNextPage && <div ref={sentinelRef} style={{ height: 1 }} />}
+    </div>
+  );
 }
