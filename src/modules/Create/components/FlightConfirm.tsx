@@ -5,6 +5,8 @@ import { ADULT_TYPE, CHILD_TYPE } from '@/constants/common';
 import type {
   BookingParamsType,
   BookingPriceItemType,
+  FlightJourneySegmentType,
+  FlightJourneyType,
   FlightSearchOneWayType,
   PassengerGuestType,
 } from '@/types';
@@ -27,13 +29,52 @@ const FlightConfirm = ({
   onPriceListChange?: (prices: BookingPriceItemType[], flightIndex: number) => void;
 }) => {
   const {
-    data: addOns,
+    data: flightAddOns,
     isLoading,
     getBaggageById,
     getMealById,
   } = useFlightAddOns({ flightId: flight.flightId });
 
-  const paxs = Form.useWatch(['flights', `flight-${index}`, 'paxs'], form); // reactive
+  const flightValues = Form.useWatch(['flights', `flight-${index}`], form); // reactive
+
+  const flightsBasedOnAddOns = useMemo(() => {
+    return flight?.journeys?.flatMap((journey: FlightJourneyType, journeyIndex: number) => {
+      const addOns = flightAddOns?.journeysWithAvailableAddOnsOptions?.[journeyIndex];
+      if (addOns?.availableAddOnsOptions !== null) {
+        return {
+          ...flight,
+          numOfTransits: journey.numOfTransits,
+          tripDuration: journey.journeyDuration,
+          journeys: [journey],
+          addOns: addOns?.availableAddOnsOptions,
+        } as FlightSearchOneWayType;
+      } else if (addOns?.segmentsWithAvailableAddOns?.length > 0) {
+        return flight.journeys[journeyIndex].segments.map(
+          (segment: FlightJourneySegmentType, segmentIndex: number) => {
+            return {
+              ...flight,
+              numOfTransits: '0',
+              tripDuration: segment.flightDurationInMinutes,
+              journeys: [
+                {
+                  ...flight.journeys[journeyIndex],
+                  journeyDuration: segment.flightDurationInMinutes,
+                  departureDetail: segment.departureDetail,
+                  arrivalDetail: segment.arrivalDetail,
+                  segments: [segment],
+                },
+              ],
+              addOns: addOns?.segmentsWithAvailableAddOns?.[segmentIndex]?.availableAddOnsOptions,
+            };
+          },
+        );
+      }
+      return {
+        ...flight,
+        journeys: [flight.journeys[journeyIndex]],
+      } as FlightSearchOneWayType;
+    });
+  }, [flightAddOns, flight]);
 
   const priceList = useMemo<BookingPriceItemType[]>(() => {
     const prices: BookingPriceItemType[] = [];
@@ -53,43 +94,64 @@ const FlightConfirm = ({
     });
     if (totalAdult > 0) {
       const flightPrice =
-        flight?.journeys?.[0]?.fareInfo?.partnerFare?.adultFare?.totalFareWithCurrency;
+        flight?.journeys?.reduce((acc: number, journey: FlightJourneyType) => {
+          return (
+            acc +
+            Number(journey?.fareInfo?.partnerFare?.adultFare?.totalFareWithCurrency?.amount ?? 0)
+          );
+        }, 0) ?? 0;
       prices.push({
         item: `Flight ${flightName} (Adult) x${totalAdult}`,
-        currency: flightPrice?.currency ?? 'IDR',
-        amount: Number(flightPrice?.amount ?? 0) * totalAdult,
+        currency: 'IDR',
+        amount: flightPrice * totalAdult,
       });
     }
     if (totalChild > 0) {
       const flightPrice =
-        flight?.journeys?.[0]?.fareInfo?.partnerFare?.childFare?.totalFareWithCurrency;
+        flight?.journeys?.reduce((acc: number, journey: FlightJourneyType) => {
+          return (
+            acc +
+            Number(journey?.fareInfo?.partnerFare?.childFare?.totalFareWithCurrency?.amount ?? 0)
+          );
+        }, 0) ?? 0;
       prices.push({
         item: `Flight ${flightName} (Child) x${totalChild}`,
-        currency: flightPrice?.currency ?? 'IDR',
-        amount: Number(flightPrice?.amount ?? 0) * totalChild,
+        currency: 'IDR',
+        amount: flightPrice * totalChild,
       });
     }
     if (totalInfant > 0) {
       const flightPrice =
-        flight?.journeys?.[0]?.fareInfo?.partnerFare?.infantFare?.totalFareWithCurrency;
+        flight?.journeys?.reduce((acc: number, journey: FlightJourneyType) => {
+          return (
+            acc +
+            Number(journey?.fareInfo?.partnerFare?.infantFare?.totalFareWithCurrency?.amount ?? 0)
+          );
+        }, 0) ?? 0;
       prices.push({
         item: `Flight ${flightName} (Infant) x${totalInfant}`,
-        currency: flightPrice?.currency ?? 'IDR',
-        amount: Number(flightPrice?.amount ?? 0) * totalInfant,
+        currency: 'IDR',
+        amount: flightPrice * totalInfant,
       });
     }
 
     let totalBaggagePrice = 0;
     let totalMealPrice = 0;
-    Object.values(paxs ?? {}).forEach((pax: any) => {
-      if (pax.baggage) {
-        const baggagePrice = getBaggageById(pax.baggage)?.priceWithCurrency?.amount ?? 0;
-        totalBaggagePrice += Number(baggagePrice);
-      }
-      if (pax.meal) {
-        const mealPrice = getMealById(pax.meal)?.priceWithCurrency?.amount ?? 0;
-        totalMealPrice += Number(mealPrice);
-      }
+    Object.values(flightValues ?? {}).forEach((flightAddOns: any, flightAddOnsIndex: number) => {
+      Object.values(flightAddOns?.paxs ?? {}).forEach((pax: any) => {
+        if (pax.baggage) {
+          const baggagePrice =
+            getBaggageById(pax.baggage, flightsBasedOnAddOns?.[flightAddOnsIndex]?.addOns)
+              ?.priceWithCurrency?.amount ?? 0;
+          totalBaggagePrice += Number(baggagePrice);
+        }
+        if (pax.meal) {
+          const mealPrice =
+            getMealById(pax.meal, flightsBasedOnAddOns?.[flightAddOnsIndex]?.addOns)
+              ?.priceWithCurrency?.amount ?? 0;
+          totalMealPrice += Number(mealPrice);
+        }
+      });
     });
     if (totalBaggagePrice > 0) {
       prices.push({
@@ -103,75 +165,93 @@ const FlightConfirm = ({
     }
 
     return prices;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paxs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flightValues]);
 
   useEffect(() => {
     onPriceListChange?.(priceList, index);
   }, [priceList, index, onPriceListChange]);
 
   return (
-    <Card size="small">
-      <FlightInfo flight={flight} withSelect={false} withPrice={false} />
-      {isLoading ? (
-        <Spin />
-      ) : (
-        <div className="mt-4">
-          <div className="text-lg font-semibold mb-2">Passengers</div>
-          <Space direction="vertical">
-            {bookingParams.paxList.map((pax, paxIndex) => (
-              <Card key={pax.id} size="small">
-                <Space size="large">
-                  <div className="text-medium font-semibold">{`${pax.firstName} ${pax.lastName} (${pax.type})`}</div>
-                  {addOns?.availableAddOnsOptions.baggageOptions &&
-                    addOns?.availableAddOnsOptions.baggageOptions.length > 0 && (
-                      <Form.Item
-                        name={['flights', `flight-${index}`, 'paxs', `pax-${paxIndex}`, 'baggage']}
-                        label="Baggage"
-                        rules={[{ required: true }]}
-                        className="mb-0"
-                        initialValue={addOns?.availableAddOnsOptions.baggageOptions?.[0]?.id}
-                      >
-                        <Select
-                          placeholder="Baggage"
-                          options={addOns?.availableAddOnsOptions.baggageOptions?.map(
-                            (baggage) => ({
-                              label: `${baggage.baggageWeight} ${baggage.baggageType} (${baggage.priceWithCurrency.currency} ${formatIDR(baggage.priceWithCurrency.amount)})`,
-                              value: baggage.id,
-                              baggage,
-                            }),
+    <Space direction="vertical">
+      {flightsBasedOnAddOns?.map((flightAddOns, flightAddOnsIndex) => {
+        return (
+          <Card size="small" key={`flight-${index}-journey-${flightAddOnsIndex}`}>
+            <FlightInfo flight={flightAddOns} withSelect={false} withPrice={false} />
+            {isLoading ? (
+              <Spin />
+            ) : (
+              <div className="mt-4">
+                <div className="text-lg font-semibold mb-2">Passengers</div>
+                <Space direction="vertical">
+                  {bookingParams.paxList.map((pax, paxIndex) => (
+                    <Card key={pax.id} size="small">
+                      <Space size="large">
+                        <div className="text-medium font-semibold">{`${pax.firstName} ${pax.lastName} (${pax.type})`}</div>
+                        {flightAddOns?.addOns?.baggageOptions &&
+                          flightAddOns?.addOns?.baggageOptions.length > 0 && (
+                            <Form.Item
+                              name={[
+                                'flights',
+                                `flight-${index}`,
+                                `flightAddOns-${flightAddOnsIndex}`,
+                                'paxs',
+                                `pax-${paxIndex}`,
+                                'baggage',
+                              ]}
+                              label="Baggage"
+                              rules={[{ required: true }]}
+                              className="mb-0"
+                              initialValue={flightAddOns?.addOns?.baggageOptions?.[0]?.id}
+                            >
+                              <Select
+                                placeholder="Baggage"
+                                options={flightAddOns?.addOns?.baggageOptions?.map((baggage) => ({
+                                  label: `${baggage.baggageWeight} ${baggage.baggageType} (${baggage.priceWithCurrency.currency} ${formatIDR(baggage.priceWithCurrency.amount)})`,
+                                  value: baggage.id,
+                                  baggage,
+                                }))}
+                                style={{ width: '180px' }}
+                              />
+                            </Form.Item>
                           )}
-                          style={{ width: '180px' }}
-                        />
-                      </Form.Item>
-                    )}
-                  {addOns?.availableAddOnsOptions.mealOptions &&
-                    addOns?.availableAddOnsOptions.mealOptions.length > 0 && (
-                      <Form.Item
-                        name={['flights', `flight-${index}`, 'paxs', `pax-${paxIndex}`, 'meal']}
-                        label="Meal"
-                        rules={[{ required: true }]}
-                        className="mb-0"
-                        initialValue={addOns?.availableAddOnsOptions.mealOptions?.[0]?.id}
-                      >
-                        <Select
-                          placeholder="Meal"
-                          options={addOns?.availableAddOnsOptions.mealOptions?.map((meal) => ({
-                            label: meal.mealName,
-                            value: meal.id,
-                            meal,
-                          }))}
-                          style={{ width: '180px' }}
-                        />
-                      </Form.Item>
-                    )}
+                        {flightAddOns?.addOns?.mealOptions &&
+                          flightAddOns?.addOns?.mealOptions.length > 0 && (
+                            <Form.Item
+                              name={[
+                                'flights',
+                                `flight-${index}`,
+                                `flightAddOns-${flightAddOnsIndex}`,
+                                'paxs',
+                                `pax-${paxIndex}`,
+                                'meal',
+                              ]}
+                              label="Meal"
+                              rules={[{ required: true }]}
+                              className="mb-0"
+                              initialValue={flightAddOns?.addOns?.mealOptions?.[0]?.id}
+                            >
+                              <Select
+                                placeholder="Meal"
+                                options={flightAddOns?.addOns?.mealOptions?.map((meal) => ({
+                                  label: meal.mealName,
+                                  value: meal.id,
+                                  meal,
+                                }))}
+                                style={{ width: '180px' }}
+                              />
+                            </Form.Item>
+                          )}
+                      </Space>
+                    </Card>
+                  ))}
                 </Space>
-              </Card>
-            ))}
-          </Space>
-        </div>
-      )}
-    </Card>
+              </div>
+            )}
+          </Card>
+        );
+      })}
+    </Space>
   );
 };
 

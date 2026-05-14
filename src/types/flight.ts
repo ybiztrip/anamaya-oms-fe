@@ -81,85 +81,90 @@ export type AddOnBaggageType = {
   };
 };
 
+export type FlightJourneySegmentType = {
+  flightCode: string;
+  marketingAirline: string;
+  brandAirline: string;
+  operatingAirline: string;
+  subClass: string;
+  seatClass: string;
+  flightDurationInMinutes: string;
+  transitDurationInMinutes: string | null;
+  departureDetail: {
+    airportCode: string;
+    departureDate: string;
+    departureTime: string;
+    departureTerminal: string;
+  };
+  arrivalDetail: {
+    airportCode: string;
+    arrivalDate: string;
+    arrivalTime: string;
+    arrivalTerminal: string;
+  };
+  stopInfo: any;
+  addOns: {
+    baggageOptions: AddOnBaggageType[];
+    mealOptions: any[];
+    fareBasisCode: string;
+  };
+  fareBasisCode: any;
+  visaRequired: boolean;
+  mayNeedReCheckIn: boolean;
+  sourceAirport: string;
+  destinationAirport: string;
+  departureDate: string;
+  arrivalDate: string;
+};
+
+export type FlightJourneyType = {
+  numOfTransits: string;
+  journeyDuration: string;
+  daysOffset: string;
+  refundableStatus: string;
+  departureDetail: {
+    airportCode: string;
+    departureDate: string;
+    departureTime: string;
+    departureTerminal: string;
+  };
+  arrivalDetail: {
+    airportCode: string;
+    arrivalDate: string;
+    arrivalTime: string;
+    arrivalTerminal: string;
+  };
+  fareInfo: {
+    partnerFare: {
+      adultFare: FareType;
+      childFare: any;
+      infantFare: any;
+    };
+    airlineFare: {
+      adultFare: FareType;
+      childFare: any;
+      infantFare: any;
+    };
+    netToAgent: {
+      adultFare: {
+        amount: string;
+        currency: string;
+      };
+      childFare: any;
+      infantFare: any;
+    };
+  };
+  segments: FlightJourneySegmentType[];
+};
+
 export type FlightSearchOneWayType = {
   flightId: string;
   departureAirport: string;
   arrivalAirport: string;
   numOfTransits: string;
-  journeys: {
-    numOfTransits: string;
-    journeyDuration: string;
-    daysOffset: string;
-    refundableStatus: string;
-    departureDetail: {
-      airportCode: string;
-      departureDate: string;
-      departureTime: string;
-      departureTerminal: string;
-    };
-    arrivalDetail: {
-      airportCode: string;
-      arrivalDate: string;
-      arrivalTime: string;
-      arrivalTerminal: string;
-    };
-    fareInfo: {
-      partnerFare: {
-        adultFare: FareType;
-        childFare: any;
-        infantFare: any;
-      };
-      airlineFare: {
-        adultFare: FareType;
-        childFare: any;
-        infantFare: any;
-      };
-      netToAgent: {
-        adultFare: {
-          amount: string;
-          currency: string;
-        };
-        childFare: any;
-        infantFare: any;
-      };
-    };
-    segments: {
-      flightCode: string;
-      marketingAirline: string;
-      brandAirline: string;
-      operatingAirline: string;
-      subClass: string;
-      seatClass: string;
-      flightDurationInMinutes: string;
-      transitDurationInMinutes: string | null;
-      departureDetail: {
-        airportCode: string;
-        departureDate: string;
-        departureTime: string;
-        departureTerminal: string;
-      };
-      arrivalDetail: {
-        airportCode: string;
-        arrivalDate: string;
-        arrivalTime: string;
-        arrivalTerminal: string;
-      };
-      stopInfo: any;
-      addOns: {
-        baggageOptions: AddOnBaggageType[];
-        mealOptions: any[];
-        fareBasisCode: string;
-      };
-      fareBasisCode: any;
-      visaRequired: boolean;
-      mayNeedReCheckIn: boolean;
-      sourceAirport: string;
-      destinationAirport: string;
-      departureDate: string;
-      arrivalDate: string;
-    }[];
-  }[];
+  journeys: FlightJourneyType[];
   tripDuration: string;
+  addOns?: FlightAddOnsType;
 };
 
 export type FlightSearchOneWayResponseType = {
@@ -172,21 +177,26 @@ export type FlightBookingAddOnsPayloadType = {
   flightIds: string[];
 };
 
+export type FlightAddOnsType = {
+  baggageOptions: AddOnBaggageType[];
+  // TODO: meal options type
+  mealOptions: {
+    id: string;
+    mealType: string;
+    mealName: string;
+    priceWithCurrency: {
+      amount: string;
+      currency: string;
+    };
+  }[];
+}
+
 export type FlightBookingAddOnType = {
-  segmentsWithAvailableAddOns: [];
-  availableAddOnsOptions: {
-    baggageOptions: AddOnBaggageType[];
-    // TODO: meal options type
-    mealOptions: {
-      id: string;
-      mealType: string;
-      mealName: string;
-      priceWithCurrency: {
-        amount: string;
-        currency: string;
-      };
-    }[];
-  };
+  segmentsWithAvailableAddOns: {
+    availableAddOnsOptions: FlightAddOnsType;
+    segment: any;
+  }[];
+  availableAddOnsOptions: FlightAddOnsType | null;
 };
 
 export type FlightBookingAddOnsResponseType = {

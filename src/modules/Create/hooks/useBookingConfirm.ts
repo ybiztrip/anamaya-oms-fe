@@ -29,6 +29,11 @@ import type {
 import { localStorageGet } from '@/utils/localStorage';
 import { sessionStorageGet, sessionStorageRemove } from '@/utils/sessionStorage';
 
+import {
+  buildAvailableAddOnsFlights,
+  buildPaxWithSelectedAddOnPayload,
+} from '../utils/flightAddOnMapper';
+
 export default function useBookingConfirm({
   flightPrices,
   hotelPrices,
@@ -122,16 +127,9 @@ export default function useBookingConfirm({
   };
 
   const createBookingsFlight = async (bookingId: string, values: any) => {
-    const flightAddOns: FlightBookingAddOnType[] = [];
     const flightsPayload = flights?.map((flight, flightIndex: number) => {
       const departure = flight.selectedFlight?.journeys?.[0]?.departureDetail;
-      const arrival = flight.selectedFlight?.journeys?.[0]?.arrivalDetail;
-      const cachedFlightAddOns = queryClient.getQueryData<
-        ResponseType<FlightBookingAddOnsResponseType>
-      >([FLIGHT_ADD_ONS, flight.selectedFlight?.flightId]);
-      flightAddOns.push(
-        cachedFlightAddOns?.data?.journeysWithAvailableAddOnsOptions?.[0] as FlightBookingAddOnType,
-      );
+      const arrival = flight.selectedFlight?.journeys?.at(-1)?.arrivalDetail;
       return {
         type: tripType === 'roundTrip' ? 1 : tripType === 'oneWay' ? 2 : 3,
         clientSource: CLIENT_SOURCE,
@@ -161,33 +159,25 @@ export default function useBookingConfirm({
       };
     });
     const paxsPayload = paxList.map((pax: PassengerGuestType, paxIndex: number) => {
-      const addOn: FlightBookingAddOnType[] = flightAddOns.map((flightAddOn, flightIndex) => {
-        const paxAddOnValues =
-          values?.flights?.[`flight-${flightIndex}`]?.paxs?.[`pax-${paxIndex}`] ?? {};
-
-        const baggageId = paxAddOnValues?.baggage;
-        const mealId = paxAddOnValues?.meal;
-
-        return {
-          ...flightAddOn,
-          availableAddOnsOptions: {
-            ...flightAddOn.availableAddOnsOptions,
-            baggageOptions: baggageId
-              ? (flightAddOn.availableAddOnsOptions.baggageOptions ?? []).filter(
-                  (b) => b.id === baggageId,
-                )
-              : [],
-            mealOptions: mealId
-              ? (flightAddOn.availableAddOnsOptions.mealOptions ?? []).filter(
-                  (m) => m.id === mealId,
-                )
-              : [],
-          },
-        };
+      const addOn: FlightBookingAddOnType[] = flights.flatMap((flight, flightIndex) => {
+        const selectedFlight = flight.selectedFlight;
+        if (!selectedFlight) {
+          return [];
+        }
+        const cachedFlightAddOns = queryClient.getQueryData<
+          ResponseType<FlightBookingAddOnsResponseType>
+        >([FLIGHT_ADD_ONS, selectedFlight.flightId]);
+        const templates = buildAvailableAddOnsFlights(
+          selectedFlight,
+          cachedFlightAddOns?.data?.journeysWithAvailableAddOnsOptions,
+        );
+        return templates.map((template, slotIndex) =>
+          buildPaxWithSelectedAddOnPayload(template, values, flightIndex, slotIndex, paxIndex),
+        );
       });
       return {
         ...getBookingPaxPayload(pax),
-        addOn: addOn,
+        addOn,
       };
     });
     const bookingFlightPayload: BookingFlightPayloadType = {

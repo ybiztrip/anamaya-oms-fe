@@ -1,8 +1,25 @@
-import { Button, Card, Col, Row } from 'antd';
+import { Button, Card, Col, Popover, Row, Timeline } from 'antd';
+import { useMemo } from 'react';
 
 import useFlightAirlines from '@/hooks/useFlightAirlines';
-import type { FlightSearchOneWayType } from '@/types';
+import useFlightAirport from '@/hooks/useFlightAirport';
+import type { FlightJourneySegmentType, FlightJourneyType, FlightSearchOneWayType } from '@/types';
 import { formatDuration, formatIDR } from '@/utils/formatter';
+
+function groupSegmentsByConsecutiveAirline(segments: FlightJourneySegmentType[] | undefined) {
+  const list = segments ?? [];
+  const groups: { airlineCode: string; segments: FlightJourneySegmentType[] }[] = [];
+  for (const seg of list) {
+    const code = seg?.marketingAirline ?? '';
+    const last = groups.at(-1);
+    if (last && last.airlineCode === code) {
+      last.segments.push(seg);
+    } else {
+      groups.push({ airlineCode: code, segments: [seg] });
+    }
+  }
+  return groups;
+}
 
 function FlightInfo({
   flight,
@@ -16,42 +33,142 @@ function FlightInfo({
   onSelect?: (flight: FlightSearchOneWayType) => void;
 }) {
   const { airlinesByCode } = useFlightAirlines();
+  const { airportsByCode } = useFlightAirport();
 
-  const journey = flight?.journeys?.[0];
-  const seg0 = journey?.segments?.[0];
+  const journeys = useMemo(() => flight.journeys ?? [], [flight.journeys]);
+  const firstJourney = journeys[0];
+  const lastJourney = journeys.at(-1);
 
-  const airlineCode = seg0?.marketingAirline;
-  const airline = airlineCode ? (airlinesByCode as any)[airlineCode] : undefined;
+  const allSegments = useMemo(() => journeys.flatMap((j) => j?.segments ?? []), [journeys]);
 
-  const dep = journey?.departureDetail;
-  const arr = journey?.arrivalDetail;
+  const groups = useMemo(() => groupSegmentsByConsecutiveAirline(allSegments), [allSegments]);
 
-  const total =
-    journey?.fareInfo?.partnerFare?.adultFare?.totalFareWithCurrency ??
-    journey?.fareInfo?.airlineFare?.adultFare?.totalFareWithCurrency;
+  const dep = firstJourney?.departureDetail;
+  const arr = lastJourney?.arrivalDetail;
+
+  const totalPrice =
+    journeys?.reduce((acc: number, journey: FlightJourneyType) => {
+      return (
+        acc + Number(journey?.fareInfo?.partnerFare?.adultFare?.totalFareWithCurrency?.amount ?? 0)
+      );
+    }, 0) ?? 0;
 
   const depTerminal = dep?.departureTerminal ? `T${dep.departureTerminal}` : '-';
   const arrTerminal = arr?.arrivalTerminal ? `T${arr.arrivalTerminal}` : '-';
+
+  const transitLabel =
+    flight?.numOfTransits === '0' ? 'Nonstop' : `${flight?.numOfTransits} transit`;
+
+  const segmentTimelineItems = useMemo(
+    () =>
+      allSegments.flatMap((seg) => {
+        const d = seg?.departureDetail;
+        const a = seg?.arrivalDetail;
+        const depT = d?.departureTerminal ? `T${d.departureTerminal}` : '';
+        const arrT = a?.arrivalTerminal ? `T${a.arrivalTerminal}` : '';
+        const code = seg?.marketingAirline;
+        const airline = code ? airlinesByCode[code] : undefined;
+
+        return [
+          ...(seg?.transitDurationInMinutes
+            ? [
+                {
+                  color: 'gray',
+                  title: (
+                    <div className="text-xs text-gray-500 mt-1">
+                      {formatDuration(seg.transitDurationInMinutes)}
+                    </div>
+                  ),
+                  content: <div className="text-medium">Transit </div>,
+                },
+              ]
+            : []),
+          {
+            color: 'blue',
+            title: `Departure: ${d?.departureTime}`,
+            content: (
+              <div>
+                <div className="font-medium">
+                  {airportsByCode[d?.airportCode]?.localAirportName ?? '-'}
+                </div>
+                <div className="text-xs text-gray-600 mt-1">
+                  {d?.airportCode ?? '-'} · {depT ? ` ${depT}` : ''}
+                </div>
+              </div>
+            ),
+          },
+          {
+            color: 'green',
+            title: (
+              <div className="text-xs text-gray-500 mt-1">
+                {formatDuration(seg.flightDurationInMinutes)}
+              </div>
+            ),
+            content: (
+              <div className="text-medium">
+                {airline?.airlineName ?? code} ·{' '}
+                <span className="text-xs text-gray-500">{seg?.flightCode}</span>
+              </div>
+            ),
+          },
+          {
+            color: 'blue',
+            title: `Arrival: ${a?.arrivalTime}`,
+            content: (
+              <div>
+                <div className="font-medium">
+                  {airportsByCode[a?.airportCode]?.localAirportName ?? '-'}
+                </div>
+                <div className="text-xs text-gray-600 mt-1">
+                  {a?.airportCode ?? '-'} · {arrT ? ` ${arrT}` : ''}
+                </div>
+              </div>
+            ),
+          },
+        ];
+      }),
+    [allSegments, airlinesByCode],
+  );
+
+  const segmentPopoverContent = (
+    <div style={{ maxWidth: 360 }}>
+      <Timeline items={segmentTimelineItems} />
+    </div>
+  );
 
   return (
     <Card key={flight.flightId} size="small">
       <Row align="middle" gutter={16} wrap={false}>
         <Col flex="220px">
           <div className="flex items-center gap-3">
-            {airline?.logoUrl ? (
-              <img
-                src={airline.logoUrl}
-                alt={airline.airlineName ?? airlineCode}
-                style={{ height: 24 }}
-              />
-            ) : (
-              <div style={{ width: 24, height: 24 }} />
-            )}
-            <div>
-              <div className="font-medium">
-                {airline?.airlineName ?? airlineCode ?? 'Unknown airline'}
-              </div>
-              <div className="text-xs text-gray-500">{seg0?.flightCode}</div>
+            <div className="flex flex-col gap-3 items-start">
+              {groups.map((g, i) => {
+                const airline = g.airlineCode ? airlinesByCode[g.airlineCode] : undefined;
+                return (
+                  <div key={`${g.airlineCode}-${i}`} className="flex items-start gap-3">
+                    {airline?.logoUrl ? (
+                      <img
+                        src={airline.logoUrl}
+                        alt={airline.airlineName ?? g.airlineCode}
+                        style={{ height: 24 }}
+                      />
+                    ) : (
+                      <div style={{ width: 24, height: 24 }} />
+                    )}
+                    <div className="min-w-0">
+                      <div className="font-medium">
+                        {airline?.airlineName ?? g.airlineCode ?? 'Unknown airline'}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {g.segments
+                          .map((s) => s.flightCode)
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
           {/* TODO: add flight add-ons */}
@@ -67,10 +184,14 @@ function FlightInfo({
             </div>
 
             <div className="text-center">
-              <div className="text-sm">{formatDuration(journey?.journeyDuration)}</div>
+              <div className="text-sm">{formatDuration(String(flight?.tripDuration))}</div>
               <div className="border-t-4 border-gray-200 my-2" />
               <div className="text-xs text-gray-500">
-                {flight?.numOfTransits === '0' ? 'Nonstop' : `${flight?.numOfTransits} transit`}
+                <Popover content={segmentPopoverContent} trigger="hover" placement="top">
+                  <span className="cursor-default border-b border-dotted border-gray-400">
+                    {transitLabel}
+                  </span>
+                </Popover>
               </div>
             </div>
 
@@ -86,7 +207,7 @@ function FlightInfo({
         {withPrice && (
           <Col flex="auto" className="text-center">
             <div className="text-lg font-semibold mr-4">
-              {total?.currency ?? 'IDR'} {formatIDR(total?.amount)}
+              {'IDR'} {formatIDR(totalPrice)}
             </div>
           </Col>
         )}

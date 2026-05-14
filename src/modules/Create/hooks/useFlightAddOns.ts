@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { fetchFlightBookingAddOns } from '@/api';
 import { FLIGHT_ADD_ONS } from '@/constants/queryKey';
-import type { FlightBookingAddOnsPayloadType } from '@/types';
+import type { FlightAddOnsType, FlightBookingAddOnsPayloadType } from '@/types';
 
 export default function useFlightAddOns({ flightId }: { flightId: string }) {
   const payload: FlightBookingAddOnsPayloadType = useMemo(
@@ -26,20 +26,26 @@ export default function useFlightAddOns({ flightId }: { flightId: string }) {
     },
   });
 
-  const getBaggageById = (id: string) => {
-    return data?.data?.journeysWithAvailableAddOnsOptions?.[0]?.availableAddOnsOptions?.baggageOptions?.find?.(
+  const getBaggageById = (id: string, addOns?: FlightAddOnsType) => {
+    if (!addOns) {
+      return null;
+    }
+    return addOns?.baggageOptions?.find?.(
       (baggage: any) => baggage?.id === id,
     );
   };
 
-  const getMealById = (id: string) => {
-    return data?.data?.journeysWithAvailableAddOnsOptions?.[0]?.availableAddOnsOptions?.mealOptions?.find?.(
+  const getMealById = (id: string, addOns?: FlightAddOnsType) => {
+    if (!addOns) {
+      return null;
+    }
+    return addOns?.mealOptions?.find?.(
       (meal: any) => meal?.id === id,
     );
   };
 
   return {
-    data: data?.data?.journeysWithAvailableAddOnsOptions[0],
+    data: data?.data,
     isLoading,
     error,
     getBaggageById,
