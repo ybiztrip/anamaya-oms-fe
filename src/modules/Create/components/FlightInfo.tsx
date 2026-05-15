@@ -140,12 +140,12 @@ function FlightInfo({
     <Card key={flight.flightId} size="small">
       <Row align="middle" gutter={16} wrap={false}>
         <Col flex="220px">
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col gap-3 items-start">
-              {groups.map((g, i) => {
-                const airline = g.airlineCode ? airlinesByCode[g.airlineCode] : undefined;
-                return (
-                  <div key={`${g.airlineCode}-${i}`} className="flex items-start gap-3">
+          <div className="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-3 items-center">
+            {groups.map((g, i) => {
+              const airline = g.airlineCode ? airlinesByCode[g.airlineCode] : undefined;
+              return (
+                <div key={`${g.airlineCode}-${i}`} className="contents">
+                  <div className="flex items-center justify-center">
                     {airline?.logoUrl ? (
                       <img
                         src={airline.logoUrl}
@@ -155,23 +155,22 @@ function FlightInfo({
                     ) : (
                       <div style={{ width: 24, height: 24 }} />
                     )}
-                    <div className="min-w-0">
-                      <div className="font-medium">
-                        {airline?.airlineName ?? g.airlineCode ?? 'Unknown airline'}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {g.segments
-                          .map((s) => s.flightCode)
-                          .filter(Boolean)
-                          .join(' · ')}
-                      </div>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-medium">
+                      {airline?.airlineName ?? g.airlineCode ?? 'Unknown airline'}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {g.segments
+                        .map((s) => s.flightCode)
+                        .filter(Boolean)
+                        .join(' · ')}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
-          {/* TODO: add flight add-ons */}
         </Col>
 
         <Col flex="auto">
