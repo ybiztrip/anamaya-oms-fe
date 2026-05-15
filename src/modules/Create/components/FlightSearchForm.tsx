@@ -173,7 +173,7 @@ function FlightSearchForm({
                         }),
                       ]}
                     >
-                      <SelectAirport showSearch placeholder="From" />
+                      <SelectAirport placeholder="From" />
                     </Form.Item>
                     <Input
                       className="site-input-split"
@@ -201,7 +201,7 @@ function FlightSearchForm({
                         }),
                       ]}
                     >
-                      <SelectAirport showSearch placeholder="To" />
+                      <SelectAirport placeholder="To" />
                     </Form.Item>
                   </Space.Compact>
                 </Col>

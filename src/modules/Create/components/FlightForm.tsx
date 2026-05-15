@@ -148,7 +148,7 @@ function FlightForm({
                     }),
                   ]}
                 >
-                  <SelectAirport showSearch placeholder="From" />
+                  <SelectAirport placeholder="From" />
                 </Form.Item>
 
                 <Button onClick={onSwap} icon={<SwapOutlined />} />
@@ -166,7 +166,7 @@ function FlightForm({
                     }),
                   ]}
                 >
-                  <SelectAirport showSearch placeholder="To" />
+                  <SelectAirport placeholder="To" />
                 </Form.Item>
               </Space.Compact>
             </Col>
@@ -230,7 +230,7 @@ function FlightForm({
                               rules={[{ required: true, message: 'Origin required' }]}
                               style={{ flex: 1, marginBottom: 0 }}
                             >
-                              <SelectAirport showSearch placeholder="From" />
+                              <SelectAirport placeholder="From" />
                             </Form.Item>
 
                             <Button
@@ -256,7 +256,7 @@ function FlightForm({
                               rules={[{ required: true, message: 'Destination required' }]}
                               style={{ flex: 1, marginBottom: 0 }}
                             >
-                              <SelectAirport showSearch placeholder="To" />
+                              <SelectAirport placeholder="To" />
                             </Form.Item>
                           </Space.Compact>
                         </Col>

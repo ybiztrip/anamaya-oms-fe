@@ -175,7 +175,7 @@ function FlightHotelForm({
                   }),
                 ]}
               >
-                <SelectAirport showSearch placeholder="From" />
+                <SelectAirport placeholder="From" />
               </Form.Item>
 
               <Button onClick={onSwap} icon={<SwapOutlined />} />
@@ -193,7 +193,7 @@ function FlightHotelForm({
                   }),
                 ]}
               >
-                <SelectAirport showSearch placeholder="To" />
+                <SelectAirport placeholder="To" />
               </Form.Item>
             </Space.Compact>
           </Col>

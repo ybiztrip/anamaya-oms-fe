@@ -17,6 +17,7 @@ export default function SelectAirport({ ...props }: SelectAirportProps) {
       return {
         value: code,
         label: `${code} — ${city}`,
+        city: city,
         airport: a,
       };
     });
@@ -29,6 +30,9 @@ export default function SelectAirport({ ...props }: SelectAirportProps) {
       style={{ width: '100%' }}
       status={error ? 'error' : undefined}
       notFoundContent={isLoading ? 'Loading airports…' : 'No airports'}
+      showSearch={{
+        optionFilterProp: ['label', 'city'],
+      }}
       {...props}
     />
   );
