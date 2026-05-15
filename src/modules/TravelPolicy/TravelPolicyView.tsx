@@ -1,15 +1,17 @@
 import { Button, Col, Form, message, Modal, Row, Typography } from 'antd';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import ActivityLogs from '@/components/ActivityLogs';
 import Layout from '@/components/Layout';
 import SectionCard from '@/components/SectionCard';
 import { AIRLINE_CODE_GARUDA, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import useFlightAirlines from '@/hooks/useFlightAirlines';
 import type { TravelPolicyType } from '@/types';
 
 import TravelPolicyForm from './components/TravelPolicyForm';
 import TravelPolicyList from './components/TravelPolicyList';
 import useTravelPolicy from './hooks/useTravelPolicy';
+import { formatTravelPolicyChangeSummary } from './utils/activityLogFormatter';
 
 type ModalMode = 'create' | 'update';
 
@@ -50,6 +52,12 @@ export default function TravelPolicyView() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<ModalMode>('create');
   const [selectedTravelPolicy, setSelectedTravelPolicy] = useState<TravelPolicyType | null>(null);
+  const { airlinesByCode } = useFlightAirlines();
+
+  const formatChangeSummary = useCallback(
+    (entry: string) => formatTravelPolicyChangeSummary(entry, { airlinesByCode }),
+    [airlinesByCode],
+  );
 
   const list = data?.data ?? [];
   const total = data?.totalElements ?? list.length;
@@ -142,7 +150,11 @@ export default function TravelPolicyView() {
               <div className="mb-4 mt-4">
                 <Typography.Title level={5}>Activity Logs</Typography.Title>
               </div>
-              <ActivityLogs type="TRAVEL_POLICY" referenceId={selectedTravelPolicy?.id ?? 0} />
+              <ActivityLogs
+                type="TRAVEL_POLICY"
+                referenceId={selectedTravelPolicy?.id ?? 0}
+                formatChangeSummary={formatChangeSummary}
+              />
             </Col>
           </Row>
         </Modal>

@@ -8,12 +8,17 @@ import { ACTIVITY_LOGS } from '@/constants/queryKey';
 import type { ActivityLogType } from '@/types';
 import dayjs from '@/utils/dayjs';
 
-export type ActivityLogsProps = {
+export type ActivityLogsProps = Readonly<{
   type: ActivityLogType;
   referenceId: number;
-};
+  formatChangeSummary?: (entry: string) => string;
+}>;
 
-export default function ActivityLogs({ type, referenceId }: ActivityLogsProps) {
+export default function ActivityLogs({
+  type,
+  referenceId,
+  formatChangeSummary,
+}: ActivityLogsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +61,10 @@ export default function ActivityLogs({ type, referenceId }: ActivityLogsProps) {
       data?.pages.flatMap((page) =>
         page.data.map((item) => ({
           title: dayjs(item.createdAt).format('DD MMM YYYY HH:mm'),
-          content: item.changeSummary?.join(', ') ?? 'No changes',
+          content:
+            item.changeSummary
+              ?.map((entry) => (formatChangeSummary ? formatChangeSummary(entry) : entry))
+              .join(', ') ?? 'No changes',
         })),
       ) ?? [];
 
@@ -81,7 +89,7 @@ export default function ActivityLogs({ type, referenceId }: ActivityLogsProps) {
     }
 
     return list;
-  }, [data?.pages, isLoading, isFetchingNextPage]);
+  }, [data?.pages, formatChangeSummary, isLoading, isFetchingNextPage]);
 
   const hasLogs = (data?.pages.flatMap((p) => p.data).length ?? 0) > 0;
 

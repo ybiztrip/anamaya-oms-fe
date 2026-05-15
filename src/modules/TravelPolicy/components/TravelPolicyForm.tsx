@@ -43,7 +43,7 @@ export default function TravelPolicyForm({ mode = 'create' }: { mode?: 'create' 
         <Divider className="my-2" />
         <Row gutter={[16, 8]} className="mt-4">
           <Col xs={24}>
-            <Form.Item label="Including Garuda Airline" layout="horizontal">
+            <Form.Item label="Including Garuda Indonesia" layout="horizontal">
               <Form.Item name="includingGarudaAirline" valuePropName="checked" noStyle>
                 <Switch />
               </Form.Item>
