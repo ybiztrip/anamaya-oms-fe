@@ -61,10 +61,12 @@ export type BookingFlightType = {
   destination: string;
   departureDatetime: string;
   arrivalDatetime: string;
+  totalAmount?: number;
   paymentMethod: string;
-  paymentReference1: string;
-  paymentReference2: string;
+  paymentReference1?: string;
+  paymentReference2?: string;
   metadata: any;
+  createdAt?: string;
 };
 
 export type BookingPaxType = {

@@ -14,6 +14,8 @@ import {
   CREATE_PATH,
   HOME_PATH,
   LOGIN_PATH,
+  MONITORING_CREDIT_PATH,
+  MONITORING_DEPOSIT_PATH,
   PROFILE_PATH,
 } from '@/constants/routePath';
 import ApprovalView from '@/modules/Approval/ApprovalView';
@@ -27,6 +29,7 @@ import HotelSearchView from '@/modules/Create/HotelSearchView';
 import EmployeeView from '@/modules/Employee/EmployeeView';
 import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
+import MonitoringDepositView from '@/modules/Monitoring/MonitoringDepositView';
 import ProfileView from '@/modules/Profile/ProfileView';
 import TravelPolicyView from '@/modules/TravelPolicy/TravelPolicyView';
 
@@ -136,6 +139,22 @@ function App() {
             <PermittedRoute permission={PERMISSIONS.CONFIG_COMPANY}>
               <CompanyView />
             </PermittedRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={MONITORING_CREDIT_PATH}
+        element={
+          <ProtectedRoute>
+            <MonitoringDepositView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={MONITORING_DEPOSIT_PATH}
+        element={
+          <ProtectedRoute>
+            <MonitoringDepositView />
           </ProtectedRoute>
         }
       />

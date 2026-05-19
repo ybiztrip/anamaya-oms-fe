@@ -45,3 +45,11 @@ export const BOOKINGS_REJECT_API = BOOKINGS_API + '/reject/:id';
 export const DOCUMENT_API = API_V1 + '/documents';
 export const DOCUMENT_UPLOAD_API = DOCUMENT_API + '/upload';
 export const DOCUMENT_URL_API = DOCUMENT_API + '/url';
+
+export const DEPOSIT_API = API_V1 + '/balances';
+export const DEPOSIT_DETAIL_API = DEPOSIT_API + '/:code';
+export const DEPOSIT_MONITORING_API = DEPOSIT_API + '/monitoring';
+
+export const CREDIT_API = API_V1 + '/company-credit';
+export const CREDIT_INVOICES_API = CREDIT_API + '/invoices';
+export const CREDIT_MONITORING_API = CREDIT_API + '/monitoring';

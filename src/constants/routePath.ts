@@ -12,3 +12,6 @@ export const CONFIGURATION_PATH = '/configuration';
 export const CONFIGURATION_EMPLOYEES_PATH = '/configuration/employees';
 export const CONFIGURATION_TRAVEL_POLICIES_PATH = '/configuration/travel-policies';
 export const CONFIGURATION_COMPANY_PATH = '/configuration/company';
+export const MONITORING_PATH = '/monitoring';
+export const MONITORING_DEPOSIT_PATH = MONITORING_PATH + '/deposit';
+export const MONITORING_CREDIT_PATH = MONITORING_PATH + '/credit';

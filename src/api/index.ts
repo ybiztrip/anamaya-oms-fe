@@ -12,6 +12,9 @@ import {
   BOOKINGS_NEED_APPROVAL_API,
   BOOKINGS_REJECT_API,
   COMPANY_CONFIGS_API,
+  DEPOSIT_API,
+  DEPOSIT_DETAIL_API,
+  DEPOSIT_MONITORING_API,
   DOCUMENT_UPLOAD_API,
   DOCUMENT_URL_API,
   FLIGHT_AIRLINES_API,
@@ -53,6 +56,10 @@ import type {
   BookingType,
   CompanyConfigsUpdatePayloadType,
   CompanyConfigType,
+  DepositBalanceType,
+  DepositMonitoringPayloadType,
+  DepositMonitoringType,
+  DepositTransactionsResponseType,
   FlightBookingAddOnsPayloadType,
   FlightBookingAddOnsResponseType,
   FlightSearchOneWayPayloadType,
@@ -313,5 +320,24 @@ export async function documentUpload(
 
 export async function documentUrl(key: string): Promise<ResponseType<string>> {
   const res = await axios.get(DOCUMENT_URL_API, { params: { key } });
+  return res.data;
+}
+
+export async function fetchDepositBalance(): Promise<ResponseType<DepositBalanceType[]>> {
+  const res = await axios.get(DEPOSIT_API);
+  return res.data;
+}
+
+export async function fetchDepositTransactions(
+  code: string,
+): Promise<ResponseType<DepositTransactionsResponseType>> {
+  const res = await axios.get(DEPOSIT_DETAIL_API.replace(':code', code));
+  return res.data;
+}
+
+export async function fetchDepositMonitoring(
+  params: DepositMonitoringPayloadType,
+): Promise<PaginationResponseType<DepositMonitoringType>> {
+  const res = await axios.get(DEPOSIT_MONITORING_API, { params });
   return res.data;
 }

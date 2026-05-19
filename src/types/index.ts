@@ -3,6 +3,7 @@ export * from './booking';
 export * from './company';
 export * from './flight';
 export * from './hotel';
+export * from './monitoring';
 export * from './travelPolicy';
 export * from './user';
 

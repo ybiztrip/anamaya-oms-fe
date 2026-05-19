@@ -5,6 +5,8 @@ export const PERMISSIONS = {
   CONFIG_EMPLOYEE: 'config_employee',
   CONFIG_TRAVEL_POLICY: 'config_travel_policy',
   CONFIG_COMPANY: 'config_company',
+  MONITORING_DEPOSIT: 'monitoring_deposit',
+  MONITORING_CREDIT: 'monitoring_credit',
 };
 
 export const PERMISSIONS_BY_ROLE: Record<string, string[]> = {
@@ -12,6 +14,8 @@ export const PERMISSIONS_BY_ROLE: Record<string, string[]> = {
     PERMISSIONS.CONFIG_EMPLOYEE,
     PERMISSIONS.CONFIG_TRAVEL_POLICY,
     PERMISSIONS.CONFIG_COMPANY,
+    PERMISSIONS.MONITORING_DEPOSIT,
+    PERMISSIONS.MONITORING_CREDIT,
   ],
   [ROLE_USER]: [],
   [ROLE_APPROVER]: [PERMISSIONS.APPROVAL],

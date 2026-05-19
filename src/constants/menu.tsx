@@ -1,6 +1,7 @@
 import {
   CheckSquareOutlined,
   ControlOutlined,
+  LineChartOutlined,
   PlusOutlined,
   SettingOutlined,
   SolutionOutlined,
@@ -14,6 +15,8 @@ import {
   CONFIGURATION_EMPLOYEES_PATH,
   CONFIGURATION_TRAVEL_POLICIES_PATH,
   CREATE_PATH,
+  // MONITORING_CREDIT_PATH,
+  MONITORING_DEPOSIT_PATH,
 } from '@/constants/routePath';
 
 import { PERMISSIONS } from './permission';
@@ -80,4 +83,20 @@ export const menus: Menu[] = [
     ],
     Icon: SettingOutlined,
   },
+  {
+    name: 'monitoring-deposit',
+    title: 'Monitoring Deposit',
+    path: MONITORING_DEPOSIT_PATH,
+    childs: [],
+    permissions: [PERMISSIONS.MONITORING_DEPOSIT],
+    Icon: LineChartOutlined,
+  },
+  // {
+  //   name: 'monitoring-credit',
+  //   title: 'Monitoring Credit',
+  //   path: MONITORING_CREDIT_PATH,
+  //   childs: [],
+  //   permissions: [PERMISSIONS.MONITORING_CREDIT],
+  //   Icon: LineChartOutlined,
+  // },
 ];
