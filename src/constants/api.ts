@@ -46,6 +46,9 @@ export const DOCUMENT_API = API_V1 + '/documents';
 export const DOCUMENT_UPLOAD_API = DOCUMENT_API + '/upload';
 export const DOCUMENT_URL_API = DOCUMENT_API + '/url';
 
+export const FILES_API = API_V1 + '/files';
+export const FILES_FETCH_API = FILES_API + '/fetch';
+
 export const DEPOSIT_API = API_V1 + '/balances';
 export const DEPOSIT_DETAIL_API = DEPOSIT_API + '/:code';
 export const DEPOSIT_MONITORING_API = DEPOSIT_API + '/monitoring';

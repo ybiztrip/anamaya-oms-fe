@@ -1,9 +1,10 @@
 import { ReloadOutlined } from '@ant-design/icons';
-import { Button, Table } from 'antd';
+import { Button, message,Table } from 'antd';
 import dayjs from 'dayjs';
 
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
-import type { DepositMonitoringType, PaginationResponseType } from '@/types';
+import useETicket from '@/hooks/useETicket';
+import type { BookingETicketPayloadType, DepositMonitoringType, PaginationResponseType } from '@/types';
 import { formatIDR } from '@/utils/formatter';
 
 type DepositTransactionTableProps = Readonly<{
@@ -27,6 +28,7 @@ function DepositTransactionTable({
   setPageSize,
   refreshDepositTransactions,
 }: DepositTransactionTableProps) {
+  const { downloadETicket, isLoading: isDownloading } = useETicket();
   const list = data?.data ?? [];
   const total = data?.totalElements ?? list.length;
 
@@ -37,9 +39,19 @@ function DepositTransactionTable({
     }
   };
 
-  const handleViewETicket = (id: number) => {
-    // TODO: implement view e-ticket
-    console.log(id);
+  const handleViewETicket = async (record: DepositMonitoringType) => {
+    try {
+      const payload: BookingETicketPayloadType = {
+        type: record.bookingType,
+        partnerBookingId: String(record.referenceCode),
+      };
+      const blob = await downloadETicket(payload);
+      const fileUrl = globalThis.URL.createObjectURL(blob);
+      globalThis.open(fileUrl, '_blank');
+      setTimeout(() => globalThis.URL.revokeObjectURL(fileUrl), 10000);
+    } catch (err: any) {
+      message.error(err?.response?.data?.message ?? err?.message ?? DEFAULT_ERROR_MESSAGE);
+    }
   };
 
   return (
@@ -106,7 +118,11 @@ function DepositTransactionTable({
             title: 'Actions',
             key: 'action',
             render: (_, record: DepositMonitoringType) => (
-              <Button type="primary" onClick={() => handleViewETicket(record.id)}>
+              <Button
+                type="primary"
+                loading={isDownloading}
+                onClick={() => handleViewETicket(record)}
+              >
                 E-Ticket
               </Button>
             ),

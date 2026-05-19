@@ -218,3 +218,8 @@ export type BookingRejectPayloadType = {
   flightIds: number[];
   hotelIds: number[];
 };
+
+export type BookingETicketPayloadType = {
+  type: string;
+  partnerBookingId: string;
+};

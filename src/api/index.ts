@@ -17,6 +17,7 @@ import {
   DEPOSIT_MONITORING_API,
   DOCUMENT_UPLOAD_API,
   DOCUMENT_URL_API,
+  FILES_FETCH_API,
   FLIGHT_AIRLINES_API,
   FLIGHT_AIRPORTS_API,
   FLIGHT_BOOKING_ADD_ONS_API,
@@ -45,6 +46,7 @@ import type {
   BookingCreatePayloadType,
   BookingCreateResponseType,
   BookingDetailResponseType,
+  BookingETicketPayloadType,
   BookingFlightPayloadType,
   BookingFlightResponseType,
   BookingHotelPayloadType,
@@ -320,6 +322,11 @@ export async function documentUpload(
 
 export async function documentUrl(key: string): Promise<ResponseType<string>> {
   const res = await axios.get(DOCUMENT_URL_API, { params: { key } });
+  return res.data;
+}
+
+export async function fetchBookingETicket(params: BookingETicketPayloadType): Promise<Blob> {
+  const res = await axios.post(FILES_FETCH_API, params, { responseType: 'blob' });
   return res.data;
 }
 
