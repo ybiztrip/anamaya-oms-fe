@@ -150,10 +150,10 @@ function FlightInfo({
                       <img
                         src={airline.logoUrl}
                         alt={airline.airlineName ?? g.airlineCode}
-                        style={{ height: 24 }}
+                        style={{ height: 24, width: 48, objectFit: 'contain' }}
                       />
                     ) : (
-                      <div style={{ width: 24, height: 24 }} />
+                      <div style={{ width: 48, height: 24 }} />
                     )}
                   </div>
                   <div className="min-w-0">
