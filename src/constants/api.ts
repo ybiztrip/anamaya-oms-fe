@@ -52,7 +52,11 @@ export const FILES_FETCH_API = FILES_API + '/fetch';
 export const DEPOSIT_API = API_V1 + '/balances';
 export const DEPOSIT_DETAIL_API = DEPOSIT_API + '/:code';
 export const DEPOSIT_MONITORING_API = DEPOSIT_API + '/monitoring';
+export const DEPOSIT_MONITORING_EXPORT_API = DEPOSIT_MONITORING_API + '/export';
 
 export const CREDIT_API = API_V1 + '/company-credit';
 export const CREDIT_INVOICES_API = CREDIT_API + '/invoices';
 export const CREDIT_MONITORING_API = CREDIT_API + '/monitoring';
+
+export const REFUNDS_API = API_V1 + '/refunds';
+export const REFUNDS_PAYMENT_API = REFUNDS_API + '/paid';

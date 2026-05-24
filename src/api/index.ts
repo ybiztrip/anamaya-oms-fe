@@ -15,6 +15,7 @@ import {
   DEPOSIT_API,
   DEPOSIT_DETAIL_API,
   DEPOSIT_MONITORING_API,
+  DEPOSIT_MONITORING_EXPORT_API,
   DOCUMENT_UPLOAD_API,
   DOCUMENT_URL_API,
   FILES_FETCH_API,
@@ -346,5 +347,10 @@ export async function fetchDepositMonitoring(
   params: DepositMonitoringPayloadType,
 ): Promise<PaginationResponseType<DepositMonitoringType>> {
   const res = await axios.get(DEPOSIT_MONITORING_API, { params });
+  return res.data;
+}
+
+export async function exportDepositMonitoring(params: DepositMonitoringPayloadType): Promise<any> {
+  const res = await axios.get(DEPOSIT_MONITORING_EXPORT_API, { params });
   return res.data;
 }

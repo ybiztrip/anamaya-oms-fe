@@ -1,10 +1,13 @@
-import { ReloadOutlined } from '@ant-design/icons';
-import { Button, message,Table } from 'antd';
+import { Button, message, Space, Table } from 'antd';
 import dayjs from 'dayjs';
 
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import useETicket from '@/hooks/useETicket';
-import type { BookingETicketPayloadType, DepositMonitoringType, PaginationResponseType } from '@/types';
+import type {
+  BookingETicketPayloadType,
+  DepositMonitoringType,
+  PaginationResponseType,
+} from '@/types';
 import { formatIDR } from '@/utils/formatter';
 
 type DepositTransactionTableProps = Readonly<{
@@ -15,7 +18,6 @@ type DepositTransactionTableProps = Readonly<{
   pageSize: number;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
-  refreshDepositTransactions: () => void;
 }>;
 
 function DepositTransactionTable({
@@ -26,7 +28,6 @@ function DepositTransactionTable({
   pageSize,
   setPage,
   setPageSize,
-  refreshDepositTransactions,
 }: DepositTransactionTableProps) {
   const { downloadETicket, isLoading: isDownloading } = useETicket();
   const list = data?.data ?? [];
@@ -54,16 +55,13 @@ function DepositTransactionTable({
     }
   };
 
+  const handleRequestRefund = async (record: DepositMonitoringType) => {
+    console.log(record);
+    // TODO: Request refund
+  };
+
   return (
     <>
-      <div className="flex justify-end mb-4">
-        <Button
-          type="text"
-          icon={<ReloadOutlined />}
-          onClick={refreshDepositTransactions}
-          aria-label="Refresh balance"
-        />
-      </div>
       {error && (
         <div className="text-center text-sm text-red-500 mb-4">
           {error?.message ?? DEFAULT_ERROR_MESSAGE}
@@ -118,13 +116,22 @@ function DepositTransactionTable({
             title: 'Actions',
             key: 'action',
             render: (_, record: DepositMonitoringType) => (
-              <Button
-                type="primary"
-                loading={isDownloading}
-                onClick={() => handleViewETicket(record)}
-              >
-                E-Ticket
-              </Button>
+              <Space>
+                <Button
+                  type="primary"
+                  loading={isDownloading}
+                  onClick={() => handleViewETicket(record)}
+                >
+                  E-Ticket
+                </Button>
+                <Button
+                  type="primary"
+                  loading={isDownloading}
+                  onClick={() => handleRequestRefund(record)}
+                >
+                  Request Refund
+                </Button>
+              </Space>
             ),
           },
         ]}

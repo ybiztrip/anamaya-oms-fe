@@ -1,12 +1,18 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
-import { fetchDepositMonitoring } from '@/api';
+import { exportDepositMonitoring, fetchDepositMonitoring } from '@/api';
 import { DEFAULT_PAGE_SIZE } from '@/constants/common';
 import { MONITORING_DEPOSIT_TRANSACTIONS } from '@/constants/queryKey';
 import type { DepositCodeType, DepositMonitoringPayloadType } from '@/types';
 
-export default function useDepositTransactions(code: DepositCodeType) {
+export default function useDepositTransactions(
+  code: DepositCodeType,
+  filters?: {
+    createdAt?: string;
+    referenceCode?: string;
+  },
+) {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
@@ -17,13 +23,19 @@ export default function useDepositTransactions(code: DepositCodeType) {
       page: page - 1,
       size: pageSize,
       balanceCodeType: code,
+      createdAt: filters?.createdAt,
+      referenceCode: filters?.referenceCode,
     }),
-    [page, pageSize, code],
+    [page, pageSize, code, filters?.createdAt, filters?.referenceCode],
   );
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: [MONITORING_DEPOSIT_TRANSACTIONS, code],
+  const { data, isLoading, error, isFetching } = useQuery({
+    queryKey: [MONITORING_DEPOSIT_TRANSACTIONS, code, filters?.createdAt, filters?.referenceCode],
     queryFn: () => fetchDepositMonitoring(payload),
+  });
+
+  const exportMutation = useMutation({
+    mutationFn: () => exportDepositMonitoring(payload),
   });
 
   const refreshDepositTransactions = () =>
@@ -35,8 +47,10 @@ export default function useDepositTransactions(code: DepositCodeType) {
     setPage,
     setPageSize,
     data,
-    isLoading,
+    isLoading: isLoading || isFetching,
     error,
+    exportDepositTransactions: exportMutation.mutateAsync,
+    isExporting: exportMutation.isPending,
     refreshDepositTransactions,
   };
 }
