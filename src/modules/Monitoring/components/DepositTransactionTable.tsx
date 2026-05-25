@@ -1,12 +1,14 @@
-import { Button, message, Space, Table } from 'antd';
+import { Button, message, Modal, Space, Table } from 'antd';
 import dayjs from 'dayjs';
 
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import useETicket from '@/hooks/useETicket';
+import useRefund from '@/hooks/useRefund';
 import type {
   BookingETicketPayloadType,
   DepositMonitoringType,
   PaginationResponseType,
+  RefundPayloadType,
 } from '@/types';
 import { formatIDR } from '@/utils/formatter';
 
@@ -18,6 +20,7 @@ type DepositTransactionTableProps = Readonly<{
   pageSize: number;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
+  refreshData: () => void;
 }>;
 
 function DepositTransactionTable({
@@ -28,8 +31,10 @@ function DepositTransactionTable({
   pageSize,
   setPage,
   setPageSize,
+  refreshData,
 }: DepositTransactionTableProps) {
   const { downloadETicket, isLoading: isDownloading } = useETicket();
+  const { createRefund, isLoading: isCreatingRefund } = useRefund();
   const list = data?.data ?? [];
   const total = data?.totalElements ?? list.length;
 
@@ -56,8 +61,33 @@ function DepositTransactionTable({
   };
 
   const handleRequestRefund = async (record: DepositMonitoringType) => {
-    console.log(record);
-    // TODO: Request refund
+    Modal.confirm({
+      title: 'Request refund?',
+      content: `Are you sure to request refund for transaction ${record.referenceCode} with amount Rp${formatIDR(record.amount)}?`,
+      okText: 'Yes, request',
+      cancelText: 'Cancel',
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        try {
+          const payload: RefundPayloadType = {
+            bookingType: record.bookingType,
+            ...(record.bookingType === 'FLIGHT'
+              ? { bookingFlightId: Number(record.bookingFlights?.[0]?.bookingId) }
+              : {}),
+            ...(record.bookingType === 'HOTEL'
+              ? { bookingHotelId: Number(record.bookingHotels?.[0]?.bookingId) }
+              : {}),
+            requestedAmount: record.amount,
+            remarks: 'Request Refund',
+          };
+          await createRefund(payload);
+          message.success('Refund request submitted successfully');
+          refreshData();
+        } catch (err: any) {
+          message.error(err?.response?.data?.message ?? err?.message ?? DEFAULT_ERROR_MESSAGE);
+        }
+      },
+    });
   };
 
   return (
@@ -126,8 +156,9 @@ function DepositTransactionTable({
                 </Button>
                 <Button
                   type="primary"
-                  loading={isDownloading}
+                  loading={isCreatingRefund}
                   onClick={() => handleRequestRefund(record)}
+                  danger
                 >
                   Request Refund
                 </Button>

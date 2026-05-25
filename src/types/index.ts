@@ -4,6 +4,7 @@ export * from './company';
 export * from './flight';
 export * from './hotel';
 export * from './monitoring';
+export * from './refund';
 export * from './travelPolicy';
 export * from './user';
 

@@ -96,6 +96,8 @@ export type BookingHotelPaxType = BookingPaxType;
 
 export type BookingHotelType = {
   id?: string;
+  bookingId?: number;
+  companyId?: number;
   status?: string;
   clientSource: string;
   itemId: string;

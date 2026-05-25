@@ -28,6 +28,7 @@ import {
   HOTEL_PROPERTY_DETAIL_API,
   HOTEL_ROOM_API,
   HOTEL_ROOM_RATE_API,
+  REFUNDS_API,
   ROLES_API,
   TRAVEL_POLICY_API,
   TRAVEL_POLICY_BY_ID_API,
@@ -78,6 +79,7 @@ import type {
   HotelRoomRateResponseType,
   HotelRoomResponseType,
   PaginationResponseType,
+  RefundPayloadType,
   ResponseType,
   RoleType,
   TravelPolicyListPayloadType,
@@ -352,5 +354,10 @@ export async function fetchDepositMonitoring(
 
 export async function exportDepositMonitoring(params: DepositMonitoringPayloadType): Promise<any> {
   const res = await axios.get(DEPOSIT_MONITORING_EXPORT_API, { params });
+  return res.data;
+}
+
+export async function createRefund(params: RefundPayloadType): Promise<ResponseType<any>> {
+  const res = await axios.post(REFUNDS_API, params);
   return res.data;
 }

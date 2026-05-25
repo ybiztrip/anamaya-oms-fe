@@ -131,6 +131,7 @@ function DepositTransactions() {
         pageSize={activeData.pageSize}
         setPage={activeData.setPage}
         setPageSize={activeData.setPageSize}
+        refreshData={activeData.refreshDepositTransactions}
       />
     </SectionCard>
   );
