@@ -1,6 +1,7 @@
 import {
   CheckSquareOutlined,
   ControlOutlined,
+  FileTextOutlined,
   LineChartOutlined,
   PlusOutlined,
   SettingOutlined,
@@ -17,6 +18,8 @@ import {
   CREATE_PATH,
   // MONITORING_CREDIT_PATH,
   MONITORING_DEPOSIT_PATH,
+  REPORT_FLIGHT_PATH,
+  REPORT_HOTEL_PATH,
 } from '@/constants/routePath';
 
 import { PERMISSIONS } from './permission';
@@ -99,4 +102,24 @@ export const menus: Menu[] = [
   //   permissions: [PERMISSIONS.MONITORING_CREDIT],
   //   Icon: LineChartOutlined,
   // },
+  {
+    name: 'report',
+    title: 'Report',
+    path: '',
+    childs: [
+      {
+        name: 'flight',
+        title: 'Flight',
+        path: REPORT_FLIGHT_PATH,
+        Icon: FileTextOutlined,
+      },
+      {
+        name: 'hotel',
+        title: 'Hotel',
+        path: REPORT_HOTEL_PATH,
+        Icon: FileTextOutlined,
+      },
+    ],
+    Icon: FileTextOutlined,
+  },
 ];

@@ -17,6 +17,8 @@ import {
   MONITORING_CREDIT_PATH,
   MONITORING_DEPOSIT_PATH,
   PROFILE_PATH,
+  REPORT_FLIGHT_PATH,
+  REPORT_HOTEL_PATH,
 } from '@/constants/routePath';
 import ApprovalView from '@/modules/Approval/ApprovalView';
 import BookingDetailView from '@/modules/Approval/BookingDetailView';
@@ -31,6 +33,8 @@ import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
 import MonitoringDepositView from '@/modules/Monitoring/MonitoringDepositView';
 import ProfileView from '@/modules/Profile/ProfileView';
+import ReportFlightView from '@/modules/Report/ReportFlightView';
+import ReportHotelView from '@/modules/Report/ReportHotelView';
 import TravelPolicyView from '@/modules/TravelPolicy/TravelPolicyView';
 
 import PermittedRoute from './PermittedRoute';
@@ -155,6 +159,23 @@ function App() {
         element={
           <ProtectedRoute>
             <MonitoringDepositView />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={REPORT_FLIGHT_PATH}
+        element={
+          <ProtectedRoute>
+            <ReportFlightView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={REPORT_HOTEL_PATH}
+        element={
+          <ProtectedRoute>
+            <ReportHotelView />
           </ProtectedRoute>
         }
       />

@@ -174,6 +174,18 @@ export type BookingNeedApprovalPayloadType = {
   needAttachment?: boolean;
 };
 
+export type BookingFlightsPayloadType = {
+  size?: number;
+  page?: number;
+  bookingCode?: string;
+};
+
+export type BookingHotelsPayloadType = {
+  size?: number;
+  page?: number;
+  bookingCode?: string;
+};
+
 export type BookingDetailResponseType = BookingType;
 
 export type BookingCreatePayloadType = {

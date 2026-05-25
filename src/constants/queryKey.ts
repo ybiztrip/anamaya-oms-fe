@@ -13,3 +13,5 @@ export const FLIGHT_ADD_ONS = 'flight-add-ons';
 export const HOTEL_GEO_LIST = 'hotel-geo-list';
 export const MONITORING_DEPOSIT_BALANCE = 'monitoring-deposit-balance';
 export const MONITORING_DEPOSIT_TRANSACTIONS = 'monitoring-deposit-transactions';
+export const REPORT_FLIGHTS = 'report-flights';
+export const REPORT_HOTELS = 'report-hotels';

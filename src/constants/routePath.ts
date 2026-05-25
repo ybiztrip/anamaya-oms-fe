@@ -15,3 +15,6 @@ export const CONFIGURATION_COMPANY_PATH = '/configuration/company';
 export const MONITORING_PATH = '/monitoring';
 export const MONITORING_DEPOSIT_PATH = MONITORING_PATH + '/deposit';
 export const MONITORING_CREDIT_PATH = MONITORING_PATH + '/credit';
+export const REPORT_PATH = '/report';
+export const REPORT_FLIGHT_PATH = REPORT_PATH + '/flight';
+export const REPORT_HOTEL_PATH = REPORT_PATH + '/hotel';
