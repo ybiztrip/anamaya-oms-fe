@@ -56,7 +56,8 @@ export type DepositMonitoringType = {
 };
 
 export type DepositMonitoringPayloadType = {
-  createdAt?: string;
+  startDate?: string;
+  endDate?: string;
   referenceCode?: string;
   page: number;
   size: number;

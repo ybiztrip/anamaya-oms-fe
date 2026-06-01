@@ -9,7 +9,8 @@ import type { DepositCodeType, DepositMonitoringPayloadType } from '@/types';
 export default function useDepositTransactions(
   code: DepositCodeType,
   filters?: {
-    createdAt?: string;
+    startDate?: string;
+    endDate?: string;
     referenceCode?: string;
   },
 ) {
@@ -23,14 +24,21 @@ export default function useDepositTransactions(
       page: page - 1,
       size: pageSize,
       balanceCodeType: code,
-      createdAt: filters?.createdAt,
+      startDate: filters?.startDate,
+      endDate: filters?.endDate,
       referenceCode: filters?.referenceCode,
     }),
-    [page, pageSize, code, filters?.createdAt, filters?.referenceCode],
+    [page, pageSize, code, filters?.startDate, filters?.endDate, filters?.referenceCode],
   );
 
   const { data, isLoading, error, isFetching } = useQuery({
-    queryKey: [MONITORING_DEPOSIT_TRANSACTIONS, code, filters?.createdAt, filters?.referenceCode],
+    queryKey: [
+      MONITORING_DEPOSIT_TRANSACTIONS,
+      code,
+      filters?.startDate,
+      filters?.endDate,
+      filters?.referenceCode,
+    ],
     queryFn: () => fetchDepositMonitoring(payload),
   });
 

@@ -13,15 +13,16 @@ import DepositTransactionTable from './DepositTransactionTable';
 
 function DepositTransactions() {
   const [activeTab, setActiveTab] = useState<'flight' | 'hotel'>('flight');
-  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
+  const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
   const [referenceCode, setReferenceCode] = useState('');
   const debouncedReferenceCode = useDebouncedValue(referenceCode, 400);
   const filters = useMemo(
     () => ({
-      createdAt: selectedDate ? selectedDate.format('YYYY-MM-DD') : undefined,
+      startDate: dateRange ? dateRange[0].format('YYYY-MM-DD') : undefined,
+      endDate: dateRange ? dateRange[1].format('YYYY-MM-DD') : undefined,
       referenceCode: debouncedReferenceCode.trim() || undefined,
     }),
-    [selectedDate, debouncedReferenceCode],
+    [dateRange, debouncedReferenceCode],
   );
   const flightTransactions = useDepositTransactions(
     DEPOSIT_CODE_FLIGHT as DepositCodeType,
@@ -79,15 +80,18 @@ function DepositTransactions() {
           </Card>
         </Col>
       </Row>
-      <Card size="small">
+      <Card size="small" className="mb-4">
         <Row justify="space-between">
           <Col>
             <Row gutter={[16, 16]} className="mb-4">
               <Col xs={24} md={12}>
-                <DatePicker
+                <DatePicker.RangePicker
                   className="w-full"
-                  onChange={(value) => setSelectedDate(value)}
-                  placeholder="Transaction Date"
+                  value={dateRange}
+                  onChange={(range) =>
+                    setDateRange(range?.[0] && range?.[1] ? [range[0], range[1]] : null)
+                  }
+                  placeholder={['Start Date', 'End Date']}
                   allowClear
                 />
               </Col>
