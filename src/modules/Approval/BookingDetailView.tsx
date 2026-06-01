@@ -6,7 +6,6 @@ import {
   Card,
   Col,
   Divider,
-  Image,
   message,
   Row,
   Spin,
@@ -17,7 +16,8 @@ import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { documentUrl, fetchBookingDetail } from '@/api';
+import { fetchBookingDetail } from '@/api';
+import DocumentLinks from '@/components/DocumentLinks';
 import Layout from '@/components/Layout';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { BOOKINGS_DETAIL } from '@/constants/queryKey';
@@ -72,19 +72,6 @@ function BookingDetailView() {
     data?.flights?.length && data?.flights?.length > 0
       ? data?.flights[0]?.paxs
       : (data?.hotels?.[0]?.paxs ?? []);
-
-  const attachmentKeys = useMemo(() => {
-    return data?.attachments?.map((attachment) => attachment.file) ?? [];
-  }, [data]);
-
-  const { data: attachmentUrls, isLoading: isAttachmentLoading } = useQuery({
-    queryKey: [BOOKINGS_DETAIL, id, 'attachments', attachmentKeys],
-    queryFn: async () => {
-      const results = await Promise.all(attachmentKeys.map((key: string) => documentUrl(key)));
-      return results.map((res) => res.data);
-    },
-    enabled: !!id && attachmentKeys.length > 0,
-  });
 
   if (!id) {
     return (
@@ -213,7 +200,10 @@ function BookingDetailView() {
                           <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
                             {Array.from({ length: Number(hotel.metadata?.hotelStarRating) }).map(
                               (_, i) => (
-                                <StarFilled key={i} style={{ color: '#69A8FF', fontSize: 12 }} />
+                                <StarFilled
+                                  key={`${hotel.id ?? 'hotel'}-star-${i}`}
+                                  style={{ color: '#69A8FF', fontSize: 12 }}
+                                />
                               ),
                             )}
                           </div>
@@ -274,32 +264,7 @@ function BookingDetailView() {
         <Divider />
 
         <Title level={5}>Additional Information</Title>
-        {isAttachmentLoading ? (
-          <div className="w-full text-center">
-            <Spin />
-          </div>
-        ) : attachmentUrls && attachmentUrls.length > 0 ? (
-          <Row gutter={[16, 16]}>
-            {attachmentUrls.map((url, index) => {
-              const isImage = /\.(png|jpe?g|gif|webp)$/i.test(url);
-              return (
-                <Col key={url} xs={24} md={12} lg={8}>
-                  <Card size="small">
-                    {isImage ? (
-                      <Image src={url} width="100%" />
-                    ) : (
-                      <a href={url} target="_blank" rel="noreferrer">
-                        Open attachment {index + 1}
-                      </a>
-                    )}
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
-        ) : (
-          <Text type="secondary">No attachments</Text>
-        )}
+        <DocumentLinks attachments={data?.attachments} emptyText="No attachments" />
 
         <Divider />
 
