@@ -25,7 +25,9 @@ createRoot(document.getElementById('root')!).render(
             bodyBg: '#ffffff',
           },
           Menu: {
+            itemSelectedColor: '#0d6eff',
             itemSelectedBg: '#ffffff',
+            subMenuItemSelectedColor: '#0d6eff',
           },
         },
       }}

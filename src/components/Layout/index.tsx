@@ -1,6 +1,6 @@
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Image, Layout, Menu, Popover, Typography } from 'antd';
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import AnamayaLogo from '@/assets/anamaya.webp';
@@ -16,6 +16,9 @@ import { isPermittedAny } from '@/utils/permission';
 const { Header, Sider } = Layout;
 const { Title } = Typography;
 
+const matchesMenuPath = (path: string, currentPath: string) =>
+  currentPath === path || currentPath.startsWith(`${path}/`);
+
 const AppLayout = ({
   children,
   withSidebar = true,
@@ -27,10 +30,27 @@ const AppLayout = ({
   const { logout } = useAuth();
   const currentUser = localStorageGet<UserType>(USER);
 
-  const selectedMenuKey = useMemo(() => {
-    const selectedMenu = menus.find((menu) => menu.path === pathname);
-    return selectedMenu ? selectedMenu.name : '';
-  }, [pathname]);
+  let selectedKey = '';
+  let activeOpenKeys: string[] = [];
+
+  const topMenu = menus.find(
+    (menu) => menu.path && menu.childs.length === 0 && matchesMenuPath(menu.path, pathname),
+  );
+  if (topMenu) {
+    selectedKey = topMenu.name;
+  } else {
+    for (const menu of menus) {
+      const child = menu.childs.find((c) => matchesMenuPath(c.path, pathname));
+      if (child) {
+        selectedKey = child.name;
+        activeOpenKeys = [menu.name];
+        break;
+      }
+    }
+  }
+
+  const [userOpenKeys, setUserOpenKeys] = useState<string[]>([]);
+  const mergedOpenKeys = [...new Set([...userOpenKeys, ...activeOpenKeys])];
 
   return (
     <Layout>
@@ -94,26 +114,38 @@ const AppLayout = ({
             <Menu
               className="mt-8"
               mode="inline"
-              selectedKeys={[selectedMenuKey]}
-              items={menus.map((menu) => {
-                const { name, title, path, childs, Icon, permissions } = menu;
-                if (permissions && !isPermittedAny(permissions)) return null;
-                const children = childs.map((child) => {
-                  const { name, title, path, Icon: ChildIcon, permissions: childPermissions } = child;
-                  if (childPermissions && !isPermittedAny(childPermissions)) return null;
+              selectedKeys={selectedKey ? [selectedKey] : []}
+              openKeys={mergedOpenKeys}
+              onOpenChange={setUserOpenKeys}
+              items={menus
+                .map((menu) => {
+                  const { name, title, path, childs, Icon, permissions } = menu;
+                  if (permissions && !isPermittedAny(permissions)) return null;
+                  const children = childs
+                    .map((child) => {
+                      const {
+                        name: childName,
+                        title: childTitle,
+                        path: childPath,
+                        Icon: ChildIcon,
+                        permissions: childPermissions,
+                      } = child;
+                      if (childPermissions && !isPermittedAny(childPermissions)) return null;
+                      return {
+                        key: childName,
+                        ...(ChildIcon ? { icon: <ChildIcon /> } : {}),
+                        label: <Link to={childPath}>{childTitle}</Link>,
+                      };
+                    })
+                    .filter((item) => item != null);
                   return {
                     key: name,
-                    ...(ChildIcon ? { icon: <ChildIcon /> } : {}),
-                    label: <Link to={path}>{title}</Link>,
+                    ...(Icon ? { icon: <Icon /> } : {}),
+                    label: path ? <Link to={path}>{title}</Link> : title,
+                    ...(children.length ? { children } : {}),
                   };
-                });
-                return {
-                  key: name,
-                  ...(Icon ? { icon: <Icon /> } : {}),
-                  label: path ? <Link to={path}>{title}</Link> : title,
-                  ...(children.length ? { children } : {}),
-                };
-              })}
+                })
+                .filter((item) => item != null)}
             />
           </Sider>
         )}
