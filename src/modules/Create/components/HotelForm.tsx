@@ -121,7 +121,7 @@ function HotelForm({
               style={{ flex: 1, marginBottom: 0 }}
               rules={[{ required: true, message: 'Destination required' }]}
             >
-              <SelectHotelGeo placeholder="City, Hotel name" labelInValue />
+              <SelectHotelGeo placeholder="City" labelInValue />
             </Form.Item>
           </Col>
           <Col xs={24} md={6}>
