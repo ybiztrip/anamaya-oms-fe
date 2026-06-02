@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ant-layout-sider-collapsed .app-sidebar-menu .layout-menu-child.ant-menu-item {
+  background-color: #fafafa;
+}

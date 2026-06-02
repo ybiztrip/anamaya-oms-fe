@@ -1,6 +1,7 @@
 import { UserOutlined } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
 import { Avatar, Button, Image, Layout, Menu, Popover, Typography } from 'antd';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import AnamayaLogo from '@/assets/anamaya.webp';
@@ -50,7 +51,50 @@ const AppLayout = ({
   }
 
   const [userOpenKeys, setUserOpenKeys] = useState<string[]>([]);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const mergedOpenKeys = [...new Set([...userOpenKeys, ...activeOpenKeys])];
+  const menuItems = useMemo<MenuProps['items']>(() => {
+    const items: NonNullable<MenuProps['items']> = [];
+
+    menus.forEach((menu) => {
+      const { name, title, path, childs, Icon, permissions } = menu;
+      if (permissions && !isPermittedAny(permissions)) return;
+
+      const children: NonNullable<MenuProps['items']> = [];
+      childs.forEach((child) => {
+        const {
+          name: childName,
+          title: childTitle,
+          path: childPath,
+          Icon: ChildIcon,
+          permissions: childPermissions,
+        } = child;
+        if (childPermissions && !isPermittedAny(childPermissions)) return;
+        children.push({
+          key: childName,
+          ...(ChildIcon ? { icon: <ChildIcon /> } : {}),
+          className: 'layout-menu-child',
+          title: `${title} / ${childTitle}`,
+          label: <Link to={childPath}>{childTitle}</Link>,
+        });
+      });
+
+      if (isCollapsed && children.length > 0) {
+        items.push(...children);
+        return;
+      }
+
+      items.push({
+        key: name,
+        ...(Icon ? { icon: <Icon /> } : {}),
+        className: 'layout-menu-parent',
+        label: path ? <Link to={path}>{title}</Link> : title,
+        ...(children.length > 0 ? { children } : {}),
+      });
+    });
+
+    return items;
+  }, [isCollapsed]);
 
   return (
     <Layout>
@@ -109,43 +153,16 @@ const AppLayout = ({
             collapsible
             breakpoint="lg"
             collapsedWidth={80}
+            onCollapse={(collapsed) => setIsCollapsed(collapsed)}
             style={{ overflow: 'auto' }}
           >
             <Menu
-              className="mt-8"
+              className="mt-8 app-sidebar-menu"
               mode="inline"
               selectedKeys={selectedKey ? [selectedKey] : []}
-              openKeys={mergedOpenKeys}
-              onOpenChange={setUserOpenKeys}
-              items={menus
-                .map((menu) => {
-                  const { name, title, path, childs, Icon, permissions } = menu;
-                  if (permissions && !isPermittedAny(permissions)) return null;
-                  const children = childs
-                    .map((child) => {
-                      const {
-                        name: childName,
-                        title: childTitle,
-                        path: childPath,
-                        Icon: ChildIcon,
-                        permissions: childPermissions,
-                      } = child;
-                      if (childPermissions && !isPermittedAny(childPermissions)) return null;
-                      return {
-                        key: childName,
-                        ...(ChildIcon ? { icon: <ChildIcon /> } : {}),
-                        label: <Link to={childPath}>{childTitle}</Link>,
-                      };
-                    })
-                    .filter((item) => item != null);
-                  return {
-                    key: name,
-                    ...(Icon ? { icon: <Icon /> } : {}),
-                    label: path ? <Link to={path}>{title}</Link> : title,
-                    ...(children.length ? { children } : {}),
-                  };
-                })
-                .filter((item) => item != null)}
+              openKeys={isCollapsed ? [] : mergedOpenKeys}
+              onOpenChange={(keys) => setUserOpenKeys(keys)}
+              items={menuItems}
             />
           </Sider>
         )}
