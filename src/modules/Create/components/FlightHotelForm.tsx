@@ -208,7 +208,7 @@ function FlightHotelForm({
                   style={{ width: '100%' }}
                   placeholder="Departure date"
                   format="DD MMM YYYY"
-                  disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
+                  disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'), 'day')}
                 />
               </Form.Item>
               {tripType === 'roundTrip' && (
@@ -232,7 +232,11 @@ function FlightHotelForm({
                     <DatePicker
                       style={{ width: '100%' }}
                       placeholder="Return date"
-                      disabledDate={(d) => (depart ? d.isBefore(depart, 'day') : false)}
+                      disabledDate={(d) =>
+                        depart
+                          ? d.isBefore(depart, 'day')
+                          : d.isBefore(dayjs().add(1, 'day'), 'day')
+                      }
                       format="DD MMM YYYY"
                     />
                   </Form.Item>
@@ -260,7 +264,7 @@ function FlightHotelForm({
             >
               <DatePicker
                 style={{ width: '100%' }}
-                disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'))}
+                disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'), 'day')}
                 format="DD MMM YYYY"
               />
             </Form.Item>
@@ -274,7 +278,9 @@ function FlightHotelForm({
               <DatePicker
                 style={{ width: '100%' }}
                 disabledDate={(d) =>
-                  checkInDate ? d.isBefore(checkInDate, 'day') : d.isBefore(dayjs().add(1, 'day'))
+                  checkInDate
+                    ? d.isBefore(checkInDate, 'day')
+                    : d.isBefore(dayjs().add(1, 'day'), 'day')
                 }
                 format="DD MMM YYYY"
               />
