@@ -65,7 +65,21 @@ export type BookingFlightType = {
   paymentMethod: string;
   paymentReference1?: string;
   paymentReference2?: string;
-  metadata: any;
+  metadata?: {
+    prices?: BookingPriceItemType[];
+    booker?: string;
+    departureAirport?: string;
+    departureTerminal?: string[] | string;
+    arrivalAirport?: string;
+    arrivalTerminal?: string[] | string;
+    airlines?: string[];
+    flightCodes?: string[];
+    passengerNames?: string[];
+    attachments?: {
+      name: string;
+      file: string;
+    }[];
+  };
   createdAt?: string;
 };
 
@@ -113,7 +127,20 @@ export type BookingHotelType = {
   paymentReference1: string;
   paymentReference2: string;
   specialRequest: string;
-  metadata: any;
+  metadata?: {
+    prices?: BookingPriceItemType[];
+    booker?: string;
+    hotelName?: string;
+    hotelAddress?: string;
+    hotelCity?: string;
+    hotelStarRating?: string;
+    hotelRoomName?: string;
+    guestNames?: string[];
+    attachments?: {
+      name: string;
+      file: string;
+    }[];
+  };
 };
 
 export type BookingType = {
@@ -178,12 +205,22 @@ export type BookingFlightsPayloadType = {
   size?: number;
   page?: number;
   bookingCode?: string;
+  departureStartDate?: string;
+  departureEndDate?: string;
+  arrivalStartDate?: string;
+  arrivalEndDate?: string;
+  status?: string;
 };
 
 export type BookingHotelsPayloadType = {
   size?: number;
   page?: number;
   bookingCode?: string;
+  checkInStartDate?: string;
+  checkInEndDate?: string;
+  checkOutStartDate?: string;
+  checkOutEndDate?: string;
+  status?: string;
 };
 
 export type BookingDetailResponseType = BookingType;

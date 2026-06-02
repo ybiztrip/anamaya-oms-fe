@@ -127,9 +127,11 @@ export default function useBookingConfirm({
   };
 
   const createBookingsFlight = async (bookingId: string, values: any) => {
+    const userProfile = localStorageGet<UserType>(USER);
     const flightsPayload = flights?.map((flight, flightIndex: number) => {
       const departure = flight.selectedFlight?.journeys?.[0]?.departureDetail;
       const arrival = flight.selectedFlight?.journeys?.at(-1)?.arrivalDetail;
+      const allSegments = flight.selectedFlight?.journeys.flatMap((j) => j?.segments ?? []);
       return {
         type: tripType === 'roundTrip' ? 1 : tripType === 'oneWay' ? 2 : 3,
         clientSource: CLIENT_SOURCE,
@@ -153,8 +155,20 @@ export default function useBookingConfirm({
         paymentReference2: '',
         metadata: {
           prices: flightPrices?.[flightIndex] ?? [],
+          booker: userProfile?.email,
           departureAirport: flight.selectedFlight?.departureAirport ?? '',
+          departureTerminal: departure?.departureTerminal ?? '',
           arrivalAirport: flight.selectedFlight?.arrivalAirport ?? '',
+          arrivalTerminal: arrival?.arrivalTerminal ?? '',
+          airlines: allSegments?.map((segment) => segment?.marketingAirline),
+          flightCodes: allSegments?.map((segment) => segment?.flightCode),
+          passengerNames: paxList.map(
+            (pax: PassengerGuestType) => `${pax.firstName} ${pax.lastName}`,
+          ),
+          attachments: attachments?.map((attachment: UploadFile) => ({
+            name: attachment.name ?? '',
+            file: attachment.response ?? '',
+          })),
         },
       };
     });
@@ -191,6 +205,7 @@ export default function useBookingConfirm({
   };
 
   const createBookingsHotel = async (bookingId: string, values: any) => {
+    const userProfile = localStorageGet<UserType>(USER);
     const hotelPayload = {
       clientSource: CLIENT_SOURCE,
       itemId: hotel?.selectedHotel?.propertyId ?? '',
@@ -209,10 +224,17 @@ export default function useBookingConfirm({
       paymentReference2: '',
       metadata: {
         prices: hotelPrices ?? [],
+        booker: userProfile?.email,
         hotelName: hotel?.selectedHotel?.propertySummary?.name ?? '',
         hotelAddress: hotel?.selectedHotel?.propertySummary?.address?.lines?.join(', ') ?? '',
+        hotelCity: hotel?.selectedHotel?.propertySummary?.address?.city ?? '',
         hotelStarRating: hotel?.selectedHotel?.propertySummary?.starRating ?? '',
         hotelRoomName: hotel?.selectedRoom?.roomName ?? '',
+        guestNames: paxList.map((pax: PassengerGuestType) => `${pax.firstName} ${pax.lastName}`),
+        attachments: attachments?.map((attachment: UploadFile) => ({
+          name: attachment.name ?? '',
+          file: attachment.response ?? '',
+        })),
       },
     };
     const paxsPayload = paxList.map((pax: PassengerGuestType) => {

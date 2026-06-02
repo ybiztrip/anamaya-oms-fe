@@ -1,6 +1,7 @@
 import { Table } from 'antd';
 import dayjs from 'dayjs';
 
+import DocumentLinks from '@/components/DocumentLinks';
 import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import type { BookingHotelType, PaginationResponseType } from '@/types';
 import { formatIDR } from '@/utils/formatter';
@@ -61,9 +62,31 @@ function ReportHotelTable({
             render: (bookingCode: string) => <span>{bookingCode}</span>,
           },
           {
-            title: 'Hotel Name',
+            title: 'Attachments',
+            key: 'attachments',
+            render: (hotel: BookingHotelType) => (
+              <DocumentLinks attachments={hotel?.metadata?.attachments} />
+            ),
+          },
+          {
+            title: 'Booker',
+            key: 'booker',
+            render: (hotel: BookingHotelType) => <span>{hotel?.metadata?.booker}</span>,
+          },
+          {
+            title: 'Hotel',
             key: 'hotelName',
             render: (hotel: BookingHotelType) => <span>{hotel?.metadata?.hotelName}</span>,
+          },
+          {
+            title: 'Room',
+            key: 'roomName',
+            render: (hotel: BookingHotelType) => <span>{hotel?.metadata?.hotelRoomName}</span>,
+          },
+          {
+            title: 'Location',
+            key: 'location',
+            render: (hotel: BookingHotelType) => <span>{hotel?.metadata?.hotelCity}</span>,
           },
           {
             title: 'Check In Date',
@@ -82,10 +105,19 @@ function ReportHotelTable({
             ),
           },
           {
-            title: 'Amount',
+            title: 'Guest Names',
+            key: 'guestNames',
+            render: (hotel: BookingHotelType) => (
+              <span>{hotel?.metadata?.guestNames?.join(', ') ?? '-'}</span>
+            ),
+          },
+          {
+            title: 'Total Price',
             dataIndex: 'partnerSellAmount',
             key: 'partnerSellAmount',
-            render: (partnerSellAmount: number) => <span>Rp{formatIDR(partnerSellAmount) || '-'}</span>,
+            render: (partnerSellAmount: number) => (
+              <span>Rp{formatIDR(partnerSellAmount) || '-'}</span>
+            ),
           },
           {
             title: 'Status',

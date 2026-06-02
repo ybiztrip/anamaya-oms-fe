@@ -21,8 +21,11 @@ export default function ReportFlightView() {
   const filtersValues = useMemo(
     () => ({
       bookingCode: debouncedBookingCode?.trim() || undefined,
+      departureDateRange: filters.departureDateRange,
+      arrivalDateRange: filters.arrivalDateRange,
+      status: filters.status || undefined,
     }),
-    [debouncedBookingCode],
+    [debouncedBookingCode, filters],
   );
 
   const { data, isLoading, error, page, pageSize, setPage, setPageSize, refresh } =
@@ -34,7 +37,7 @@ export default function ReportFlightView() {
   return (
     <Layout>
       <SectionCard className="mt-4" title="Report Flight">
-        <Card size="small">
+        <Card size="small" className="mb-4">
           <Row justify="space-between">
             <Col>
               <ReportFlightFilterForm value={filters} onChange={setFilters} />

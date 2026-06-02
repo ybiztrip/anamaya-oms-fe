@@ -21,8 +21,11 @@ export default function ReportHotelView() {
   const filtersValues = useMemo(
     () => ({
       bookingCode: debouncedBookingCode?.trim() || undefined,
+      checkInDateRange: filters.checkInDateRange,
+      checkOutDateRange: filters.checkOutDateRange,
+      status: filters.status || undefined,
     }),
-    [debouncedBookingCode],
+    [debouncedBookingCode, filters],
   );
 
   const { data, isLoading, error, page, pageSize, setPage, setPageSize, refresh } =
@@ -34,7 +37,7 @@ export default function ReportHotelView() {
   return (
     <Layout>
       <SectionCard className="mt-4" title="Report Hotel">
-        <Card size="small">
+        <Card size="small" className="mb-4">
           <Row justify="space-between">
             <Col>
               <ReportHotelFilterForm value={filters} onChange={setFilters} />
