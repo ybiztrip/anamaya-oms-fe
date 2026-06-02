@@ -36,7 +36,7 @@ export default function useEmployee() {
     return {
       id: values.id ?? existing?.id ?? 0,
       companyId: existing?.companyId ?? currentUser?.companyId ?? 0,
-      status: values.status,
+      status: values.status ?? existing?.status ?? 1,
       email: values.email ?? existing?.email ?? '',
       travelPolicyId: values.travelPolicy ?? existing?.travelPolicyId ?? 0,
       firstName: values.firstName ?? existing?.firstName ?? '',
@@ -57,7 +57,7 @@ export default function useEmployee() {
       positionId: 2,
       createdBy: existing ? existing.createdBy : (currentUser?.id ?? 0),
       updatedBy: currentUser?.id ?? 0,
-      password: 'test123',
+      ...(values.password ? { password: values.password } : {}),
       enableChatEngine: false,
     };
   };
