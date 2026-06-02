@@ -215,7 +215,7 @@ function FlightSearchForm({
                       <DatePicker
                         style={{ width: '100%' }}
                         placeholder="Departure date"
-                        disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'), 'day')}
+                        disabledDate={(d) => d.isBefore(dayjs(), 'day')}
                         format="DD MMM YYYY"
                       />
                     </Form.Item>

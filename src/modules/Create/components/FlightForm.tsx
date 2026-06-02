@@ -181,7 +181,7 @@ function FlightForm({
                     style={{ width: '100%' }}
                     placeholder="Departure date"
                     format="DD MMM YYYY"
-                    disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'), 'day')}
+                    disabledDate={(d) => d.isBefore(dayjs(), 'day')}
                   />
                 </Form.Item>
                 {tripType === 'roundTrip' && (
@@ -274,7 +274,7 @@ function FlightForm({
                               <DatePicker
                                 style={{ width: '100%' }}
                                 placeholder="Departure date"
-                                disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'), 'day')}
+                                disabledDate={(d) => d.isBefore(dayjs(), 'day')}
                                 format="DD MMM YYYY"
                               />
                             </Form.Item>

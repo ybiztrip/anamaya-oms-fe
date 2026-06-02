@@ -132,7 +132,7 @@ function HotelForm({
             >
               <DatePicker
                 style={{ width: '100%' }}
-                disabledDate={(d) => d.isBefore(dayjs().add(1, 'day'), 'day')}
+                disabledDate={(d) => d.isBefore(dayjs(), 'day')}
                 format="DD MMM YYYY"
               />
             </Form.Item>
@@ -141,13 +141,23 @@ function HotelForm({
             <Form.Item
               name="checkOutDate"
               label="Check out"
-              rules={[{ required: true, message: 'Check out required' }]}
+              rules={[
+                { required: true, message: 'Check out required' },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const checkIn = getFieldValue('checkInDate');
+                    if (!value || !checkIn) return Promise.resolve();
+                    if (value.isAfter(checkIn, 'day')) return Promise.resolve();
+                    return Promise.reject(new Error('Check out must be after check in'));
+                  },
+                }),
+              ]}
             >
               <DatePicker
                 style={{ width: '100%' }}
                 disabledDate={(d) =>
                   checkInDate
-                    ? d.isBefore(checkInDate, 'day')
+                    ? d.isBefore(checkInDate.add(1, 'day'), 'day')
                     : d.isBefore(dayjs().add(1, 'day'), 'day')
                 }
                 format="DD MMM YYYY"
