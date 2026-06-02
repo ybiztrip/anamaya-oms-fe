@@ -34,7 +34,6 @@ function HotelSearchForm({
   const [items, setItems] = useState<HotelPropertyType[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalProperties, setTotalProperties] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const lastSearchRef = useRef<any>(null);
@@ -96,11 +95,10 @@ function HotelSearchForm({
         page: nextPage,
         limit: DEFAULT_PAGE_SIZE,
       });
-      const { properties = [], totalPages = 1, totalProperties = 0 } = response?.data ?? {};
+      const { properties = [], totalPages = 1 } = response?.data ?? {};
       setItems((prev) => (append ? [...prev, ...properties] : properties));
       setPage(nextPage);
       setTotalPages(Number(totalPages));
-      setTotalProperties(Number(totalProperties));
       return properties.length;
     },
     [handleSearchHotels],
@@ -281,11 +279,6 @@ function HotelSearchForm({
               {hasSearched && items.length > 0 && page < totalPages && (
                 <div className="flex justify-center py-6 text-sm text-gray-500">
                   {isLoadingMore ? <Spin /> : 'Scroll to load more'}
-                </div>
-              )}
-              {hasSearched && items.length > 0 && page >= totalPages && totalProperties > 0 && (
-                <div className="flex justify-center py-4 text-xs text-gray-400">
-                  Showing {items.length} of {totalProperties}
                 </div>
               )}
               <div ref={sentinelRef} />
