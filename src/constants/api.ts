@@ -42,7 +42,9 @@ export const BOOKINGS_ATTACHMENT_API = BOOKINGS_API + '/:id/attachments';
 export const BOOKINGS_APPROVE_API = BOOKINGS_API + '/approve/:id';
 export const BOOKINGS_REJECT_API = BOOKINGS_API + '/reject/:id';
 export const BOOKINGS_FLIGHTS_API = BOOKINGS_API + '/flights';
+export const BOOKINGS_FLIGHTS_EXPORT_API = BOOKINGS_API + '/flights/export';
 export const BOOKINGS_HOTELS_API = BOOKINGS_API + '/hotels';
+export const BOOKINGS_HOTELS_EXPORT_API = BOOKINGS_API + '/hotels/export';
 
 export const DOCUMENT_API = API_V1 + '/documents';
 export const DOCUMENT_UPLOAD_API = DOCUMENT_API + '/upload';

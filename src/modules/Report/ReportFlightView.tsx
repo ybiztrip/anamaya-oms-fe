@@ -28,11 +28,28 @@ export default function ReportFlightView() {
     [debouncedBookingCode, filters],
   );
 
-  const { data, isLoading, error, page, pageSize, setPage, setPageSize, refresh } =
-    useReportFlight(filtersValues);
+  const {
+    data,
+    isLoading,
+    error,
+    page,
+    pageSize,
+    setPage,
+    setPageSize,
+    refresh,
+    exportReportFlights,
+    isExporting,
+  } = useReportFlight(filtersValues);
 
   const handleExport = async () => {
-    // TODO: export report flights
+    const csvText = await exportReportFlights();
+    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `report-flight-${Date.now()}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
   return (
     <Layout>
@@ -49,6 +66,7 @@ export default function ReportFlightView() {
                     type="text"
                     icon={<DownloadOutlined />}
                     onClick={handleExport}
+                    loading={isExporting}
                     aria-label="Export"
                   />
                 </Tooltip>

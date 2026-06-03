@@ -8,8 +8,10 @@ import {
   BOOKINGS_DETAIL_API,
   BOOKINGS_FLIGHT_API,
   BOOKINGS_FLIGHTS_API,
+  BOOKINGS_FLIGHTS_EXPORT_API,
   BOOKINGS_HOTEL_API,
   BOOKINGS_HOTELS_API,
+  BOOKINGS_HOTELS_EXPORT_API,
   BOOKINGS_MY_APPROVAL_API,
   BOOKINGS_NEED_APPROVAL_API,
   BOOKINGS_REJECT_API,
@@ -260,10 +262,20 @@ export async function fetchBookingsFlights(
   return res.data;
 }
 
+export async function exportBookingsFlights(params: BookingFlightsPayloadType): Promise<any> {
+  const res = await axios.get(BOOKINGS_FLIGHTS_EXPORT_API, { params });
+  return res.data;
+}
+
 export async function fetchBookingsHotels(
   params: BookingHotelsPayloadType,
 ): Promise<PaginationResponseType<BookingHotelType>> {
   const res = await axios.get(BOOKINGS_HOTELS_API, { params });
+  return res.data;
+}
+
+export async function exportBookingsHotels(params: BookingHotelsPayloadType): Promise<any> {
+  const res = await axios.get(BOOKINGS_HOTELS_EXPORT_API, { params });
   return res.data;
 }
 

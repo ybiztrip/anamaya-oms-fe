@@ -1,7 +1,7 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
-import { fetchBookingsHotels } from '@/api';
+import { exportBookingsHotels, fetchBookingsHotels } from '@/api';
 import { DEFAULT_PAGE_SIZE } from '@/constants/common';
 import { REPORT_HOTELS } from '@/constants/queryKey';
 import type { BookingHotelsPayloadType } from '@/types';
@@ -41,6 +41,10 @@ export default function useReportHotel(filters?: ReportHotelFilters) {
     queryFn: () => fetchBookingsHotels(payload),
   });
 
+  const exportMutation = useMutation({
+    mutationFn: () => exportBookingsHotels(payload),
+  });
+
   const refresh = () => queryClient.invalidateQueries({ queryKey: [REPORT_HOTELS] });
 
   return {
@@ -52,5 +56,7 @@ export default function useReportHotel(filters?: ReportHotelFilters) {
     isLoading: isLoading || isFetching,
     error,
     refresh,
+    exportReportHotels: exportMutation.mutateAsync,
+    isExporting: exportMutation.isPending,
   };
 }

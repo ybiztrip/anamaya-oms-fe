@@ -1,7 +1,7 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
-import { fetchBookingsFlights } from '@/api';
+import { exportBookingsFlights, fetchBookingsFlights } from '@/api';
 import { DEFAULT_PAGE_SIZE } from '@/constants/common';
 import { REPORT_FLIGHTS } from '@/constants/queryKey';
 import type { BookingFlightsPayloadType } from '@/types';
@@ -36,6 +36,10 @@ export default function useReportFlight(filters?: ReportFlightFilters) {
     [page, pageSize, filters],
   );
 
+  const exportMutation = useMutation({
+    mutationFn: () => exportBookingsFlights(payload),
+  });
+
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: [REPORT_FLIGHTS, payload],
     queryFn: () => fetchBookingsFlights(payload),
@@ -52,5 +56,7 @@ export default function useReportFlight(filters?: ReportFlightFilters) {
     isLoading: isLoading || isFetching,
     error,
     refresh,
+    exportReportFlights: exportMutation.mutateAsync,
+    isExporting: exportMutation.isPending,
   };
 }
