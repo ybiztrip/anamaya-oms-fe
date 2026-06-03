@@ -1,12 +1,6 @@
 import { Col, DatePicker, Input, Row, Select } from 'antd';
 
-import {
-  BOOKING_STATUS_APPROVED,
-  BOOKING_STATUS_BOOKED,
-  BOOKING_STATUS_CANCELLED,
-  BOOKING_STATUS_ISSUED,
-  BOOKING_STATUS_REJECTED,
-} from '@/constants/common';
+import { BOOKING_HOTEL_STATUSES } from '@/constants/common';
 
 import type { ReportHotelFilters } from '../types';
 
@@ -32,13 +26,7 @@ export default function ReportHotelFilterForm({ value, onChange }: ReportHotelFi
           allowClear
           value={value.status}
           onChange={(status) => onChange({ ...value, status })}
-          options={[
-            { label: BOOKING_STATUS_BOOKED, value: BOOKING_STATUS_BOOKED },
-            { label: BOOKING_STATUS_APPROVED, value: BOOKING_STATUS_APPROVED },
-            { label: BOOKING_STATUS_ISSUED, value: BOOKING_STATUS_ISSUED },
-            { label: BOOKING_STATUS_CANCELLED, value: BOOKING_STATUS_CANCELLED },
-            { label: BOOKING_STATUS_REJECTED, value: BOOKING_STATUS_REJECTED },
-          ]}
+          options={BOOKING_HOTEL_STATUSES.map((status) => ({ label: status, value: status }))}
         />
       </Col>
       <Col xs={24} md={12}>

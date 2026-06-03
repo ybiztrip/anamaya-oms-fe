@@ -31,7 +31,7 @@ export default function useReportHotel(filters?: ReportHotelFilters) {
       checkOutEndDate: filters?.checkOutDateRange
         ? filters?.checkOutDateRange?.[1]?.format('YYYY-MM-DD')
         : undefined,
-      status: filters?.status || undefined,
+      statuses: filters?.status || undefined,
     }),
     [page, pageSize, filters],
   );

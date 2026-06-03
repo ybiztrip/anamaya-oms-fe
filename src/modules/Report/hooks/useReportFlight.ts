@@ -31,7 +31,7 @@ export default function useReportFlight(filters?: ReportFlightFilters) {
       arrivalEndDate: filters?.arrivalDateRange
         ? filters?.arrivalDateRange?.[1]?.format('YYYY-MM-DD')
         : undefined,
-      status: filters?.status,
+      statuses: filters?.status,
     }),
     [page, pageSize, filters],
   );

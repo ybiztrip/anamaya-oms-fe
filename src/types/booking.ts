@@ -209,7 +209,7 @@ export type BookingFlightsPayloadType = {
   departureEndDate?: string;
   arrivalStartDate?: string;
   arrivalEndDate?: string;
-  status?: string;
+  statuses?: string;
 };
 
 export type BookingHotelsPayloadType = {
@@ -220,7 +220,7 @@ export type BookingHotelsPayloadType = {
   checkInEndDate?: string;
   checkOutStartDate?: string;
   checkOutEndDate?: string;
-  status?: string;
+  statuses?: string;
 };
 
 export type BookingDetailResponseType = BookingType;
