@@ -24,18 +24,34 @@ function DepositTransactions() {
     }),
     [dateRange, debouncedReferenceCode],
   );
+  const flightSummary = useDepositTransactions(DEPOSIT_CODE_FLIGHT as DepositCodeType);
+  const hotelSummary = useDepositTransactions(DEPOSIT_CODE_HOTEL as DepositCodeType);
   const flightTransactions = useDepositTransactions(
     DEPOSIT_CODE_FLIGHT as DepositCodeType,
-    filters,
+    activeTab === 'flight' ? filters : undefined,
   );
-  const hotelTransactions = useDepositTransactions(DEPOSIT_CODE_HOTEL as DepositCodeType, filters);
+  const hotelTransactions = useDepositTransactions(
+    DEPOSIT_CODE_HOTEL as DepositCodeType,
+    activeTab === 'hotel' ? filters : undefined,
+  );
 
   const flightTotal =
-    flightTransactions.data?.totalElements ?? flightTransactions.data?.data?.length ?? 0;
+    flightSummary.data?.totalElements ?? flightSummary.data?.data?.length ?? 0;
   const hotelTotal =
-    hotelTransactions.data?.totalElements ?? hotelTransactions.data?.data?.length ?? 0;
+    hotelSummary.data?.totalElements ?? hotelSummary.data?.data?.length ?? 0;
 
   const activeData = activeTab === 'flight' ? flightTransactions : hotelTransactions;
+
+  const handleTabChange = (tab: 'flight' | 'hotel') => {
+    setActiveTab(tab);
+    setDateRange(null);
+    setReferenceCode('');
+    if (tab === 'flight') {
+      flightTransactions.setPage(1);
+    } else {
+      hotelTransactions.setPage(1);
+    }
+  };
 
   const handleExport = async () => {
     const csvText = await activeData.exportDepositTransactions();
@@ -58,7 +74,7 @@ function DepositTransactions() {
                 ? 'border-flight bg-flight/10 shadow-sm'
                 : 'border-flight/40 bg-transparent'
             }`}
-            onClick={() => setActiveTab('flight')}
+            onClick={() => handleTabChange('flight')}
           >
             <div className="text-sm text-gray-500">Flight</div>
             <div className="text-2xl font-semibold">{flightTotal}</div>
@@ -72,7 +88,7 @@ function DepositTransactions() {
                 ? 'border-hotel bg-hotel/10 shadow-sm'
                 : 'border-hotel/40 bg-transparent'
             }`}
-            onClick={() => setActiveTab('hotel')}
+            onClick={() => handleTabChange('hotel')}
           >
             <div className="text-sm text-gray-500">Hotel</div>
             <div className="text-2xl font-semibold">{hotelTotal}</div>
