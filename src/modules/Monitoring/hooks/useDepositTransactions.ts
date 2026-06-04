@@ -26,7 +26,7 @@ export default function useDepositTransactions(
       balanceCodeType: code,
       startDate: filters?.startDate,
       endDate: filters?.endDate,
-      referenceCode: filters?.referenceCode,
+      bookingCode: filters?.referenceCode,
     }),
     [page, pageSize, code, filters?.startDate, filters?.endDate, filters?.referenceCode],
   );
