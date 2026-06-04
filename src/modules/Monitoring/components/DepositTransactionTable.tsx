@@ -63,7 +63,7 @@ function DepositTransactionTable({
   const handleRequestRefund = async (record: DepositMonitoringType) => {
     Modal.confirm({
       title: 'Request refund?',
-      content: `Are you sure to request refund for transaction ${record.referenceCode} with amount Rp${formatIDR(record.amount)}?`,
+      content: `Are you sure to request refund for transaction ${record.referenceCode}?`,
       okText: 'Yes, request',
       cancelText: 'Cancel',
       okButtonProps: { danger: true },
