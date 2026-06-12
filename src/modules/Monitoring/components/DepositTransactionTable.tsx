@@ -125,6 +125,12 @@ function DepositTransactionTable({
             render: (referenceCode: string) => <span>{referenceCode}</span>,
           },
           {
+            title: 'Booker',
+            dataIndex: 'contactEmail',
+            key: 'contactEmail',
+            render: (contactEmail: string) => <span>{contactEmail}</span>,
+          },
+          {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',

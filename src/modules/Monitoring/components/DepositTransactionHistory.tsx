@@ -15,14 +15,17 @@ function DepositTransactions() {
   const [activeTab, setActiveTab] = useState<'flight' | 'hotel'>('flight');
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
   const [referenceCode, setReferenceCode] = useState('');
+  const [booker, setBooker] = useState('');
   const debouncedReferenceCode = useDebouncedValue(referenceCode, 400);
+  const debouncedBooker = useDebouncedValue(booker, 400);
   const filters = useMemo(
     () => ({
       startDate: dateRange ? dateRange[0].format('YYYY-MM-DD') : undefined,
       endDate: dateRange ? dateRange[1].format('YYYY-MM-DD') : undefined,
       referenceCode: debouncedReferenceCode.trim() || undefined,
+      booker: debouncedBooker.trim() || undefined,
     }),
-    [dateRange, debouncedReferenceCode],
+    [dateRange, debouncedReferenceCode, debouncedBooker],
   );
   const flightSummary = useDepositTransactions(DEPOSIT_CODE_FLIGHT as DepositCodeType);
   const hotelSummary = useDepositTransactions(DEPOSIT_CODE_HOTEL as DepositCodeType);
@@ -46,6 +49,7 @@ function DepositTransactions() {
     setActiveTab(tab);
     setDateRange(null);
     setReferenceCode('');
+    setBooker('');
     if (tab === 'flight') {
       flightTransactions.setPage(1);
     } else {
@@ -100,7 +104,7 @@ function DepositTransactions() {
         <Row justify="space-between">
           <Col>
             <Row gutter={[16, 16]} className="mb-4">
-              <Col xs={24} md={12}>
+              <Col xs={24} md={8}>
                 <DatePicker.RangePicker
                   className="w-full"
                   value={dateRange}
@@ -111,11 +115,18 @@ function DepositTransactions() {
                   allowClear
                 />
               </Col>
-              <Col xs={24} md={12}>
+              <Col xs={24} md={8}>
                 <Input
                   placeholder="Reference Code"
                   value={referenceCode}
                   onChange={(e) => setReferenceCode(e.target.value)}
+                />
+              </Col>
+              <Col xs={24} md={8}>
+                <Input
+                  placeholder="Booker"
+                  value={booker}
+                  onChange={(e) => setBooker(e.target.value)}
                 />
               </Col>
             </Row>

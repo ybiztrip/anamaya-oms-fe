@@ -12,6 +12,7 @@ export default function useDepositTransactions(
     startDate?: string;
     endDate?: string;
     referenceCode?: string;
+    booker?: string;
   },
 ) {
   const queryClient = useQueryClient();
@@ -26,9 +27,10 @@ export default function useDepositTransactions(
       balanceCodeType: code,
       startDate: filters?.startDate,
       endDate: filters?.endDate,
-      bookingCode: filters?.referenceCode,
+      referenceCode: filters?.referenceCode,
+      contactEmail: filters?.booker,
     }),
-    [page, pageSize, code, filters?.startDate, filters?.endDate, filters?.referenceCode],
+    [page, pageSize, code, filters?.startDate, filters?.endDate, filters?.referenceCode, filters?.booker],
   );
 
   const { data, isLoading, error, isFetching } = useQuery({
@@ -38,6 +40,7 @@ export default function useDepositTransactions(
       filters?.startDate,
       filters?.endDate,
       filters?.referenceCode,
+      filters?.booker,
     ],
     queryFn: () => fetchDepositMonitoring(payload),
   });

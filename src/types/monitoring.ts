@@ -40,6 +40,7 @@ export type DepositTransactionsResponseType = {
 export type DepositMonitoringType = {
   id: number;
   companyId: number;
+  contactEmail: string;
   balanceCode: DepositCodeType;
   referenceCode: string;
   referenceId: number;
@@ -58,7 +59,8 @@ export type DepositMonitoringType = {
 export type DepositMonitoringPayloadType = {
   startDate?: string;
   endDate?: string;
-  bookingCode?: string;
+  referenceCode?: string;
+  contactEmail?: string;
   page: number;
   size: number;
   balanceCodeType: DepositCodeType;
