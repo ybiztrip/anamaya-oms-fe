@@ -26,9 +26,11 @@ import HotelInfo from './HotelInfo';
 function HotelSearchForm({
   bookingParams,
   onSelectHotel,
+  onSearchParamsChange,
 }: {
   bookingParams: BookingParamsType;
   onSelectHotel: (hotel: HotelPropertyType, formValues: any) => void;
+  onSearchParamsChange?: (formValues: any) => void;
 }) {
   const [form] = Form.useForm();
   const [items, setItems] = useState<HotelPropertyType[]>([]);
@@ -147,6 +149,7 @@ function HotelSearchForm({
         sortBy: 'HIGHEST_PRICE',
       }}
       onFinish={async (values) => {
+        onSearchParamsChange?.(values);
         lastSearchRef.current = values;
         setIsLoadingMore(false);
         setHasSearched(true);

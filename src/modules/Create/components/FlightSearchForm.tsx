@@ -16,10 +16,12 @@ function FlightSearchForm({
   bookingParams,
   flightIndex,
   onSelectFlight,
+  onSearchParamsChange,
 }: {
   bookingParams: BookingParamsType;
   flightIndex: number;
   onSelectFlight: (flight: FlightSearchOneWayType, flightIndex: number) => void;
+  onSearchParamsChange?: (formValues: any) => void;
 }) {
   const [form] = Form.useForm();
 
@@ -148,7 +150,10 @@ function FlightSearchForm({
         departureDate: dayjs(flightParams?.departureDate),
         sortBy: 'ARRIVAL_TIME',
       }}
-      onFinish={handleSearchFlights}
+      onFinish={async (values) => {
+        onSearchParamsChange?.(values);
+        await handleSearchFlights(values);
+      }}
     >
       <div className="sticky top-0 z-10 bg-white pb-3">
         <Row>

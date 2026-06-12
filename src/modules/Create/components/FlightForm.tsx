@@ -199,7 +199,19 @@ function FlightForm({
                     />
                     <Form.Item
                       name="returnDate"
-                      rules={[{ required: true, message: 'Return date required for round-trip' }]}
+                      rules={[
+                        { required: true, message: 'Return date required for round-trip' },
+                        ({ getFieldValue }) => ({
+                          validator: (_, value) => {
+                            const departureDate = getFieldValue('departureDate');
+                            if (!value || !departureDate) return Promise.resolve();
+                            if (!value.isBefore(departureDate, 'day')) return Promise.resolve();
+                            return Promise.reject(
+                              new Error('Return date can not be before departure date'),
+                            );
+                          },
+                        }),
+                      ]}
                       style={{ flex: 1, marginBottom: 0 }}
                     >
                       <DatePicker

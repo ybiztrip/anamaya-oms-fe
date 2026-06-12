@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Col, Row, Space } from 'antd';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Layout from '@/components/Layout';
@@ -20,36 +20,65 @@ import FlightSearchForm from './components/FlightSearchForm';
 function FlightSearchView() {
   const navigate = useNavigate();
 
-  const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
+  const [bookingParams, setBookingParams] = useState<BookingParamsType | null>(() =>
+    sessionStorageGet<BookingParamsType>(BOOKING_PARAMS),
+  );
+  const [activeFlightIndex, setActiveFlightIndex] = useState<number>(0);
 
-  const selectFlight = (flight: FlightSearchOneWayType, flightIndex: number) => {
-    const newFlights = [...(bookingParams?.flights ?? [])];
-    newFlights[flightIndex] = {
-      ...newFlights[flightIndex],
-      origin: flight.departureAirport,
-      destination: flight.arrivalAirport,
-      departureDate: dayjs(flight.journeys[0].departureDetail.departureDate, 'MM-DD-YYYY').format(
-        'YYYY-MM-DD',
-      ),
-      selectedFlight: flight,
-    };
-    const newBookingParams = {
-      ...bookingParams,
-      flights: newFlights,
-    } as BookingParamsType;
+  const updateBookingParams = useCallback((newBookingParams: BookingParamsType) => {
     sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, newBookingParams);
-    if (flightIndex === Number(bookingParams?.flights?.length ?? 0) - 1) {
-      if (bookingParams?.hotel) {
-        navigate(CREATE_HOTEL_SEARCH_PATH);
-      } else {
-        navigate(CREATE_BOOKING_CONFIRM_PATH);
-      }
-    } else {
-      setActiveFlightIndex(flightIndex + 1);
-    }
-  };
+    setBookingParams(newBookingParams);
+  }, []);
 
-  const [activeFlightIndex, setActiveFlightIndex] = useState<number | null>(0);
+  const syncSearchParams = useCallback(
+    (formValues: any) => {
+      const newFlights = [...(bookingParams?.flights ?? [])];
+      newFlights[activeFlightIndex] = {
+        ...newFlights[activeFlightIndex],
+        origin: formValues.origin,
+        destination: formValues.destination,
+        departureDate: dayjs(formValues.departureDate, 'MM-DD-YYYY').format('YYYY-MM-DD'),
+      };
+
+      const newBookingParams = {
+        ...bookingParams,
+        flights: newFlights,
+      } as BookingParamsType;
+      updateBookingParams(newBookingParams);
+    },
+    [activeFlightIndex, bookingParams, updateBookingParams],
+  );
+
+  const selectFlight = useCallback(
+    (flight: FlightSearchOneWayType, flightIndex: number) => {
+      const newFlights = [...(bookingParams?.flights ?? [])];
+      newFlights[flightIndex] = {
+        ...newFlights[flightIndex],
+        origin: flight.departureAirport,
+        destination: flight.arrivalAirport,
+        departureDate: dayjs(flight.journeys[0].departureDetail.departureDate, 'MM-DD-YYYY').format(
+          'YYYY-MM-DD',
+        ),
+        selectedFlight: flight,
+      };
+      const newBookingParams = {
+        ...bookingParams,
+        flights: newFlights,
+      } as BookingParamsType;
+      sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, newBookingParams);
+      if (flightIndex === Number(bookingParams?.flights?.length ?? 0) - 1) {
+        if (bookingParams?.hotel) {
+          navigate(CREATE_HOTEL_SEARCH_PATH);
+        } else {
+          navigate(CREATE_BOOKING_CONFIRM_PATH);
+        }
+      } else {
+        setActiveFlightIndex(flightIndex + 1);
+      }
+    },
+    [bookingParams, navigate],
+  );
+
   useEffect(() => {
     if (!bookingParams) {
       navigate(CREATE_PATH);
@@ -107,6 +136,7 @@ function FlightSearchView() {
             bookingParams={bookingParams}
             flightIndex={index}
             onSelectFlight={selectFlight}
+            onSearchParamsChange={syncSearchParams}
           />
         );
       })}

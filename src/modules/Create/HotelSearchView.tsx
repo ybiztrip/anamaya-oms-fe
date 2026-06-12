@@ -1,6 +1,6 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Button, Col, Row } from 'antd';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Layout from '@/components/Layout';
@@ -20,23 +20,52 @@ import HotelSearchForm from './components/HotelSearchForm';
 function HotelSearchView() {
   const navigate = useNavigate();
 
-  const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
+  const [bookingParams, setBookingParams] = useState<BookingParamsType | null>(() =>
+    sessionStorageGet<BookingParamsType>(BOOKING_PARAMS),
+  );
 
-  const selectHotel = (hotel: HotelPropertyType, formValues: any) => {
-    const newHotel = {
-      ...bookingParams?.hotel,
-      destination: formValues.destination,
-      checkInDate: formValues.checkInDate,
-      checkOutDate: formValues.checkOutDate,
-      selectedHotel: hotel,
-    };
-    const newBookingParams = {
-      ...bookingParams,
-      hotel: newHotel,
-    } as BookingParamsType;
+  const updateBookingParams = useCallback((newBookingParams: BookingParamsType) => {
     sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, newBookingParams);
-    navigate(CREATE_HOTEL_ROOM_PATH);
-  };
+    setBookingParams(newBookingParams);
+  }, []);
+
+  const syncSearchParams = useCallback(
+    (formValues: any) => {
+      const newHotel = {
+        ...bookingParams?.hotel,
+        destinationName: formValues.destination.label,
+        destinationGeo: formValues.destination.value,
+        checkInDate: formValues.checkInDate,
+        checkOutDate: formValues.checkOutDate,
+      };
+      const newBookingParams = {
+        ...bookingParams,
+        hotel: newHotel,
+      } as BookingParamsType;
+      updateBookingParams(newBookingParams);
+    },
+    [bookingParams, updateBookingParams],
+  );
+
+  const selectHotel = useCallback(
+    (hotel: HotelPropertyType, formValues: any) => {
+      const newHotel = {
+        ...bookingParams?.hotel,
+        destinationName: formValues.destination.label,
+        destinationGeo: formValues.destination.value,
+        checkInDate: formValues.checkInDate,
+        checkOutDate: formValues.checkOutDate,
+        selectedHotel: hotel,
+      };
+      const newBookingParams = {
+        ...bookingParams,
+        hotel: newHotel,
+      } as BookingParamsType;
+      updateBookingParams(newBookingParams);
+      navigate(CREATE_HOTEL_ROOM_PATH);
+    },
+    [bookingParams, updateBookingParams, navigate],
+  );
 
   const handleBack = () => {
     if (bookingParams?.flights?.length) {
@@ -83,7 +112,11 @@ function HotelSearchView() {
         </Col>
       </Row>
       {bookingParams && (
-        <HotelSearchForm bookingParams={bookingParams} onSelectHotel={selectHotel} />
+        <HotelSearchForm
+          bookingParams={bookingParams}
+          onSelectHotel={selectHotel}
+          onSearchParamsChange={syncSearchParams}
+        />
       )}
     </Layout>
   );
