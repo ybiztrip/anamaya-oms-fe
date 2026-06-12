@@ -7,10 +7,10 @@ import {
   CONFIGURATION_COMPANY_PATH,
   CONFIGURATION_EMPLOYEES_PATH,
   CONFIGURATION_TRAVEL_POLICIES_PATH,
-  CREATE_BOOKING_CONFIRM_PATH,
-  CREATE_FLIGHT_SEARCH_PATH,
-  CREATE_HOTEL_ROOM_PATH,
-  CREATE_HOTEL_SEARCH_PATH,
+  CREATE_BOOKING_CONFIRM_SEGMENT,
+  CREATE_FLIGHT_SEARCH_SEGMENT,
+  CREATE_HOTEL_ROOM_SEGMENT,
+  CREATE_HOTEL_SEARCH_SEGMENT,
   CREATE_PATH,
   HOME_PATH,
   LOGIN_PATH,
@@ -24,6 +24,7 @@ import ApprovalView from '@/modules/Approval/ApprovalView';
 import BookingDetailView from '@/modules/Approval/BookingDetailView';
 import CompanyView from '@/modules/Company/CompanyView';
 import BookingConfirmView from '@/modules/Create/BookingConfirmView';
+import CreateFlowShell from '@/modules/Create/CreateFlowShell';
 import CreateView from '@/modules/Create/CreateView';
 import FlightSearchView from '@/modules/Create/FlightSearchView';
 import HotelRoomView from '@/modules/Create/HotelRoomView';
@@ -64,42 +65,16 @@ function App() {
         path={CREATE_PATH}
         element={
           <ProtectedRoute>
-            <CreateView />
+            <CreateFlowShell />
           </ProtectedRoute>
         }
-      />
-      <Route
-        path={CREATE_FLIGHT_SEARCH_PATH}
-        element={
-          <ProtectedRoute>
-            <FlightSearchView />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path={CREATE_HOTEL_SEARCH_PATH}
-        element={
-          <ProtectedRoute>
-            <HotelSearchView />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path={CREATE_HOTEL_ROOM_PATH}
-        element={
-          <ProtectedRoute>
-            <HotelRoomView />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path={CREATE_BOOKING_CONFIRM_PATH}
-        element={
-          <ProtectedRoute>
-            <BookingConfirmView />
-          </ProtectedRoute>
-        }
-      />
+      >
+        <Route index element={<CreateView />} />
+        <Route path={CREATE_FLIGHT_SEARCH_SEGMENT} element={<FlightSearchView />} />
+        <Route path={CREATE_HOTEL_SEARCH_SEGMENT} element={<HotelSearchView />} />
+        <Route path={CREATE_HOTEL_ROOM_SEGMENT} element={<HotelRoomView />} />
+        <Route path={CREATE_BOOKING_CONFIRM_SEGMENT} element={<BookingConfirmView />} />
+      </Route>
       <Route
         path={APPROVAL_PATH}
         element={
