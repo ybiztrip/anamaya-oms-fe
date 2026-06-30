@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Checkbox, Col, List, Row, Space, Spin, Typography } from 'antd';
+import { Alert, Button, Card, Checkbox, Col, List, Modal, Row, Space, Spin, Typography } from 'antd';
 
 import SectionCard from '@/components/SectionCard';
 import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
@@ -92,6 +92,38 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
     setSelectedBookings((prev) => prev.filter((item) => !bookings.some((b) => b.id === item.id)));
   };
 
+  const confirmApprove = (bookings: BookingType[]) => {
+    if (bookings.length === 0 || isActionLoading) return;
+
+    Modal.confirm({
+      title: 'Approve Booking Request',
+      content:
+        bookings.length === 1
+          ? 'Are you sure you want to approve this booking?'
+          : `Are you sure you want to approve ${bookings.length} selected bookings?`,
+      okText: 'Approve',
+      cancelText: 'Cancel',
+      okButtonProps: { type: 'primary' },
+      onOk: () => approve(bookings),
+    });
+  };
+
+  const confirmReject = (bookings: BookingType[]) => {
+    if (bookings.length === 0 || isActionLoading) return;
+
+    Modal.confirm({
+      title: 'Reject Booking Request',
+      content:
+        bookings.length === 1
+          ? 'Are you sure you want to reject this booking?'
+          : `Are you sure you want to reject ${bookings.length} selected bookings?`,
+      okText: 'Reject',
+      cancelText: 'Cancel',
+      okButtonProps: { danger: true },
+      onOk: () => reject(bookings),
+    });
+  };
+
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
@@ -164,7 +196,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
                 type="primary"
                 disabled={selectedPendingBookings.length === 0 || isActionLoading}
                 loading={isActionLoading}
-                onClick={() => approve(selectedPendingBookings)}
+                onClick={() => confirmApprove(selectedPendingBookings)}
               >
                 Approve selected
               </Button>
@@ -173,7 +205,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
                 danger
                 disabled={selectedPendingBookings.length === 0 || isActionLoading}
                 loading={isActionLoading}
-                onClick={() => reject(selectedPendingBookings)}
+                onClick={() => confirmReject(selectedPendingBookings)}
               >
                 Reject selected
               </Button>
@@ -232,14 +264,14 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
                               type="link"
                               danger
                               loading={isActionLoading}
-                              onClick={() => reject([item])}
+                              onClick={() => confirmReject([item])}
                             >
                               Reject
                             </Button>
                             <Button
                               type="primary"
                               loading={isActionLoading}
-                              onClick={() => approve([item])}
+                              onClick={() => confirmApprove([item])}
                             >
                               Approve
                             </Button>

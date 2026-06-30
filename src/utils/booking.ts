@@ -56,6 +56,6 @@ export const getBookingOverallStatus = (
   return {
     ...result,
     status: BOOKING_STATUS_APPROVED,
-    approvedAt: approvedStatus.approvedAt,
+    approvedAt: approvedStatus?.approvedAt ?? '',
   };
 };
