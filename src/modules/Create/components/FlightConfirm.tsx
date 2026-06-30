@@ -173,7 +173,7 @@ const FlightConfirm = ({
   }, [priceList, index, onPriceListChange]);
 
   return (
-    <Space direction="vertical">
+    <Space direction="vertical" className="w-full">
       {flightsBasedOnAddOns?.map((flightAddOns, flightAddOnsIndex) => {
         return (
           <Card size="small" key={`flight-${index}-journey-${flightAddOnsIndex}`}>
