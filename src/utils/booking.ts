@@ -37,7 +37,10 @@ export const getBookingOverallStatus = (
       status: BOOKING_STATUS_BOOKED,
     };
   }
-  const statusRejectIndex = statuses.findIndex((status) => status.status === BOOKING_STATUS_REJECTED);
+
+  const statusRejectIndex = statuses.findIndex(
+    (status) => status.status === BOOKING_STATUS_REJECTED,
+  );
   if (statusRejectIndex !== -1) {
     return {
       ...result,
@@ -45,12 +48,14 @@ export const getBookingOverallStatus = (
       rejectedAt: statuses[statusRejectIndex].rejectedAt,
     };
   }
-  const statusApprovedIndex = statuses.findIndex((status) => status.status === BOOKING_STATUS_APPROVED);
+
+  const approvedStatus =
+    statuses.find((status) => Boolean(status.approvedAt)) ??
+    statuses.find((status) => status.status === BOOKING_STATUS_APPROVED);
+
   return {
     ...result,
     status: BOOKING_STATUS_APPROVED,
-    approvedAt: statuses[statusApprovedIndex].approvedAt,
+    approvedAt: approvedStatus.approvedAt,
   };
-  
-  
 };

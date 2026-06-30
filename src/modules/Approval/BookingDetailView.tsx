@@ -1,30 +1,26 @@
 import { ArrowLeftOutlined, StarFilled } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import {
-  Alert,
-  Button,
-  Card,
-  Col,
-  Divider,
-  message,
-  Row,
-  Spin,
-  Tag,
-  Typography,
-} from 'antd';
+import { Alert, Button, Card, Col, Divider, message, Row, Spin, Tag, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { fetchBookingDetail } from '@/api';
+import BookingStatusTag from '@/components/BookingStatusTag';
 import DocumentLinks from '@/components/DocumentLinks';
 import Layout from '@/components/Layout';
-import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import {
+  BOOKING_STATUS_APPROVED,
+  BOOKING_STATUS_REJECTED,
+  DEFAULT_ERROR_MESSAGE,
+} from '@/constants/common';
 import { BOOKINGS_DETAIL } from '@/constants/queryKey';
 import { APPROVAL_PATH } from '@/constants/routePath';
+import useFlightAirlines from '@/hooks/useFlightAirlines';
 import useFlightAirport from '@/hooks/useFlightAirport';
 import PriceDetail from '@/modules/Create/components/PriceDetail';
 import type { BookingDetailResponseType, BookingType, ResponseType } from '@/types';
+import { getBookingOverallStatus } from '@/utils/booking';
 
 const { Text, Title } = Typography;
 
@@ -38,6 +34,7 @@ function BookingDetailView() {
   const { id } = useParams();
   const location = useLocation();
   const { airportsByCode } = useFlightAirport();
+  const { airlinesByCode } = useFlightAirlines();
   const state = location.state as LocationState | null;
 
   const booking = state?.booking;
@@ -60,6 +57,8 @@ function BookingDetailView() {
       return response.data;
     },
   });
+
+  const { status, approvedAt, rejectedAt } = getBookingOverallStatus(data);
 
   const allPrices = useMemo(() => {
     return [
@@ -146,14 +145,33 @@ function BookingDetailView() {
         Back
       </Button>
       <Card>
-        <Title level={4}>Booking Detail</Title>
+        <Row justify="space-between" align="top">
+          <Col>
+            <Title level={4}>Booking Detail</Title>
+          </Col>
+          <Col>
+            <BookingStatusTag status={status} />
+          </Col>
+        </Row>
         <div className="mt-2">
           <Text type="secondary">Booking Code:</Text> {data.code}
         </div>
         <div className="mt-1">
-          <Text type="secondary">Created:</Text> {dayjs(data.createdAt).format('ddd, MMM DD HH:mm')}
+          <Text type="secondary">Created:</Text>{' '}
+          {dayjs.utc(data.createdAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
         </div>
-
+        {status === BOOKING_STATUS_APPROVED && approvedAt && (
+          <div className="mt-1">
+            <Text type="secondary">Approved:</Text>{' '}
+            {dayjs.utc(approvedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
+          </div>
+        )}
+        {status === BOOKING_STATUS_REJECTED && rejectedAt && (
+          <div className="mt-1">
+            <Text type="secondary">Rejected:</Text>{' '}
+            {dayjs.utc(rejectedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
+          </div>
+        )}
         <Divider />
 
         {data.flights?.length > 0 && (
@@ -172,12 +190,28 @@ function BookingDetailView() {
                         {`${airportsByCode[flight.destination]?.localAirportName} (${flight.destination})`}
                       </Text>
                     </div>
+                    <div>
+                      {flight.metadata?.airlines?.map((airline, airlineIndex) => (
+                        <div key={`${flight.id}-airline-${airlineIndex}`}>
+                          {airlinesByCode[airline]?.airlineName ?? '-'} (
+                          {flight.metadata?.flightCodes?.[airlineIndex] ?? '-'})
+                        </div>
+                      ))}
+                    </div>
                     <div className="text-sm text-gray-500">
-                      {dayjs(flight.departureDatetime).format('ddd, MMM DD HH:mm')} -{' '}
-                      {dayjs(flight.arrivalDatetime).format('ddd, MMM DD HH:mm')}
+                      {dayjs(flight.departureDatetime).format('ddd, MMM DD HH:mm')}{' '}
+                      {flight.metadata?.departureTerminal
+                        ? `(${flight.metadata?.departureTerminal})`
+                        : ''}{' '}
+                      - {dayjs(flight.arrivalDatetime).format('ddd, MMM DD HH:mm')}{' '}
+                      {flight.metadata?.arrivalTerminal
+                        ? `(${flight.metadata?.arrivalTerminal})`
+                        : ''}
                     </div>
                   </Col>
-                  <Col>{flight.status && <Tag color="blue">{flight.status}</Tag>}</Col>
+                  <Col>
+                    <BookingStatusTag status={flight.status} />
+                  </Col>
                 </Row>
               </Card>
             ))}
@@ -215,7 +249,9 @@ function BookingDetailView() {
                       </Text>
                     </div>
                   </Col>
-                  <Col>{hotel.status && <Tag color="blue">{hotel.status}</Tag>}</Col>
+                  <Col>
+                    <BookingStatusTag status={hotel.status} />
+                  </Col>
                 </Row>
               </Card>
             ))}

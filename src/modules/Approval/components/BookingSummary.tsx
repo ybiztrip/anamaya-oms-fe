@@ -1,11 +1,8 @@
-import { Col, Row, Space, Tag, Typography } from 'antd';
+import { Col, Row, Space, Typography } from 'antd';
 import dayjs from 'dayjs';
 
-import {
-  BOOKING_STATUS_APPROVED,
-  BOOKING_STATUS_BOOKED,
-  BOOKING_STATUS_REJECTED,
-} from '@/constants/common';
+import BookingStatusTag from '@/components/BookingStatusTag';
+import { BOOKING_STATUS_APPROVED, BOOKING_STATUS_REJECTED } from '@/constants/common';
 import useFlightAirport from '@/hooks/useFlightAirport';
 import type { BookingType } from '@/types';
 import { getBookingOverallStatus } from '@/utils/booking';
@@ -15,7 +12,7 @@ const { Text } = Typography;
 interface BookingSummaryProps {
   data: BookingType;
 }
-function BookingSummary({ data }: BookingSummaryProps) {
+function BookingSummary({ data }: Readonly<BookingSummaryProps>) {
   const { airportsByCode } = useFlightAirport();
 
   const { status, approvedAt, rejectedAt } = getBookingOverallStatus(data);
@@ -82,32 +79,19 @@ function BookingSummary({ data }: BookingSummaryProps) {
 
         <Col flex="none" className="shrink-0 pl-1">
           <div className="flex flex-col items-end gap-2 text-right text-xs sm:text-sm">
-            <Tag
-              color={
-                status === BOOKING_STATUS_BOOKED
-                  ? 'blue'
-                  : status === BOOKING_STATUS_APPROVED
-                    ? 'green'
-                    : 'red'
-              }
-              className="m-0"
-            >
-              {status}
-            </Tag>
+            <BookingStatusTag status={status} className="m-0" />
 
             <Text type="secondary" className="block">
               Created: {dayjs.utc(data.createdAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
             </Text>
             {status === BOOKING_STATUS_APPROVED && approvedAt && (
               <Text type="secondary" className="block">
-                Approved:{' '}
-                {dayjs.utc(approvedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
+                Approved: {dayjs.utc(approvedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
               </Text>
             )}
             {status === BOOKING_STATUS_REJECTED && rejectedAt && (
               <Text type="secondary" className="block">
-                Rejected:{' '}
-                {dayjs.utc(rejectedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
+                Rejected: {dayjs.utc(rejectedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
               </Text>
             )}
           </div>
