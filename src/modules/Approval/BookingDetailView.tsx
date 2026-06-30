@@ -1,6 +1,18 @@
 import { ArrowLeftOutlined, StarFilled } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
-import { Alert, Button, Card, Col, Divider, message, Row, Spin, Tag, Typography } from 'antd';
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Divider,
+  message,
+  Modal,
+  Row,
+  Spin,
+  Tag,
+  Typography,
+} from 'antd';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -11,16 +23,26 @@ import DocumentLinks from '@/components/DocumentLinks';
 import Layout from '@/components/Layout';
 import {
   BOOKING_STATUS_APPROVED,
+  BOOKING_STATUS_BOOKED,
   BOOKING_STATUS_REJECTED,
   DEFAULT_ERROR_MESSAGE,
 } from '@/constants/common';
+import { PERMISSIONS } from '@/constants/permission';
 import { BOOKINGS_DETAIL } from '@/constants/queryKey';
 import { APPROVAL_PATH } from '@/constants/routePath';
 import useFlightAirlines from '@/hooks/useFlightAirlines';
 import useFlightAirport from '@/hooks/useFlightAirport';
 import PriceDetail from '@/modules/Create/components/PriceDetail';
-import type { BookingDetailResponseType, BookingType, ResponseType } from '@/types';
+import type {
+  BookingApprovePayloadType,
+  BookingDetailResponseType,
+  BookingType,
+  ResponseType,
+} from '@/types';
 import { getBookingOverallStatus } from '@/utils/booking';
+import { isPermitted } from '@/utils/permission';
+
+import useBookingApprove from './hooks/useBookingApprove';
 
 const { Text, Title } = Typography;
 
@@ -35,6 +57,7 @@ function BookingDetailView() {
   const location = useLocation();
   const { airportsByCode } = useFlightAirport();
   const { airlinesByCode } = useFlightAirlines();
+  const { approveBooking, rejectBooking, isLoading: isActionLoading } = useBookingApprove();
   const state = location.state as LocationState | null;
 
   const booking = state?.booking;
@@ -58,7 +81,60 @@ function BookingDetailView() {
     },
   });
 
-  const { status, approvedAt, rejectedAt } = getBookingOverallStatus(data);
+  const { status, approvedAt, rejectedAt } = data
+    ? getBookingOverallStatus(data)
+    : { status: '', approvedAt: '', rejectedAt: '' };
+  const isApprovalPermitted = isPermitted(PERMISSIONS.APPROVAL);
+  const canTakeApprovalAction = isApprovalPermitted && status === BOOKING_STATUS_BOOKED;
+
+  const buildPayload = (booking: BookingType): BookingApprovePayloadType => {
+    const flightIds = (booking.flights ?? [])
+      .filter((flight) => flight.status === BOOKING_STATUS_BOOKED && flight.id)
+      .map((flight) => Number(flight.id))
+      .filter((bookingId) => !Number.isNaN(bookingId));
+    const hotelIds = (booking.hotels ?? [])
+      .filter((hotel) => hotel.status === BOOKING_STATUS_BOOKED && hotel.id)
+      .map((hotel) => Number(hotel.id))
+      .filter((bookingId) => !Number.isNaN(bookingId));
+
+    return { flightIds, hotelIds };
+  };
+
+  const approve = async () => {
+    if (!data) return;
+    await approveBooking({ id: String(data.id), payload: buildPayload(data) });
+  };
+
+  const reject = async () => {
+    if (!data) return;
+    await rejectBooking({ id: String(data.id), payload: buildPayload(data) });
+  };
+
+  const confirmApprove = () => {
+    if (!canTakeApprovalAction || isActionLoading) return;
+
+    Modal.confirm({
+      title: 'Approve Booking Request',
+      content: 'Are you sure you want to approve this booking?',
+      okText: 'Approve',
+      cancelText: 'Cancel',
+      okButtonProps: { type: 'primary' },
+      onOk: approve,
+    });
+  };
+
+  const confirmReject = () => {
+    if (!canTakeApprovalAction || isActionLoading) return;
+
+    Modal.confirm({
+      title: 'Reject Booking Request',
+      content: 'Are you sure you want to reject this booking?',
+      okText: 'Reject',
+      cancelText: 'Cancel',
+      okButtonProps: { danger: true },
+      onOk: reject,
+    });
+  };
 
   const allPrices = useMemo(() => {
     return [
@@ -153,25 +229,41 @@ function BookingDetailView() {
             <BookingStatusTag status={status} />
           </Col>
         </Row>
-        <div className="mt-2">
-          <Text type="secondary">Booking Code:</Text> {data.code}
-        </div>
-        <div className="mt-1">
-          <Text type="secondary">Created:</Text>{' '}
-          {dayjs.utc(data.createdAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
-        </div>
-        {status === BOOKING_STATUS_APPROVED && approvedAt && (
-          <div className="mt-1">
-            <Text type="secondary">Approved:</Text>{' '}
-            {dayjs.utc(approvedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
-          </div>
-        )}
-        {status === BOOKING_STATUS_REJECTED && rejectedAt && (
-          <div className="mt-1">
-            <Text type="secondary">Rejected:</Text>{' '}
-            {dayjs.utc(rejectedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
-          </div>
-        )}
+        <Row justify="space-between" align="bottom">
+          <Col>
+            <div className="mt-2">
+              <Text type="secondary">Booking Code:</Text> {data.code}
+            </div>
+            <div className="mt-1">
+              <Text type="secondary">Created:</Text>{' '}
+              {dayjs.utc(data.createdAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
+            </div>
+            {status === BOOKING_STATUS_APPROVED && approvedAt && (
+              <div className="mt-1">
+                <Text type="secondary">Approved:</Text>{' '}
+                {dayjs.utc(approvedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
+              </div>
+            )}
+            {status === BOOKING_STATUS_REJECTED && rejectedAt && (
+              <div className="mt-1">
+                <Text type="secondary">Rejected:</Text>{' '}
+                {dayjs.utc(rejectedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
+              </div>
+            )}
+          </Col>
+          {canTakeApprovalAction && (
+            <Col>
+              <div className="flex items-center gap-2">
+                <Button danger loading={isActionLoading} onClick={confirmReject}>
+                  Reject
+                </Button>
+                <Button type="primary" loading={isActionLoading} onClick={confirmApprove}>
+                  Approve
+                </Button>
+              </div>
+            </Col>
+          )}
+        </Row>
         <Divider />
 
         {data.flights?.length > 0 && (
