@@ -4,6 +4,7 @@ import SectionCard from '@/components/SectionCard';
 import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { APPROVAL_PATH } from '@/constants/routePath';
 import type { BookingApprovePayloadType, BookingType } from '@/types';
+import { getBookingOverallStatus } from '@/utils/booking';
 
 import useBookingApprove from '../hooks/useBookingApprove';
 import useBookingNeedApproval from '../hooks/useBookingNeedApproval';
@@ -24,16 +25,18 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
   const [selectedBookings, setSelectedBookings] = useState<BookingType[]>([]);
 
   const allPendingBookings = useMemo(
-    () => items?.filter((x) => x.status === BOOKING_STATUS_BOOKED) ?? [],
+    () => items?.filter((x) => getBookingOverallStatus(x).status === BOOKING_STATUS_BOOKED) ?? [],
     [items],
   );
 
   const selectedPendingBookings = useMemo(
     () =>
-      selectedBookings.filter(
-        (booking) =>
-          items?.find((item) => item.id === booking.id)?.status === BOOKING_STATUS_BOOKED,
-      ),
+      selectedBookings.filter((booking) => {
+        const currentBooking = items?.find((item) => item.id === booking.id);
+        return currentBooking
+          ? getBookingOverallStatus(currentBooking).status === BOOKING_STATUS_BOOKED
+          : false;
+      }),
     [selectedBookings, items],
   );
 
@@ -203,7 +206,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
                     <Col flex="none" className="shrink-0 pt-0.5" style={{ width: 32 }}>
                       <Checkbox
                         checked={checked}
-                        disabled={item.status !== BOOKING_STATUS_BOOKED}
+                        disabled={getBookingOverallStatus(item).status !== BOOKING_STATUS_BOOKED}
                         onChange={(e) => toggleOne(item, e.target.checked)}
                       />
                     </Col>

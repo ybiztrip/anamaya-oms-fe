@@ -81,6 +81,8 @@ export type BookingFlightType = {
     }[];
   };
   createdAt?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
 };
 
 export type BookingPaxType = {
@@ -141,6 +143,9 @@ export type BookingHotelType = {
       file: string;
     }[];
   };
+  createdAt?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
 };
 
 export type BookingType = {

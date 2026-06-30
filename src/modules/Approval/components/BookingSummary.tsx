@@ -8,6 +8,7 @@ import {
 } from '@/constants/common';
 import useFlightAirport from '@/hooks/useFlightAirport';
 import type { BookingType } from '@/types';
+import { getBookingOverallStatus } from '@/utils/booking';
 
 const { Text } = Typography;
 
@@ -17,16 +18,7 @@ interface BookingSummaryProps {
 function BookingSummary({ data }: BookingSummaryProps) {
   const { airportsByCode } = useFlightAirport();
 
-  const journeyFlightHotelStatus = [
-    data.status,
-    ...data.flights.map((flight) => flight.status),
-    ...data.hotels.map((hotel) => hotel.status),
-  ];
-  const status = journeyFlightHotelStatus.includes(BOOKING_STATUS_BOOKED)
-    ? BOOKING_STATUS_BOOKED
-    : journeyFlightHotelStatus.includes(BOOKING_STATUS_REJECTED)
-      ? BOOKING_STATUS_REJECTED
-      : BOOKING_STATUS_APPROVED;
+  const { status, approvedAt, rejectedAt } = getBookingOverallStatus(data);
 
   const paxs = data.flights.length > 0 ? data.flights[0]?.paxs : (data.hotels[0]?.paxs ?? []);
 
@@ -104,16 +96,18 @@ function BookingSummary({ data }: BookingSummaryProps) {
             </Tag>
 
             <Text type="secondary" className="block">
-              Created: {dayjs(data.createdAt).format('ddd, MMM DD HH:mm')}
+              Created: {dayjs.utc(data.createdAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
             </Text>
-            {data.status === BOOKING_STATUS_APPROVED && (
+            {status === BOOKING_STATUS_APPROVED && approvedAt && (
               <Text type="secondary" className="block">
-                Approved: {dayjs(data.approvedAt).format('ddd, MMM DD HH:mm')}
+                Approved:{' '}
+                {dayjs.utc(approvedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
               </Text>
             )}
-            {data.status === BOOKING_STATUS_REJECTED && (
+            {status === BOOKING_STATUS_REJECTED && rejectedAt && (
               <Text type="secondary" className="block">
-                Rejected: {dayjs(data.rejectedAt).format('ddd, MMM DD HH:mm')}
+                Rejected:{' '}
+                {dayjs.utc(rejectedAt).tz('Asia/Jakarta').format('ddd, MMM DD HH:mm')}
               </Text>
             )}
           </div>
