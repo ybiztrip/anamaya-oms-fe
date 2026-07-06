@@ -65,29 +65,6 @@ function HotelSearchForm({
     priceLimits && Number.isFinite(priceLimits.maxPrice) ? priceLimits.maxPrice : undefined;
 
   useEffect(() => {
-    if (!priceLimits) return;
-
-    const currentMin = form.getFieldValue('minPrice');
-    const currentMax = form.getFieldValue('maxPrice');
-    const nextMin =
-      typeof currentMin === 'number'
-        ? Math.max(currentMin, priceLimits.minPrice)
-        : priceLimits.minPrice;
-    const nextMax =
-      typeof currentMax === 'number'
-        ? Math.min(currentMax, priceLimits.maxPrice)
-        : priceLimits.maxPrice;
-    const normalizedMax = Math.max(nextMax, nextMin);
-
-    if (nextMin !== currentMin || normalizedMax !== currentMax) {
-      form.setFieldsValue({
-        minPrice: nextMin,
-        maxPrice: normalizedMax,
-      });
-    }
-  }, [form, priceLimits]);
-
-  useEffect(() => {
     if (autoSearchRef.current) return;
     if (!isPolicyReady) return;
     if (!priceLimits) return;
@@ -179,6 +156,7 @@ function HotelSearchForm({
         lastSearchRef.current = values;
         setIsLoadingMore(false);
         setHasSearched(true);
+        setItems([]);
         await runSearch(values, 1, false);
       }}
     >
@@ -271,13 +249,6 @@ function HotelSearchForm({
           </Form.Item>
           <Form.Item label="Price Range">
             <Space direction="vertical" style={{ width: '100%' }}>
-              {/* <Form.Item name="minPrice" noStyle initialValue={0}>
-                <InputNumber min={0} placeholder="Min" style={{ width: '100%' }} />
-              </Form.Item>
-              <Typography.Text type="secondary">to</Typography.Text>
-              <Form.Item name="maxPrice" noStyle initialValue={10000000}>
-                <InputNumber min={0} placeholder="Max" style={{ width: '100%' }} />
-              </Form.Item> */}
               <Form.Item
                 name="minPrice"
                 noStyle
