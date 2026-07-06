@@ -27,11 +27,11 @@ function HotelSearchForm({
   bookingParams,
   onSelectHotel,
   onSearchParamsChange,
-}: {
+}: Readonly<{
   bookingParams: BookingParamsType;
   onSelectHotel: (hotel: HotelPropertyType, formValues: any) => void;
   onSearchParamsChange?: (formValues: any) => void;
-}) {
+}>) {
   const [form] = Form.useForm();
   const [items, setItems] = useState<HotelPropertyType[]>([]);
   const [page, setPage] = useState(1);
@@ -47,17 +47,10 @@ function HotelSearchForm({
   const { hotelParams, handleSearchHotels, isLoading } = useHotelSearch({
     bookingParams,
   });
-  const { travelPoliciesById } = useTravelPolicy();
+  const { travelPoliciesById, isLoading: isTravelPolicyLoading } = useTravelPolicy();
+  const isPolicyReady = !isTravelPolicyLoading;
 
   const autoSearchRef = useRef(false);
-  useEffect(() => {
-    if (autoSearchRef.current) return;
-
-    if (hotelParams?.destinationGeo && hotelParams?.checkInDate && hotelParams?.checkOutDate) {
-      form.submit();
-      autoSearchRef.current = true;
-    }
-  }, [hotelParams, form]);
 
   const priceLimits = useMemo(() => {
     const policyLimits = getTravelPolicyLimits(bookingParams?.paxList, travelPoliciesById);
@@ -67,6 +60,9 @@ function HotelSearchForm({
       maxPrice: policyLimits.hotelMaxPrice,
     };
   }, [bookingParams?.paxList, travelPoliciesById]);
+  const minPriceBound = priceLimits?.minPrice ?? 0;
+  const maxPriceBound =
+    priceLimits && Number.isFinite(priceLimits.maxPrice) ? priceLimits.maxPrice : undefined;
 
   useEffect(() => {
     if (!priceLimits) return;
@@ -81,14 +77,43 @@ function HotelSearchForm({
       typeof currentMax === 'number'
         ? Math.min(currentMax, priceLimits.maxPrice)
         : priceLimits.maxPrice;
+    const normalizedMax = Math.max(nextMax, nextMin);
 
-    if (nextMin !== currentMin || nextMax !== currentMax) {
+    if (nextMin !== currentMin || normalizedMax !== currentMax) {
       form.setFieldsValue({
         minPrice: nextMin,
-        maxPrice: nextMax,
+        maxPrice: normalizedMax,
       });
     }
   }, [form, priceLimits]);
+
+  useEffect(() => {
+    if (autoSearchRef.current) return;
+    if (!isPolicyReady) return;
+    if (!priceLimits) return;
+
+    if (hotelParams?.destinationGeo && hotelParams?.checkInDate && hotelParams?.checkOutDate) {
+      const currentMin = form.getFieldValue('minPrice');
+      const currentMax = form.getFieldValue('maxPrice');
+      const nextMin =
+        typeof currentMin === 'number'
+          ? Math.max(currentMin, priceLimits.minPrice)
+          : priceLimits.minPrice;
+      const nextMax =
+        typeof currentMax === 'number'
+          ? Math.min(currentMax, priceLimits.maxPrice)
+          : priceLimits.maxPrice;
+      const normalizedMax = Math.max(nextMax, nextMin);
+
+      if (nextMin !== currentMin || normalizedMax !== currentMax) {
+        form.setFieldsValue({
+          minPrice: nextMin,
+          maxPrice: normalizedMax,
+        });
+      }
+      form.submit();
+    }
+  }, [hotelParams, form, isPolicyReady, priceLimits]);
 
   const runSearch = useCallback(
     async (values: any, nextPage: number, append: boolean) => {
@@ -149,6 +174,7 @@ function HotelSearchForm({
         sortBy: 'HIGHEST_PRICE',
       }}
       onFinish={async (values) => {
+        autoSearchRef.current = true;
         onSearchParamsChange?.(values);
         lastSearchRef.current = values;
         setIsLoadingMore(false);
@@ -245,12 +271,83 @@ function HotelSearchForm({
           </Form.Item>
           <Form.Item label="Price Range">
             <Space direction="vertical" style={{ width: '100%' }}>
-              <Form.Item name="minPrice" noStyle initialValue={0}>
+              {/* <Form.Item name="minPrice" noStyle initialValue={0}>
                 <InputNumber min={0} placeholder="Min" style={{ width: '100%' }} />
               </Form.Item>
               <Typography.Text type="secondary">to</Typography.Text>
               <Form.Item name="maxPrice" noStyle initialValue={10000000}>
                 <InputNumber min={0} placeholder="Max" style={{ width: '100%' }} />
+              </Form.Item> */}
+              <Form.Item
+                name="minPrice"
+                noStyle
+                initialValue={0}
+                rules={[
+                  {
+                    validator: (_, value) => {
+                      if (value === undefined || value === null) return Promise.resolve();
+                      if (value < minPriceBound) {
+                        return Promise.reject(
+                          new Error(
+                            `Minimum price must be greater than or equal to ${minPriceBound}`,
+                          ),
+                        );
+                      }
+                      if (maxPriceBound !== undefined && value > maxPriceBound) {
+                        return Promise.reject(
+                          new Error(`Minimum price must be less than or equal to ${maxPriceBound}`),
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <InputNumber
+                  min={minPriceBound}
+                  max={maxPriceBound}
+                  placeholder="Min"
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+              <Typography.Text type="secondary">to</Typography.Text>
+              <Form.Item
+                name="maxPrice"
+                noStyle
+                initialValue={10000000}
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator: (_, value) => {
+                      if (value === undefined || value === null) return Promise.resolve();
+                      if (value < minPriceBound) {
+                        return Promise.reject(
+                          new Error(
+                            `Maximum price must be greater than or equal to ${minPriceBound}`,
+                          ),
+                        );
+                      }
+                      if (maxPriceBound !== undefined && value > maxPriceBound) {
+                        return Promise.reject(
+                          new Error(`Maximum price must be less than or equal to ${maxPriceBound}`),
+                        );
+                      }
+                      const minPrice = getFieldValue('minPrice');
+                      if (typeof minPrice === 'number' && value < minPrice) {
+                        return Promise.reject(
+                          new Error('Maximum price must be greater than or equal to minimum price'),
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
+              >
+                <InputNumber
+                  min={minPriceBound}
+                  max={maxPriceBound}
+                  placeholder="Max"
+                  style={{ width: '100%' }}
+                />
               </Form.Item>
             </Space>
           </Form.Item>
