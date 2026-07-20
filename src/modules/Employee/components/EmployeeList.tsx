@@ -1,5 +1,6 @@
 import { Table, Tag, Typography } from 'antd';
 
+import useTravelPolicy from '@/hooks/useTravelPolicy';
 import type { UserType } from '@/types';
 
 const { Text } = Typography;
@@ -23,6 +24,8 @@ function EmployeeList({
   onPageChange,
   onEdit,
 }: EmployeeListProps) {
+  const { travelPoliciesById } = useTravelPolicy();
+
   return (
     <Table
       rowKey="id"
@@ -66,6 +69,12 @@ function EmployeeList({
           dataIndex: 'phoneNo',
           key: 'phoneNo',
           render: (value: string) => <span>{value || '-'}</span>,
+        },
+        {
+          title: 'Travel Policy',
+          dataIndex: 'travelPolicyId',
+          key: 'travelPolicyId',
+          render: (value: number) => <span>{travelPoliciesById[value]?.name || '-'}</span>,
         },
         {
           title: 'Status',
