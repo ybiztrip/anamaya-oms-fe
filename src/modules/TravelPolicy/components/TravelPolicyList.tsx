@@ -2,6 +2,7 @@ import { Table, Tag } from 'antd';
 import dayjs from 'dayjs';
 
 import { FLIGHT_CLASS_LABELS } from '@/constants/common';
+import useFlightAirlines from '@/hooks/useFlightAirlines';
 import type { TravelPolicyType } from '@/types';
 import { formatIDR } from '@/utils/formatter';
 
@@ -24,6 +25,8 @@ function TravelPolicyList({
   onPageChange,
   onEdit,
 }: TravelPolicyListProps) {
+  const { airlinesByCode } = useFlightAirlines();
+
   return (
     <Table
       rowKey="id"
@@ -66,6 +69,24 @@ function TravelPolicyList({
               {FLIGHT_CLASS_LABELS[record.flightMaximumClass] || '-'}
             </span>
           ),
+        },
+        {
+          title: 'Including Airlines',
+          key: 'includingAirlines',
+          render: (_, record: TravelPolicyType) => {
+            return (
+              <div className="space-y-1">
+                {record.flights.map((airline) => (
+                  <div key={airline.name} className="flex items-center justify-between gap-3">
+                    <span className="text-sm">{airlinesByCode[airline.name]?.airlineName}:</span>
+                    <Tag color={airline.isActive ? 'blue' : 'default'}>
+                      {airline.isActive ? 'Yes' : 'No'}
+                    </Tag>
+                  </div>
+                ))}
+              </div>
+            );
+          },
         },
         {
           title: 'Hotel Price',
