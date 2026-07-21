@@ -44,7 +44,7 @@ export default function useFlightSearch({
         depAirportOrAreaCode: values.origin,
         arrAirportOrAreaCode: values.destination,
         depDate: dayjs(values.departureDate).format('MM-DD-YYYY'),
-        seatClass: flightParams?.flightClass ?? 'ECONOMY',
+        seatClass: values?.flightClass ?? 'ECONOMY',
         sortBy: values.sortBy ?? 'ARRIVAL_TIME',
       },
       passengers: {

@@ -38,6 +38,7 @@ function FlightSearchView() {
         origin: formValues.origin,
         destination: formValues.destination,
         departureDate: dayjs(formValues.departureDate, 'MM-DD-YYYY').format('YYYY-MM-DD'),
+        flightClass: formValues.flightClass,
       };
 
       const newBookingParams = {

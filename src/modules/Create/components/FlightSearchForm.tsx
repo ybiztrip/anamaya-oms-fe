@@ -3,7 +3,11 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
-import { AIRLINE_CODES_WITH_POLICY_LIMITS } from '@/constants/common';
+import {
+  AIRLINE_CODES_WITH_POLICY_LIMITS,
+  FLIGHT_CLASS_OPTIONS,
+  FLIGHT_CLASS_RANK,
+} from '@/constants/common';
 import useTravelPolicy from '@/hooks/useTravelPolicy';
 import type { BookingParamsType, FlightSearchOneWayType } from '@/types';
 import dayjs from '@/utils/dayjs';
@@ -53,6 +57,21 @@ function FlightSearchForm({
     () => getTravelPolicyLimits(bookingParams?.paxList, travelPoliciesById),
     [bookingParams?.paxList, travelPoliciesById],
   );
+
+  const flightClassOptions = useMemo(() => {
+    if (!policyLimits) return FLIGHT_CLASS_OPTIONS;
+
+    return FLIGHT_CLASS_OPTIONS.filter((option) => {
+      const rank = FLIGHT_CLASS_RANK[option.value];
+      if (policyLimits.flightMinClass && rank < FLIGHT_CLASS_RANK[policyLimits.flightMinClass]) {
+        return false;
+      }
+      if (policyLimits.flightMaxClass && rank > FLIGHT_CLASS_RANK[policyLimits.flightMaxClass]) {
+        return false;
+      }
+      return true;
+    });
+  }, [policyLimits]);
 
   const filteredResults = useMemo(() => {
     const results = data?.data?.oneWayFlightSearchResults ?? [];
@@ -249,7 +268,34 @@ function FlightSearchForm({
               style={{ width: 'fit-content' }}
               onChange={async () => {
                 try {
-                  await form.validateFields(['origin', 'destination', 'departureDate']);
+                  await form.validateFields([
+                    'origin',
+                    'destination',
+                    'departureDate',
+                    'flightClass',
+                  ]);
+                  form.submit();
+                } catch {
+                  // Don't auto-submit when required fields are incomplete.
+                }
+              }}
+            />
+          </Form.Item>
+          <Form.Item label="Flight Class" name="flightClass">
+            <Select
+              options={flightClassOptions}
+              style={{ width: '180px' }}
+              onChange={async () => {
+                try {
+                  await form.validateFields([
+                    'origin',
+                    'destination',
+                    'departureDate',
+                    'flightClass',
+                  ]);
+
+                  const values = form.getFieldsValue();
+                  onSearchParamsChange?.(values);
                   form.submit();
                 } catch {
                   // Don't auto-submit when required fields are incomplete.
