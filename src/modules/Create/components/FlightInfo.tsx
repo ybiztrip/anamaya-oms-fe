@@ -1,4 +1,4 @@
-import { InboxOutlined } from '@ant-design/icons';
+import { ShoppingOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Popover, Row, Tag, Timeline } from 'antd';
 import { useMemo } from 'react';
 
@@ -184,7 +184,7 @@ function FlightInfo({
         {withDefaultBaggage && (
           <Col flex="auto" className="text-center">
             {defaultBaggageText && (
-              <Tag icon={<InboxOutlined />} color="default" className="m-0 shrink-0">
+              <Tag icon={<ShoppingOutlined />} color="default" className="m-0 shrink-0">
                 {defaultBaggageText}
               </Tag>
             )}
