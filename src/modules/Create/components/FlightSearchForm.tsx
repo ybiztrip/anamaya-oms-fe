@@ -409,7 +409,11 @@ function FlightSearchForm({
                 return (
                   <div key={r.flightId} className="overflow-x-auto">
                     <div style={{ minWidth: 800 }} className="mt-4 space-y-3">
-                      <FlightInfo flight={r} onSelect={() => onSelectFlight(r, flightIndex)} />
+                      <FlightInfo
+                        flight={r}
+                        onSelect={() => onSelectFlight(r, flightIndex)}
+                        withFlightClass={false}
+                      />
                     </div>
                   </div>
                 );

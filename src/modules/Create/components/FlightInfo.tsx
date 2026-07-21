@@ -24,12 +24,14 @@ function groupSegmentsByConsecutiveAirline(segments: FlightJourneySegmentType[] 
 
 function FlightInfo({
   flight,
+  withFlightClass = true,
   withDefaultBaggage = true,
   withPrice = true,
   withSelect = true,
   onSelect,
 }: Readonly<{
   flight: FlightSearchOneWayType;
+  withFlightClass?: boolean;
   withDefaultBaggage?: boolean;
   withPrice?: boolean;
   withSelect?: boolean;
@@ -49,7 +51,12 @@ function FlightInfo({
   const defaultBaggage = firstJourney?.segments?.[0]?.addOns?.baggageOptions?.[0];
   const defaultBaggageText = defaultBaggage
     ? `${defaultBaggage.baggageWeight} ${defaultBaggage.baggageType}`
-    : null;
+    : '';
+
+  const flightClass = firstJourney?.segments?.[0]?.seatClass ?? '';
+
+  const refundableStatus = String(firstJourney?.refundableStatus ?? '').toUpperCase();
+  const isRefundable = refundableStatus === 'REFUNDABLE';
 
   const dep = firstJourney?.departureDetail;
   const arr = lastJourney?.arrivalDetail;
@@ -174,6 +181,9 @@ function FlightInfo({
                         .filter(Boolean)
                         .join(' · ')}
                     </div>
+                    {withFlightClass && (
+                      <div className="mt-1 text-xs text-gray-500">{flightClass}</div>
+                    )}
                   </div>
                 </div>
               );
@@ -181,15 +191,20 @@ function FlightInfo({
           </div>
         </Col>
 
-        {withDefaultBaggage && (
-          <Col flex="auto" className="text-center">
-            {defaultBaggageText && (
+        <Col flex="auto" className="text-center">
+          <div className="flex flex-wrap items-center justify-center">
+            {withDefaultBaggage && (
               <Tag icon={<ShoppingOutlined />} color="default" className="m-0 shrink-0">
                 {defaultBaggageText}
               </Tag>
             )}
-          </Col>
-        )}
+          </div>
+          <div className="flex flex-wrap items-center justify-center mt-1">
+            <Tag color={isRefundable ? 'green' : 'red'} className="m-0 shrink-0">
+              {isRefundable ? 'Refundable' : 'Non-refundable'}
+            </Tag>
+          </div>
+        </Col>
 
         <Col flex="auto">
           <div className="grid grid-cols-[4rem_auto_4rem] items-center justify-stretch">
