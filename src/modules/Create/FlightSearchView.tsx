@@ -66,7 +66,7 @@ function FlightSearchView() {
         ...bookingParams,
         flights: newFlights,
       } as BookingParamsType;
-      sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, newBookingParams);
+      updateBookingParams(newBookingParams);
       if (flightIndex === Number(bookingParams?.flights?.length ?? 0) - 1) {
         if (bookingParams?.hotel) {
           navigate(CREATE_HOTEL_SEARCH_PATH);
@@ -77,7 +77,7 @@ function FlightSearchView() {
         setActiveFlightIndex(flightIndex + 1);
       }
     },
-    [bookingParams, navigate],
+    [bookingParams, navigate, updateBookingParams],
   );
 
   useEffect(() => {
