@@ -8,6 +8,7 @@ import {
   FLIGHT_CLASS_OPTIONS,
   FLIGHT_CLASS_RANK,
 } from '@/constants/common';
+import useFlightAirlines from '@/hooks/useFlightAirlines';
 import useTravelPolicy from '@/hooks/useTravelPolicy';
 import type { BookingParamsType, FlightSearchOneWayType } from '@/types';
 import dayjs from '@/utils/dayjs';
@@ -21,15 +22,16 @@ function FlightSearchForm({
   flightIndex,
   onSelectFlight,
   onSearchParamsChange,
-}: {
+}: Readonly<{
   bookingParams: BookingParamsType;
   flightIndex: number;
   onSelectFlight: (flight: FlightSearchOneWayType, flightIndex: number) => void;
   onSearchParamsChange?: (formValues: any) => void;
-}) {
+}>) {
   const [form] = Form.useForm();
 
   const { travelPoliciesById } = useTravelPolicy();
+  const { airlinesByCode } = useFlightAirlines();
 
   const { flightParams, handleSearchFlights, data, isLoading } = useFlightSearch({
     bookingParams,
@@ -42,6 +44,7 @@ function FlightSearchForm({
   const isMorningFlight = Form.useWatch('isMorningFlight', form);
   const isNoonFlight = Form.useWatch('isNoonFlight', form);
   const isEveningFlight = Form.useWatch('isEveningFlight', form);
+  const selectedAirlineCodes = Form.useWatch('airlineCodes', form) as string[] | undefined;
 
   const autoSearchRef = useRef(false);
   useEffect(() => {
@@ -73,12 +76,45 @@ function FlightSearchForm({
     });
   }, [policyLimits]);
 
+  const airlineFilterOptions = useMemo(() => {
+    const results = data?.data?.oneWayFlightSearchResults ?? [];
+    const uniqueCodes = Array.from(
+      new Set(
+        results.flatMap((flight: FlightSearchOneWayType) =>
+          (flight?.journeys?.[0]?.segments ?? [])
+            .map((segment) => segment?.marketingAirline)
+            .filter(Boolean),
+        ),
+      ),
+    ) as string[];
+
+    return uniqueCodes.map((code) => {
+      const airline = airlinesByCode[code];
+      return {
+        code,
+        name: airline?.airlineName ?? code,
+        logoUrl: airline?.logoUrl,
+      };
+    });
+  }, [data?.data?.oneWayFlightSearchResults, airlinesByCode]);
+
+  useEffect(() => {
+    if (!selectedAirlineCodes?.length) return;
+
+    const availableCodes = new Set(airlineFilterOptions.map((airline) => airline.code));
+    const nextSelectedCodes = selectedAirlineCodes.filter((code) => availableCodes.has(code));
+
+    if (nextSelectedCodes.length !== selectedAirlineCodes.length) {
+      form.setFieldValue('airlineCodes', nextSelectedCodes);
+    }
+  }, [airlineFilterOptions, selectedAirlineCodes, form]);
+
   const filteredResults = useMemo(() => {
     const results = data?.data?.oneWayFlightSearchResults ?? [];
 
     const parseMinutes = (time?: string) => {
       if (!time) return null;
-      const [h, m] = time.split(':').map((v) => Number(v));
+      const [h, m] = time.split(':').map(Number);
       if (Number.isNaN(h) || Number.isNaN(m)) return null;
       return h * 60 + m;
     };
@@ -131,6 +167,14 @@ function FlightSearchForm({
         }
       }
 
+      if (selectedAirlineCodes?.length) {
+        const segmentCodes = new Set(
+          (journey?.segments ?? []).map((segment) => segment?.marketingAirline).filter(Boolean),
+        );
+        const isIncluded = selectedAirlineCodes.some((code) => segmentCodes.has(code));
+        if (!isIncluded) return false;
+      }
+
       if (hasTimeFilter) {
         const minutes = parseMinutes(journey?.departureDetail?.departureTime);
         if (minutes === null) return false;
@@ -158,6 +202,7 @@ function FlightSearchForm({
     isNoonFlight,
     isEveningFlight,
     policyLimits,
+    selectedAirlineCodes,
   ]);
 
   return (
@@ -316,7 +361,7 @@ function FlightSearchForm({
           {/* <Form.Item className="mb-0" name="isHideCodeshare" valuePropName="checked">
             <Checkbox>Hide codeshare</Checkbox>
           </Form.Item> */}
-          <Form.Item className="mt-16 mb-0" name="isMorningFlight" valuePropName="checked">
+          <Form.Item className="mt-8 mb-0" name="isMorningFlight" valuePropName="checked">
             <Checkbox>Morning flight &lt; 11am</Checkbox>
           </Form.Item>
           <Form.Item className="mb-0" name="isNoonFlight" valuePropName="checked">
@@ -324,6 +369,28 @@ function FlightSearchForm({
           </Form.Item>
           <Form.Item className="mb-0" name="isEveningFlight" valuePropName="checked">
             <Checkbox>Evening flight &gt; 4pm</Checkbox>
+          </Form.Item>
+          <Form.Item className="mt-8" label="Airline" name="airlineCodes">
+            <Checkbox.Group style={{ width: '100%' }}>
+              <div className="flex flex-col gap-2">
+                {airlineFilterOptions.map((airline) => (
+                  <Checkbox key={airline.code} value={airline.code}>
+                    <div className="inline-flex items-center gap-2">
+                      {airline.logoUrl ? (
+                        <img
+                          src={airline.logoUrl}
+                          alt={airline.name}
+                          style={{ width: 20, height: 20, objectFit: 'contain' }}
+                        />
+                      ) : (
+                        <div style={{ width: 20, height: 20 }} />
+                      )}
+                      <span>{airline.name}</span>
+                    </div>
+                  </Checkbox>
+                ))}
+              </div>
+            </Checkbox.Group>
           </Form.Item>
         </Col>
         <Col flex="auto">
@@ -340,13 +407,9 @@ function FlightSearchForm({
               )}
               {filteredResults.map((r: FlightSearchOneWayType) => {
                 return (
-                  <div className="overflow-x-auto">
+                  <div key={r.flightId} className="overflow-x-auto">
                     <div style={{ minWidth: 800 }} className="mt-4 space-y-3">
-                      <FlightInfo
-                        key={r.flightId}
-                        flight={r}
-                        onSelect={() => onSelectFlight(r, flightIndex)}
-                      />
+                      <FlightInfo flight={r} onSelect={() => onSelectFlight(r, flightIndex)} />
                     </div>
                   </div>
                 );
