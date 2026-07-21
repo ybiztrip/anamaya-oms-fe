@@ -177,7 +177,7 @@ const FlightConfirm = ({
       {flightsBasedOnAddOns?.map((flightAddOns, flightAddOnsIndex) => {
         return (
           <Card size="small" key={`flight-${index}-journey-${flightAddOnsIndex}`}>
-            <FlightInfo flight={flightAddOns} withSelect={false} withPrice={false} />
+            <FlightInfo flight={flightAddOns} withDefaultBaggage={false} withSelect={false} withPrice={false} />
             {isLoading ? (
               <Spin />
             ) : (

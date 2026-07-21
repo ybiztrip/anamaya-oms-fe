@@ -1,4 +1,5 @@
-import { Button, Card, Col, Popover, Row, Timeline } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Popover, Row, Tag, Timeline } from 'antd';
 import { useMemo } from 'react';
 
 import useFlightAirlines from '@/hooks/useFlightAirlines';
@@ -23,15 +24,17 @@ function groupSegmentsByConsecutiveAirline(segments: FlightJourneySegmentType[] 
 
 function FlightInfo({
   flight,
+  withDefaultBaggage = true,
   withPrice = true,
   withSelect = true,
   onSelect,
-}: {
+}: Readonly<{
   flight: FlightSearchOneWayType;
+  withDefaultBaggage?: boolean;
   withPrice?: boolean;
   withSelect?: boolean;
   onSelect?: (flight: FlightSearchOneWayType) => void;
-}) {
+}>) {
   const { airlinesByCode } = useFlightAirlines();
   const { airportsByCode } = useFlightAirport();
 
@@ -42,6 +45,11 @@ function FlightInfo({
   const allSegments = useMemo(() => journeys.flatMap((j) => j?.segments ?? []), [journeys]);
 
   const groups = useMemo(() => groupSegmentsByConsecutiveAirline(allSegments), [allSegments]);
+
+  const defaultBaggage = firstJourney?.segments?.[0]?.addOns?.baggageOptions?.[0];
+  const defaultBaggageText = defaultBaggage
+    ? `${defaultBaggage.baggageWeight} ${defaultBaggage.baggageType}`
+    : null;
 
   const dep = firstJourney?.departureDetail;
   const arr = lastJourney?.arrivalDetail;
@@ -127,7 +135,7 @@ function FlightInfo({
           },
         ];
       }),
-    [allSegments, airlinesByCode],
+    [allSegments, airlinesByCode, airportsByCode],
   );
 
   const segmentPopoverContent = (
@@ -172,6 +180,16 @@ function FlightInfo({
             })}
           </div>
         </Col>
+
+        {withDefaultBaggage && (
+          <Col flex="auto" className="text-center">
+            {defaultBaggageText && (
+              <Tag icon={<InboxOutlined />} color="default" className="m-0 shrink-0">
+                {defaultBaggageText}
+              </Tag>
+            )}
+          </Col>
+        )}
 
         <Col flex="auto">
           <div className="grid grid-cols-[4rem_auto_4rem] items-center justify-stretch">
