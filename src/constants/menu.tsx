@@ -106,17 +106,20 @@ export const menus: Menu[] = [
     name: 'report',
     title: 'Report',
     path: '',
+    permissions: [PERMISSIONS.REPORT_FLIGHT, PERMISSIONS.REPORT_HOTEL],
     childs: [
       {
         name: 'flight',
         title: 'Flight',
         path: REPORT_FLIGHT_PATH,
+        permissions: [PERMISSIONS.REPORT_FLIGHT],
         Icon: FileTextOutlined,
       },
       {
         name: 'hotel',
         title: 'Hotel',
         path: REPORT_HOTEL_PATH,
+        permissions: [PERMISSIONS.REPORT_HOTEL],
         Icon: FileTextOutlined,
       },
     ],

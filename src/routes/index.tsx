@@ -125,7 +125,9 @@ function App() {
         path={MONITORING_CREDIT_PATH}
         element={
           <ProtectedRoute>
-            <MonitoringDepositView />
+            <PermittedRoute permission={PERMISSIONS.MONITORING_CREDIT}>
+              <MonitoringDepositView />
+            </PermittedRoute>
           </ProtectedRoute>
         }
       />
@@ -133,7 +135,9 @@ function App() {
         path={MONITORING_DEPOSIT_PATH}
         element={
           <ProtectedRoute>
-            <MonitoringDepositView />
+            <PermittedRoute permission={PERMISSIONS.MONITORING_DEPOSIT}>
+              <MonitoringDepositView />
+            </PermittedRoute>
           </ProtectedRoute>
         }
       />
@@ -142,7 +146,9 @@ function App() {
         path={REPORT_FLIGHT_PATH}
         element={
           <ProtectedRoute>
-            <ReportFlightView />
+            <PermittedRoute permission={PERMISSIONS.REPORT_FLIGHT}>
+              <ReportFlightView />
+            </PermittedRoute>
           </ProtectedRoute>
         }
       />
@@ -150,7 +156,9 @@ function App() {
         path={REPORT_HOTEL_PATH}
         element={
           <ProtectedRoute>
-            <ReportHotelView />
+            <PermittedRoute permission={PERMISSIONS.REPORT_HOTEL}>
+              <ReportHotelView />
+            </PermittedRoute>
           </ProtectedRoute>
         }
       />
