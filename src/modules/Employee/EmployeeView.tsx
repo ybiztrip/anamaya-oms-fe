@@ -93,6 +93,12 @@ export default function EmployeeView() {
     }
   };
 
+  const handleCancel = () => {
+    setModalOpen(false);
+    form.resetFields();
+    setSelectedUser(null);
+  };
+
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
@@ -167,7 +173,7 @@ export default function EmployeeView() {
         <Modal
           open={modalOpen}
           title={modalMode === 'create' ? 'Add Employee' : 'Edit Employee'}
-          onCancel={() => setModalOpen(false)}
+          onCancel={handleCancel}
           onOk={handleSubmit}
           okText={modalMode === 'create' ? 'Create' : 'Update'}
           confirmLoading={

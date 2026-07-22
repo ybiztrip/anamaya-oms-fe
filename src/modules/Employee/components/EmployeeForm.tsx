@@ -234,16 +234,25 @@ export default function EmployeeForm({
           )}
           {fields.includes('phoneCode') && (
             <Col xs={24} md={12}>
-              <Form.Item label="Phone">
+              <Form.Item label="Phone" required>
                 <Space.Compact block>
-                  <Form.Item name={[...namePrefix, 'phoneCode']} noStyle initialValue="+62">
+                  <Form.Item
+                    name={[...namePrefix, 'phoneCode']}
+                    noStyle
+                    initialValue="+62"
+                    rules={[{ required: true, message: 'Phone Code required' }]}
+                  >
                     <Select
                       style={{ width: 130 }}
                       options={phoneCodeOptions}
                       disabled={disabledFields.includes('phoneCode')}
                     />
                   </Form.Item>
-                  <Form.Item name={[...namePrefix, 'phoneNumber']} noStyle>
+                  <Form.Item
+                    name={[...namePrefix, 'phoneNumber']}
+                    noStyle
+                    rules={[{ required: true, message: 'Phone Number required' }]}
+                  >
                     <Input
                       placeholder="Phone Number"
                       disabled={disabledFields.includes('phoneNumber')}
