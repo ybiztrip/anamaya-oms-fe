@@ -239,7 +239,7 @@ const FlightConfirm = ({
                               <Select
                                 placeholder="Meal"
                                 options={flightAddOns?.addOns?.mealOptions?.map((meal) => ({
-                                  label: meal.mealName,
+                                  label: meal.displayName,
                                   value: meal.id,
                                   meal,
                                 }))}
