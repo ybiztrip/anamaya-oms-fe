@@ -81,6 +81,20 @@ export type AddOnBaggageType = {
   };
 };
 
+export type AddOnMealType = {
+  id: string;
+  quantity: string;
+  displayName: string;
+  priceWithCurrency: {
+    amount: string;
+    currency: string;
+  };
+  netToAgent: {
+    amount: string;
+    currency: string;
+  };
+};
+
 export type FlightJourneySegmentType = {
   flightCode: string;
   marketingAirline: string;
@@ -105,7 +119,7 @@ export type FlightJourneySegmentType = {
   stopInfo: any;
   addOns: {
     baggageOptions: AddOnBaggageType[];
-    mealOptions: any[];
+    mealOptions: AddOnMealType[];
     fareBasisCode: string;
   };
   fareBasisCode: any;
@@ -179,17 +193,8 @@ export type FlightBookingAddOnsPayloadType = {
 
 export type FlightAddOnsType = {
   baggageOptions: AddOnBaggageType[];
-  // TODO: meal options type
-  mealOptions: {
-    id: string;
-    mealType: string;
-    mealName: string;
-    priceWithCurrency: {
-      amount: string;
-      currency: string;
-    };
-  }[];
-}
+  mealOptions: AddOnMealType[];
+};
 
 export type FlightBookingAddOnType = {
   segmentsWithAvailableAddOns: {
