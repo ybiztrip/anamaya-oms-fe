@@ -226,7 +226,7 @@ function BookingDetailView() {
             <Title level={4}>Booking Detail</Title>
           </Col>
           <Col>
-            <BookingStatusTag status={status} />
+            <BookingStatusTag status={status} size="large" />
           </Col>
         </Row>
         <Row justify="space-between" align="bottom">

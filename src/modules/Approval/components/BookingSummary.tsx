@@ -36,43 +36,41 @@ function BookingSummary({ data }: Readonly<BookingSummaryProps>) {
           <div className="mt-2 space-y-1.5 min-w-0">
             {data.flights.map((flight) => {
               const depName = airportsByCode[flight.origin]?.localAirportName;
-              const arrName = airportsByCode[flight.destination]?.localAirportName;
               return (
                 <div
                   key={flight.id ?? `${flight.origin}-${flight.departureDatetime}`}
-                  className="space-y-1.5 min-w-0"
+                  className="flex items-center justify-start gap-2"
                 >
-                  <Text className="text-xs sm:text-sm leading-snug block min-w-0 [overflow-wrap:anywhere]">
+                  <Text className="text-xs sm:text-sm leading-snug block min-w-0 truncate">
                     {dayjs(flight.departureDatetime).format('ddd, MMM DD HH:mm')}{' '}
-                    <Text strong>{flight.origin}</Text>
+                    <Text strong>{flight.origin}</Text> → <Text strong>{flight.destination}</Text>
                     {depName && <Text type="secondary"> · {depName}</Text>}
                   </Text>
-                  <Text className="text-xs sm:text-sm leading-snug block min-w-0 [overflow-wrap:anywhere]">
-                    {dayjs(flight.arrivalDatetime).format('ddd, MMM DD HH:mm')}{' '}
-                    <Text strong>{flight.destination}</Text>
-                    {arrName && <Text type="secondary"> · {arrName}</Text>}
-                  </Text>
+                  <BookingStatusTag status={flight.status} size="small" className="m-0 shrink-0" />
                 </div>
               );
             })}
 
             {data.hotels.map((hotel) => (
-              <Text
+              <div
                 key={hotel.id ?? `${hotel.checkInDate}-${hotel.roomId}`}
-                className="text-xs sm:text-sm leading-snug block min-w-0 [overflow-wrap:anywhere]"
+                className="flex items-center justify-start gap-2"
               >
-                {dayjs(hotel.checkInDate).format('ddd, MMM DD')} —{' '}
-                {dayjs(hotel.checkOutDate).format('ddd, MMM DD')}
-                {hotel.metadata?.hotelName && (
-                  <>
-                    {' '}
-                    <Text strong>· {hotel.metadata.hotelName}</Text>
-                  </>
-                )}
-                {hotel.metadata?.hotelRoomName && (
-                  <Text type="secondary"> · {hotel.metadata.hotelRoomName}</Text>
-                )}
-              </Text>
+                <Text className="text-xs sm:text-sm leading-snug block min-w-0 [overflow-wrap:anywhere]">
+                  {dayjs(hotel.checkInDate).format('ddd, MMM DD')} —{' '}
+                  {dayjs(hotel.checkOutDate).format('ddd, MMM DD')}
+                  {hotel.metadata?.hotelName && (
+                    <>
+                      {' '}
+                      <Text strong>· {hotel.metadata.hotelName}</Text>
+                    </>
+                  )}
+                  {hotel.metadata?.hotelRoomName && (
+                    <Text type="secondary"> · {hotel.metadata.hotelRoomName}</Text>
+                  )}
+                </Text>
+                <BookingStatusTag status={hotel.status} size="small" className="m-0 shrink-0" />
+              </div>
             ))}
           </div>
         </Col>
