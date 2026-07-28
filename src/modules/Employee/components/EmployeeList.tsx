@@ -1,7 +1,7 @@
 import { Table, Tag, Typography } from 'antd';
 
 import useTravelPolicy from '@/hooks/useTravelPolicy';
-import type { UserType } from '@/types';
+import type { UserRoleType, UserType } from '@/types';
 
 const { Text } = Typography;
 
@@ -75,6 +75,14 @@ function EmployeeList({
           dataIndex: 'travelPolicyId',
           key: 'travelPolicyId',
           render: (value: number) => <span>{travelPoliciesById[value]?.name || '-'}</span>,
+        },
+        {
+          title: 'Roles',
+          dataIndex: 'roles',
+          key: 'roles',
+          render: (value: UserRoleType[]) => (
+            <span>{value.map((r) => r.roleName).join(', ') || '-'}</span>
+          ),
         },
         {
           title: 'Status',

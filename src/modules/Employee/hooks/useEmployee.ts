@@ -25,6 +25,7 @@ export default function useEmployee() {
       page: page - 1,
       size: pageSize,
       email,
+      includeRoles: true,
     }),
     [page, pageSize, email],
   );
