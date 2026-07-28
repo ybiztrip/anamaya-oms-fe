@@ -1,5 +1,5 @@
 import { ShoppingOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Popover, Row, Tag, Timeline } from 'antd';
+import { Button, Card, Col, Popover, Row, Tag, Timeline, Tooltip } from 'antd';
 import { Utensils } from 'lucide-react';
 import { useMemo } from 'react';
 
@@ -80,15 +80,27 @@ function FlightInfo({
   const groupedAirlinesWithAddOns = useMemo(
     () =>
       groupedAirlines.map((group) => {
-        const uniqueAddOnsMap = new Map<string, { baggageText: string; hasMealAddOn: boolean }>();
+        const uniqueAddOnsMap = new Map<
+          string,
+          { baggageText: string; hasMealAddOn: boolean; flightCodes: string[] }
+        >();
 
         group.segments.forEach((segment) => {
           const baggageText = formatBaggageText(segment?.addOns?.baggageOptions?.[0]);
           const hasMealAddOn = getHasMealAddOn(segment);
           const signature = JSON.stringify({ baggageText, hasMealAddOn });
+          const flightCode = segment?.flightCode;
 
           if (!uniqueAddOnsMap.has(signature) && (baggageText || hasMealAddOn)) {
-            uniqueAddOnsMap.set(signature, { baggageText, hasMealAddOn });
+            uniqueAddOnsMap.set(signature, {
+              baggageText,
+              hasMealAddOn,
+              flightCodes: [flightCode],
+            });
+          }
+          const existing = uniqueAddOnsMap.get(signature);
+          if (existing && flightCode && !existing.flightCodes.includes(flightCode)) {
+            existing.flightCodes.push(flightCode);
           }
         });
 
@@ -259,19 +271,33 @@ function FlightInfo({
 
                       <div className="inline-flex items-center gap-x-1">
                         {g.uniqueAddOns.map((addOn, addOnIndex) => (
-                          <span
+                          <Tooltip
                             key={`${g.airlineCode}-${i}-add-on-${addOnIndex}`}
-                            className="inline-flex items-center gap-x-3"
+                            title={
+                              <>
+                                {g.uniqueAddOns.length > 1 && addOn.flightCodes.length > 0 && (
+                                  <div className="text-xs">
+                                    Flight: {addOn.flightCodes.join(' · ')}
+                                  </div>
+                                )}
+                                {addOn.baggageText && withAddOnsBaggage && (
+                                  <div>Baggage {addOn.baggageText}</div>
+                                )}
+                                {addOn.hasMealAddOn && withAddOnsMeal && <div>In-flight meal</div>}
+                              </>
+                            }
                           >
-                            {addOnIndex > 0 && <span>·</span>}
-                            {addOn.baggageText && withAddOnsBaggage && (
-                              <span>
-                                <ShoppingOutlined className="mr-1" />
-                                {addOn.baggageText}
-                              </span>
-                            )}
-                            {addOn.hasMealAddOn && withAddOnsMeal && <Utensils size={12} />}
-                          </span>
+                            <span className="inline-flex items-center gap-x-3">
+                              {addOnIndex > 0 && <span>·</span>}
+                              {addOn.baggageText && withAddOnsBaggage && (
+                                <span>
+                                  <ShoppingOutlined className="mr-1" />
+                                  {addOn.baggageText}
+                                </span>
+                              )}
+                              {addOn.hasMealAddOn && withAddOnsMeal && <Utensils size={12} />}
+                            </span>
+                          </Tooltip>
                         ))}
                       </div>
                     </div>
