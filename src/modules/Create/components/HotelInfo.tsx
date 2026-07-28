@@ -28,7 +28,7 @@ function HotelInfo({
   const starCount = Number(summary?.starRating ?? 0);
   const rate = hotel.cheapestRoom?.chargeableRate;
   const currency = rate?.currencyCode ?? 'IDR';
-  const total = rate?.total ?? '0';
+  const nightlyRate = rate?.nightlyRates?.[0]?.baseRate ?? '0';
   const surcharges = rate?.surcharges ?? [];
   const includesTaxFees = surcharges.length > 0 && surcharges.every((s) => s?.included);
 
@@ -63,7 +63,7 @@ function HotelInfo({
         {withPrice && (
           <Col flex="180px" className="text-right">
             <div className="text-lg font-semibold">
-              {currency} {formatIDR(total)}
+              {currency} {formatIDR(nightlyRate)}
             </div>
             {includesTaxFees ? (
               <Tag color="green">Includes Tax & Fees</Tag>
