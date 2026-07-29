@@ -1,7 +1,7 @@
 import { Button, message, Modal, Space, Table } from 'antd';
 import dayjs from 'dayjs';
 
-import { DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import { BOOKING_STATUS_ISSUED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import useETicket from '@/hooks/useETicket';
 import useRefund from '@/hooks/useRefund';
 import type {
@@ -151,25 +151,39 @@ function DepositTransactionTable({
           {
             title: 'Actions',
             key: 'action',
-            render: (_, record: DepositMonitoringType) => (
-              <Space>
-                <Button
-                  type="primary"
-                  loading={isDownloading}
-                  onClick={() => handleViewETicket(record)}
-                >
-                  E-Ticket
-                </Button>
-                <Button
-                  type="primary"
-                  loading={isCreatingRefund}
-                  onClick={() => handleRequestRefund(record)}
-                  danger
-                >
-                  Request Refund
-                </Button>
-              </Space>
-            ),
+            render: (_, record: DepositMonitoringType) => {
+              const allowedETicketStatuses = new Set([BOOKING_STATUS_ISSUED]);
+              const bookings =
+                record.bookingType === 'FLIGHT' ? record.bookingFlights : record.bookingHotels;
+
+              const isHasETicket =
+                bookings &&
+                bookings?.length > 0 &&
+                bookings?.every((booking) =>
+                  allowedETicketStatuses.has(String(booking?.status ?? '').toUpperCase()),
+                );
+              return (
+                <Space>
+                  {isHasETicket && (
+                    <Button
+                      type="primary"
+                      loading={isDownloading}
+                      onClick={() => handleViewETicket(record)}
+                    >
+                      E-Ticket
+                    </Button>
+                  )}
+                  <Button
+                    type="primary"
+                    loading={isCreatingRefund}
+                    onClick={() => handleRequestRefund(record)}
+                    danger
+                  >
+                    Request Refund
+                  </Button>
+                </Space>
+              );
+            },
           },
         ]}
       />
