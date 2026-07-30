@@ -4,6 +4,7 @@ import {
   FileTextOutlined,
   LineChartOutlined,
   PlusOutlined,
+  RollbackOutlined,
   SettingOutlined,
   SolutionOutlined,
   UserOutlined,
@@ -18,6 +19,7 @@ import {
   CREATE_PATH,
   // MONITORING_CREDIT_PATH,
   MONITORING_DEPOSIT_PATH,
+  REFUND_PATH,
   REPORT_FLIGHT_PATH,
   REPORT_HOTEL_PATH,
 } from '@/constants/routePath';
@@ -102,6 +104,14 @@ export const menus: Menu[] = [
   //   permissions: [PERMISSIONS.MONITORING_CREDIT],
   //   Icon: LineChartOutlined,
   // },
+  {
+    name: 'refund',
+    title: 'Refund',
+    path: REFUND_PATH,
+    childs: [],
+    permissions: [PERMISSIONS.REFUND],
+    Icon: RollbackOutlined,
+  },
   {
     name: 'report',
     title: 'Report',

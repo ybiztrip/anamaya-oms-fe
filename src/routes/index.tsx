@@ -17,6 +17,7 @@ import {
   MONITORING_CREDIT_PATH,
   MONITORING_DEPOSIT_PATH,
   PROFILE_PATH,
+  REFUND_PATH,
   REPORT_FLIGHT_PATH,
   REPORT_HOTEL_PATH,
 } from '@/constants/routePath';
@@ -34,6 +35,7 @@ import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
 import MonitoringDepositView from '@/modules/Monitoring/MonitoringDepositView';
 import ProfileView from '@/modules/Profile/ProfileView';
+import RefundView from '@/modules/Refund/RefundView';
 import ReportFlightView from '@/modules/Report/ReportFlightView';
 import ReportHotelView from '@/modules/Report/ReportHotelView';
 import TravelPolicyView from '@/modules/TravelPolicy/TravelPolicyView';
@@ -141,7 +143,16 @@ function App() {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path={REFUND_PATH}
+        element={
+          <ProtectedRoute>
+            <PermittedRoute permission={PERMISSIONS.REFUND}>
+              <RefundView />
+            </PermittedRoute>
+          </ProtectedRoute>
+        }
+      />
       <Route
         path={REPORT_FLIGHT_PATH}
         element={

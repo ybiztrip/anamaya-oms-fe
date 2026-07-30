@@ -8,7 +8,7 @@ import type {
   BookingETicketPayloadType,
   DepositMonitoringType,
   PaginationResponseType,
-  RefundPayloadType,
+  RefundCreatePayloadType,
 } from '@/types';
 import { formatIDR } from '@/utils/formatter';
 
@@ -69,7 +69,7 @@ function DepositTransactionTable({
       okButtonProps: { danger: true },
       onOk: async () => {
         try {
-          const payload: RefundPayloadType = {
+          const payload: RefundCreatePayloadType = {
             bookingType: record.bookingType,
             ...(record.bookingType === 'FLIGHT'
               ? { bookingFlightId: Number(record.bookingFlights?.[0]?.bookingId) }

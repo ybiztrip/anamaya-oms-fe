@@ -7,6 +7,7 @@ export const PERMISSIONS = {
   CONFIG_COMPANY: 'config_company',
   MONITORING_DEPOSIT: 'monitoring_deposit',
   MONITORING_CREDIT: 'monitoring_credit',
+  REFUND: 'refund',
   REPORT_FLIGHT: 'report_flight',
   REPORT_HOTEL: 'report_hotel',
 };
@@ -18,6 +19,7 @@ export const PERMISSIONS_BY_ROLE: Record<string, string[]> = {
     PERMISSIONS.CONFIG_COMPANY,
     PERMISSIONS.MONITORING_DEPOSIT,
     PERMISSIONS.MONITORING_CREDIT,
+    PERMISSIONS.REFUND,
     PERMISSIONS.REPORT_FLIGHT,
     PERMISSIONS.REPORT_HOTEL,
   ],
