@@ -63,3 +63,5 @@ export const CREDIT_INVOICES_API = CREDIT_API + '/invoices';
 export const CREDIT_MONITORING_API = CREDIT_API + '/monitoring';
 
 export const REFUNDS_API = API_V1 + '/refunds';
+export const REFUNDS_PAID_API = REFUNDS_API + '/paid';
+export const REFUNDS_CANCEL_API = REFUNDS_API + '/:id/cancel';

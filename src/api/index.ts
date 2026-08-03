@@ -33,6 +33,8 @@ import {
   HOTEL_ROOM_API,
   HOTEL_ROOM_RATE_API,
   REFUNDS_API,
+  REFUNDS_CANCEL_API,
+  REFUNDS_PAID_API,
   ROLES_API,
   TRAVEL_POLICY_API,
   TRAVEL_POLICY_BY_ID_API,
@@ -87,9 +89,11 @@ import type {
   HotelRoomRateResponseType,
   HotelRoomResponseType,
   PaginationResponseType,
+  RefundCancelPayloadType,
   RefundCreatePayloadType,
   RefundListPayloadType,
   RefundListResponseType,
+  RefundPaidPayloadType,
   ResponseType,
   RoleType,
   TravelPolicyListPayloadType,
@@ -393,6 +397,19 @@ export async function exportDepositMonitoring(params: DepositMonitoringPayloadTy
 
 export async function createRefund(params: RefundCreatePayloadType): Promise<ResponseType<any>> {
   const res = await axios.post(REFUNDS_API, params);
+  return res.data;
+}
+
+export async function payRefund(params: RefundPaidPayloadType): Promise<ResponseType<any>> {
+  const res = await axios.post(REFUNDS_PAID_API, params);
+  return res.data;
+}
+
+export async function cancelRefund(
+  id: number,
+  params: RefundCancelPayloadType,
+): Promise<ResponseType<any>> {
+  const res = await axios.put(REFUNDS_CANCEL_API.replace(':id', String(id)), params);
   return res.data;
 }
 

@@ -153,6 +153,7 @@ function DepositTransactionTable({
             key: 'action',
             render: (_, record: DepositMonitoringType) => {
               const allowedETicketStatuses = new Set([BOOKING_STATUS_ISSUED]);
+              const allowedRefundStatuses = new Set([BOOKING_STATUS_ISSUED]);
               const bookings =
                 record.bookingType === 'FLIGHT' ? record.bookingFlights : record.bookingHotels;
 
@@ -161,6 +162,12 @@ function DepositTransactionTable({
                 bookings?.length > 0 &&
                 bookings?.every((booking) =>
                   allowedETicketStatuses.has(String(booking?.status ?? '').toUpperCase()),
+                );
+              const isRefundable =
+                bookings &&
+                bookings?.length > 0 &&
+                bookings?.every((booking) =>
+                  allowedRefundStatuses.has(String(booking?.status ?? '').toUpperCase()),
                 );
               return (
                 <Space>
@@ -173,14 +180,16 @@ function DepositTransactionTable({
                       E-Ticket
                     </Button>
                   )}
-                  <Button
-                    type="primary"
-                    loading={isCreatingRefund}
-                    onClick={() => handleRequestRefund(record)}
-                    danger
-                  >
-                    Request Refund
-                  </Button>
+                  {isRefundable && (
+                    <Button
+                      type="primary"
+                      loading={isCreatingRefund}
+                      onClick={() => handleRequestRefund(record)}
+                      danger
+                    >
+                      Request Refund
+                    </Button>
+                  )}
                 </Space>
               );
             },

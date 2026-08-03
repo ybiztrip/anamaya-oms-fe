@@ -6,6 +6,20 @@ export type RefundCreatePayloadType = {
   remarks: string;
 };
 
+export type RefundPaidPayloadType = {
+  type: string;
+  partnerBookingId: string;
+  paidAmount: number;
+  remarks: string;
+};
+
+export type RefundCancelPayloadType = {
+  type: string;
+  partnerBookingId: string;
+  paidAmount: number;
+  remarks: string;
+};
+
 export type RefundListPayloadType = {
   bookingType: string;
   startDate?: string;
@@ -18,4 +32,8 @@ export type RefundListPayloadType = {
 
 export type RefundListResponseType = {
   id: number;
+  bookingCode: string;
+  bookingType: string;
+  partnerBookingId: string;
+  amount: number;
 };

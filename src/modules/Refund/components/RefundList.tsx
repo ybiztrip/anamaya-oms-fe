@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 
 import SectionCard from '@/components/SectionCard';
 
-import useRefund from '../hooks/useRefund';
+import useRefundList from '../hooks/useRefundList';
 import type { RefundFilters } from '../types';
 import RefundFilterForm from './RefundFilterForm';
 import RefundTable from './RefundTable';
@@ -27,7 +27,7 @@ export default function RefundList({
     [filters],
   );
 
-  const { data, isLoading, error, page, pageSize, setPage, setPageSize, refresh } = useRefund({
+  const { data, isLoading, error, page, pageSize, setPage, setPageSize, refresh } = useRefundList({
     type,
     filters: filtersValues,
   });
