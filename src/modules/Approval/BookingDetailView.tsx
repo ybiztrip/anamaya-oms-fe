@@ -66,7 +66,7 @@ function BookingDetailView() {
     return `${APPROVAL_PATH}?tab=${tab}`;
   }, [state?.fromTab]);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: [BOOKINGS_DETAIL, id],
     queryFn: () => fetchBookingDetail(String(id)),
     enabled: !!id,
@@ -103,11 +103,13 @@ function BookingDetailView() {
   const approve = async () => {
     if (!data) return;
     await approveBooking({ id: String(data.id), payload: buildPayload(data) });
+    await refetch();
   };
 
   const reject = async () => {
     if (!data) return;
     await rejectBooking({ id: String(data.id), payload: buildPayload(data) });
+    await refetch();
   };
 
   const confirmApprove = () => {
@@ -211,15 +213,32 @@ function BookingDetailView() {
 
   return (
     <Layout>
-      <Button
-        className="mb-4"
-        color="primary"
-        variant="text"
-        icon={<ArrowLeftOutlined />}
-        onClick={() => navigate(backPath)}
-      >
-        Back
-      </Button>
+      <Row justify="space-between" align="middle">
+        <Col>
+          <Button
+            className="mb-4"
+            color="primary"
+            variant="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate(backPath)}
+          >
+            Back
+          </Button>
+        </Col>
+
+        {canTakeApprovalAction && (
+          <Col>
+            <div className="flex items-center gap-2">
+              <Button danger loading={isActionLoading} onClick={confirmReject}>
+                Reject
+              </Button>
+              <Button type="primary" loading={isActionLoading} onClick={confirmApprove}>
+                Approve
+              </Button>
+            </div>
+          </Col>
+        )}
+      </Row>
       <Card>
         <Row justify="space-between" align="top">
           <Col>
@@ -251,18 +270,6 @@ function BookingDetailView() {
               </div>
             )}
           </Col>
-          {canTakeApprovalAction && (
-            <Col>
-              <div className="flex items-center gap-2">
-                <Button danger loading={isActionLoading} onClick={confirmReject}>
-                  Reject
-                </Button>
-                <Button type="primary" loading={isActionLoading} onClick={confirmApprove}>
-                  Approve
-                </Button>
-              </div>
-            </Col>
-          )}
         </Row>
         <Divider />
 
