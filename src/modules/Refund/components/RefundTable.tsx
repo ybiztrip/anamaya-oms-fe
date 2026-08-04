@@ -50,17 +50,17 @@ function RefundTable({
 
   const handlePaidRefund = (record: RefundListResponseType) => {
     Modal.confirm({
-      title: 'Mark refund as paid?',
-      content: `Are you sure to pay refund for transaction ${record.bookingCode}?`,
-      okText: 'Mark as paid',
+      title: 'Paid refund request?',
+      content: `Are you sure to pay refund for transaction ${record.code}?`,
+      okText: 'Paid Refund',
       cancelText: 'Cancel',
       okButtonProps: { type: 'primary' },
       onOk: async () => {
         try {
           const payload: RefundPaidPayloadType = {
             type: record.bookingType,
-            partnerBookingId: record.partnerBookingId,
-            paidAmount: record.amount,
+            partnerBookingId: record.bookingCode,
+            paidAmount: record.requestedAmount,
             remarks: 'Paid refund',
           };
           await payRefund(payload);
@@ -75,16 +75,16 @@ function RefundTable({
   const handleCancelRefund = (record: RefundListResponseType) => {
     Modal.confirm({
       title: 'Cancel refund request?',
-      content: `Are you sure to cancel refund for transaction ${record.bookingCode}?`,
-      okText: 'Cancel refund',
+      content: `Are you sure to cancel refund for transaction ${record.code}?`,
+      okText: 'Cancel Refund',
       cancelText: 'Back',
       okButtonProps: { danger: true },
       onOk: async () => {
         try {
           const payload: RefundCancelPayloadType = {
             type: record.bookingType,
-            partnerBookingId: record.partnerBookingId,
-            paidAmount: record.amount,
+            partnerBookingId: record.bookingCode,
+            paidAmount: record.requestedAmount,
             remarks: 'Cancel refund',
           };
           await cancelRefund({ id: record.id, payload });
@@ -117,22 +117,40 @@ function RefundTable({
         }}
         columns={[
           {
+            title: 'Refund Code',
+            dataIndex: 'code',
+            key: 'code',
+          },
+          {
             title: 'Booking Code',
             dataIndex: 'bookingCode',
             key: 'bookingCode',
-            render: (bookingCode: string) => <span>{bookingCode}</span>,
           },
           {
-            title: 'Amount',
-            dataIndex: 'amount',
-            key: 'amount',
-            render: (amount: number) => <span>{formatIDR(amount)}</span>,
+            title: 'Payment Method',
+            dataIndex: 'paymentMethod',
+            key: 'paymentMethod',
           },
           {
-            title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
-            render: (date: string) => <span>{dayjs(date).format('DD MMM YYYY HH:mm')}</span>,
+            title: 'Requested Amount',
+            key: 'requestedAmount',
+            render: (_, record: RefundListResponseType) => (
+              <span>
+                {record.currency} {formatIDR(record.requestedAmount)}
+              </span>
+            ),
+          },
+          {
+            title: 'Paid Amount',
+            key: 'paidAmount',
+            render: (_, record: RefundListResponseType) =>
+              record.paidAmount ? (
+                <span>
+                  {record.currency} {formatIDR(record.paidAmount)}
+                </span>
+              ) : (
+                '-'
+              ),
           },
           {
             title: 'Status',
@@ -141,8 +159,33 @@ function RefundTable({
             render: (status: string) => <span>{status ?? '-'}</span>,
           },
           {
+            title: 'Created At',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            render: (createdAt: string) => (
+              <span>{dayjs(createdAt).format('DD MMM YYYY HH:mm')}</span>
+            ),
+          },
+          {
+            title: 'Paid At',
+            dataIndex: 'paidAt',
+            key: 'paidAt',
+            render: (paidAt: string) => (
+              <span>{paidAt ? dayjs(paidAt).format('DD MMM YYYY HH:mm') : '-'}</span>
+            ),
+          },
+          {
+            title: 'Cancelled At',
+            dataIndex: 'cancelledAt',
+            key: 'cancelledAt',
+            render: (cancelledAt: string) => (
+              <span>{cancelledAt ? dayjs(cancelledAt).format('DD MMM YYYY HH:mm') : '-'}</span>
+            ),
+          },
+          {
             title: 'Action',
             key: 'action',
+            fixed: 'right',
             render: (_, record: RefundListResponseType) => (
               <Space>
                 <Button

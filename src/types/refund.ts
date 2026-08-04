@@ -34,8 +34,18 @@ export type RefundListPayloadType = {
 
 export type RefundListResponseType = {
   id: number;
-  bookingCode: string;
+  companyId: number;
+  code: string;
   bookingType: BookingTypeType;
-  partnerBookingId: string;
-  amount: number;
+  bookingCode: string;
+  paymentMethod: string;
+  requestedAmount: number;
+  paidAmount: number | null;
+  currency: string;
+  status: string;
+  remarks: string;
+  paidAt: string | null;
+  cancelledAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
