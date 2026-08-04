@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { fetchRefundList } from '@/api';
 import { DEFAULT_PAGE_SIZE } from '@/constants/common';
 import { REFUNDS } from '@/constants/queryKey';
-import type { RefundListPayloadType } from '@/types';
+import type { BookingTypeType, RefundListPayloadType } from '@/types';
 
 import type { RefundFilters } from '../types';
 
@@ -12,7 +12,7 @@ export default function useRefund({
   type,
   filters,
 }: {
-  type: 'FLIGHT' | 'HOTEL';
+  type: BookingTypeType;
   filters?: RefundFilters;
 }) {
   const queryClient = useQueryClient();

@@ -3,6 +3,8 @@ import { Button, Card, Col, Row, Space, Tooltip } from 'antd';
 import { useMemo, useState } from 'react';
 
 import SectionCard from '@/components/SectionCard';
+import { BOOKING_TYPE_FLIGHT, BOOKING_TYPE_HOTEL } from '@/constants/common';
+import type { BookingTypeType } from '@/types';
 
 import useRefundList from '../hooks/useRefundList';
 import type { RefundFilters } from '../types';
@@ -13,8 +15,8 @@ export default function RefundList({
   type,
   onTypeChange,
 }: Readonly<{
-  type: 'FLIGHT' | 'HOTEL';
-  onTypeChange: (key: string) => void;
+  type: BookingTypeType;
+  onTypeChange: (key: BookingTypeType) => void;
 }>) {
   const [filters, setFilters] = useState<RefundFilters>({
     dateRange: undefined,
@@ -40,16 +42,16 @@ export default function RefundList({
           <Button
             variant="link"
             size="large"
-            color={type === 'FLIGHT' ? 'primary' : 'default'}
-            onClick={() => onTypeChange('FLIGHT')}
+            color={type === BOOKING_TYPE_FLIGHT ? 'primary' : 'default'}
+            onClick={() => onTypeChange(BOOKING_TYPE_FLIGHT)}
           >
             Flight
           </Button>
           <Button
             variant="link"
             size="large"
-            color={type === 'HOTEL' ? 'primary' : 'default'}
-            onClick={() => onTypeChange('HOTEL')}
+            color={type === BOOKING_TYPE_HOTEL ? 'primary' : 'default'}
+            onClick={() => onTypeChange(BOOKING_TYPE_HOTEL)}
           >
             Hotel
           </Button>

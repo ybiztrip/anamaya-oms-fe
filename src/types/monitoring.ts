@@ -1,4 +1,4 @@
-import type { BookingFlightType, BookingHotelType } from './booking';
+import type { BookingFlightType, BookingHotelType, BookingTypeType } from './booking';
 
 export type DepositCodeType = 'WALLET_FLIGHT' | 'WALLET_HOTEL';
 
@@ -45,7 +45,7 @@ export type DepositMonitoringType = {
   referenceCode: string;
   referenceId: number;
   sourceType: string;
-  bookingType: string;
+  bookingType: BookingTypeType;
   type: string;
   amount: number;
   beginBalance: number;

@@ -1,5 +1,7 @@
+import type { BookingTypeType } from './booking';
+
 export type RefundCreatePayloadType = {
-  bookingType: string;
+  bookingType: BookingTypeType;
   bookingFlightId?: number;
   bookingHotelId?: number;
   requestedAmount: number;
@@ -7,21 +9,21 @@ export type RefundCreatePayloadType = {
 };
 
 export type RefundPaidPayloadType = {
-  type: string;
+  type: BookingTypeType;
   partnerBookingId: string;
   paidAmount: number;
   remarks: string;
 };
 
 export type RefundCancelPayloadType = {
-  type: string;
+  type: BookingTypeType;
   partnerBookingId: string;
   paidAmount: number;
   remarks: string;
 };
 
 export type RefundListPayloadType = {
-  bookingType: string;
+  bookingType: BookingTypeType;
   startDate?: string;
   endDate?: string;
   paymentMethod?: string;
@@ -33,7 +35,7 @@ export type RefundListPayloadType = {
 export type RefundListResponseType = {
   id: number;
   bookingCode: string;
-  bookingType: string;
+  bookingType: BookingTypeType;
   partnerBookingId: string;
   amount: number;
 };

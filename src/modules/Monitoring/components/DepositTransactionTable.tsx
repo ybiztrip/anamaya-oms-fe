@@ -1,7 +1,12 @@
 import { Button, message, Modal, Space, Table } from 'antd';
 import dayjs from 'dayjs';
 
-import { BOOKING_STATUS_ISSUED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
+import {
+  BOOKING_STATUS_ISSUED,
+  BOOKING_TYPE_FLIGHT,
+  BOOKING_TYPE_HOTEL,
+  DEFAULT_ERROR_MESSAGE,
+} from '@/constants/common';
 import useETicket from '@/hooks/useETicket';
 import useRefund from '@/hooks/useRefund';
 import type {
@@ -71,11 +76,11 @@ function DepositTransactionTable({
         try {
           const payload: RefundCreatePayloadType = {
             bookingType: record.bookingType,
-            ...(record.bookingType === 'FLIGHT'
-              ? { bookingFlightId: Number(record.bookingFlights?.[0]?.bookingId) }
+            ...(record.bookingType === BOOKING_TYPE_FLIGHT
+              ? { bookingFlightId: Number(record.bookingFlights?.[0]?.id) }
               : {}),
-            ...(record.bookingType === 'HOTEL'
-              ? { bookingHotelId: Number(record.bookingHotels?.[0]?.bookingId) }
+            ...(record.bookingType === BOOKING_TYPE_HOTEL
+              ? { bookingHotelId: Number(record.bookingHotels?.[0]?.id) }
               : {}),
             requestedAmount: record.amount,
             remarks: 'Request Refund',
@@ -155,7 +160,9 @@ function DepositTransactionTable({
               const allowedETicketStatuses = new Set([BOOKING_STATUS_ISSUED]);
               const allowedRefundStatuses = new Set([BOOKING_STATUS_ISSUED]);
               const bookings =
-                record.bookingType === 'FLIGHT' ? record.bookingFlights : record.bookingHotels;
+                record.bookingType === BOOKING_TYPE_FLIGHT
+                  ? record.bookingFlights
+                  : record.bookingHotels;
 
               const isHasETicket =
                 bookings &&

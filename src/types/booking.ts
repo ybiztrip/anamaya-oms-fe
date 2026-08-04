@@ -3,6 +3,8 @@ import type { UploadFile } from 'antd';
 import type { FlightBookingAddOnType, FlightSearchOneWayType, TripType } from './flight';
 import type { HotelPropertyType, HotelRoomRateType } from './hotel';
 
+export type BookingTypeType = 'FLIGHT' | 'HOTEL';
+
 export type PassengerGuestType = {
   id: string;
   companyId: number;
@@ -276,6 +278,6 @@ export type BookingRejectPayloadType = {
 };
 
 export type BookingETicketPayloadType = {
-  type: string;
+  type: BookingTypeType;
   partnerBookingId: string;
 };
