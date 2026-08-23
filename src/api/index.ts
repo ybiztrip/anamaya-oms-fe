@@ -405,11 +405,8 @@ export async function payRefund(params: RefundPaidPayloadType): Promise<Response
   return res.data;
 }
 
-export async function cancelRefund(
-  id: number,
-  params: RefundCancelPayloadType,
-): Promise<ResponseType<any>> {
-  const res = await axios.put(REFUNDS_CANCEL_API.replace(':id', String(id)), params);
+export async function cancelRefund(params: RefundCancelPayloadType): Promise<ResponseType<any>> {
+  const res = await axios.post(REFUNDS_CANCEL_API, params);
   return res.data;
 }
 

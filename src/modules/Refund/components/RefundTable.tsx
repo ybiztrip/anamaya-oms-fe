@@ -60,6 +60,7 @@ function RefundTable({
           const payload: RefundPaidPayloadType = {
             type: record.bookingType,
             partnerBookingId: record.bookingCode,
+            bookingId: record.otaReference,
             paidAmount: record.requestedAmount,
             remarks: 'Paid refund',
           };
@@ -84,10 +85,10 @@ function RefundTable({
           const payload: RefundCancelPayloadType = {
             type: record.bookingType,
             partnerBookingId: record.bookingCode,
-            paidAmount: record.requestedAmount,
+            bookingId: record.otaReference,
             remarks: 'Cancel refund',
           };
-          await cancelRefund({ id: record.id, payload });
+          await cancelRefund(payload);
           message.success('Refund cancelled successfully');
         } catch (err: any) {
           message.error(err?.response?.data?.message ?? err?.message ?? DEFAULT_ERROR_MESSAGE);

@@ -67,6 +67,7 @@ export type BookingFlightType = {
   paymentMethod: string;
   paymentReference1?: string;
   paymentReference2?: string;
+  refundId?: number | null;
   metadata?: {
     prices?: BookingPriceItemType[];
     booker?: string;
@@ -131,6 +132,7 @@ export type BookingHotelType = {
   paymentReference1: string;
   paymentReference2: string;
   specialRequest: string;
+  refundId?: number | null;
   metadata?: {
     prices?: BookingPriceItemType[];
     booker?: string;

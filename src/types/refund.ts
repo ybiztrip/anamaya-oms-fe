@@ -11,6 +11,7 @@ export type RefundCreatePayloadType = {
 export type RefundPaidPayloadType = {
   type: BookingTypeType;
   partnerBookingId: string;
+  bookingId: string;
   paidAmount: number;
   remarks: string;
 };
@@ -18,7 +19,7 @@ export type RefundPaidPayloadType = {
 export type RefundCancelPayloadType = {
   type: BookingTypeType;
   partnerBookingId: string;
-  paidAmount: number;
+  bookingId: string;
   remarks: string;
 };
 
@@ -38,6 +39,7 @@ export type RefundListResponseType = {
   code: string;
   bookingType: BookingTypeType;
   bookingCode: string;
+  otaReference: string;
   paymentMethod: string;
   requestedAmount: number;
   paidAmount: number | null;

@@ -22,8 +22,8 @@ export default function useRefundActions() {
   });
 
   const cancelMutation = useMutation({
-    mutationFn: async ({ id, payload }: { id: number; payload: RefundCancelPayloadType }) => {
-      const response = await cancelRefund(id, payload ?? {});
+    mutationFn: async (payload: RefundCancelPayloadType) => {
+      const response = await cancelRefund(payload ?? {});
       if (!response.success) {
         throw new Error(response.message ?? DEFAULT_ERROR_MESSAGE);
       }

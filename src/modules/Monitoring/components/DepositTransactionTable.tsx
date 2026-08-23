@@ -156,6 +156,7 @@ function DepositTransactionTable({
           {
             title: 'Actions',
             key: 'action',
+            align: 'center',
             render: (_, record: DepositMonitoringType) => {
               const allowedETicketStatuses = new Set([BOOKING_STATUS_ISSUED]);
               const allowedRefundStatuses = new Set([BOOKING_STATUS_ISSUED]);
@@ -170,12 +171,15 @@ function DepositTransactionTable({
                 bookings?.every((booking) =>
                   allowedETicketStatuses.has(String(booking?.status ?? '').toUpperCase()),
                 );
+              const refundId = bookings?.[0].refundId;
               const isRefundable =
                 bookings &&
                 bookings?.length > 0 &&
                 bookings?.every((booking) =>
                   allowedRefundStatuses.has(String(booking?.status ?? '').toUpperCase()),
-                );
+                ) &&
+                !refundId;
+              // TODO: refund multiple flight
               return (
                 <Space>
                   {isHasETicket && (
@@ -197,6 +201,7 @@ function DepositTransactionTable({
                       Request Refund
                     </Button>
                   )}
+                  {refundId && <div className="text-red-500">Refund requested</div>}
                 </Space>
               );
             },
