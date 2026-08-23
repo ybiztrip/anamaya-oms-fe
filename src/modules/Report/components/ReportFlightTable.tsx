@@ -118,7 +118,7 @@ function ReportFlightTable({
             title: 'Departure City',
             dataIndex: 'origin',
             key: 'originCity',
-            render: (origin: string) => <span>{airportsByCode[origin]?.city ?? '-'}</span>,
+            render: (origin: string) => <span>{airportsByCode[origin]?.localCityName ?? '-'}</span>,
           },
           {
             title: 'Departure Terminal',
@@ -156,7 +156,7 @@ function ReportFlightTable({
             dataIndex: 'destination',
             key: 'destinationCity',
             render: (destination: string) => (
-              <span>{airportsByCode[destination]?.city ?? '-'}</span>
+              <span>{airportsByCode[destination]?.localCityName ?? '-'}</span>
             ),
           },
           {

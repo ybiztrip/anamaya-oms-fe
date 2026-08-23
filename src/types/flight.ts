@@ -6,13 +6,6 @@ export type AirlineType = {
 
 export type AirportType = {
   airportCode: string;
-  city: string;
-  countryId: string;
-  countryCode: string;
-  areaCode: string;
-  timeZone: string;
-  internationalAirportName: string;
-  airportIcaoCode: string;
   localAirportName: string;
   localCityName: string;
   countryName: string;

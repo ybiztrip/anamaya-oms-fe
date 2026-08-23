@@ -12,7 +12,7 @@ export default function SelectAirport({ ...props }: SelectAirportProps) {
     const airports = data?.data ?? [];
     return airports.map((a) => {
       const code = a.airportCode;
-      const city = a.localCityName || a.city;
+      const city = a.localCityName;
 
       return {
         value: code,

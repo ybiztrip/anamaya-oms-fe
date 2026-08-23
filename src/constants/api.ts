@@ -21,7 +21,7 @@ export const ACTIVITY_LOGS_API = API_V1 + '/activity-logs';
 
 export const FLIGHT_API = API_V1 + '/flight';
 export const FLIGHT_AIRLINES_API = FLIGHT_API + '/airlines';
-export const FLIGHT_AIRPORTS_API = FLIGHT_API + '/airports';
+export const FLIGHT_AIRPORTS_API = FLIGHT_API + '/airports-city';
 export const FLIGHT_SEARCH_ONE_WAY_API = FLIGHT_API + '/search/one-way';
 export const FLIGHT_BOOKING_ADD_ONS_API = FLIGHT_API + '/booking/add-ons';
 
@@ -64,4 +64,4 @@ export const CREDIT_MONITORING_API = CREDIT_API + '/monitoring';
 
 export const REFUNDS_API = API_V1 + '/refunds';
 export const REFUNDS_PAID_API = REFUNDS_API + '/paid';
-export const REFUNDS_CANCEL_API = REFUNDS_API + '/:id/cancel';
+export const REFUNDS_CANCEL_API = REFUNDS_API + '/cancel';
