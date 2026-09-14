@@ -1,7 +1,6 @@
 import { Col, DatePicker, Divider, Form, Input, Row, Select, Space, Typography } from 'antd';
-import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
-import { useMemo } from 'react';
 
+import SelectPhoneCode from '@/components/Select/SelectPhoneCode';
 import SelectRole from '@/components/Select/SelectRole';
 import SelectTravelPolicy from '@/components/Select/SelectTravelPolicy';
 
@@ -91,18 +90,6 @@ export default function EmployeeForm({
   fields?: EmployeeFieldKey[];
   disabledFields?: EmployeeFieldKey[];
 }) {
-  const phoneCodeOptions = useMemo(
-    () =>
-      getCountries().map((country) => {
-        const code = `+${getCountryCallingCode(country)}`;
-        return {
-          label: `${country} (${code})`,
-          value: code,
-        };
-      }),
-    [],
-  );
-
   return (
     <div>
       <section>
@@ -179,7 +166,10 @@ export default function EmployeeForm({
                 name={[...namePrefix, 'travelPolicy']}
                 rules={[{ required: true, message: 'Travel Policy required' }]}
               >
-                <SelectTravelPolicy placeholder="Select Travel Policy" disabled={disabledFields.includes('travelPolicy')} />
+                <SelectTravelPolicy
+                  placeholder="Select Travel Policy"
+                  disabled={disabledFields.includes('travelPolicy')}
+                />
               </Form.Item>
             </Col>
           )}
@@ -242,11 +232,7 @@ export default function EmployeeForm({
                     initialValue="+62"
                     rules={[{ required: true, message: 'Phone Code required' }]}
                   >
-                    <Select
-                      style={{ width: 130 }}
-                      options={phoneCodeOptions}
-                      disabled={disabledFields.includes('phoneCode')}
-                    />
+                    <SelectPhoneCode disabled={disabledFields.includes('phoneCode')} />
                   </Form.Item>
                   <Form.Item
                     name={[...namePrefix, 'phoneNumber']}
