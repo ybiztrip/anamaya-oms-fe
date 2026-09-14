@@ -265,8 +265,16 @@ export default function EmployeeForm({
           )}
           {fields.includes('idNumber') && (
             <Col xs={24} md={12}>
-              <Form.Item label="ID#" name={[...namePrefix, 'idNumber']}>
-                <Input placeholder="ID Number" disabled={disabledFields.includes('idNumber')} />
+              <Form.Item
+                label="ID#"
+                name={[...namePrefix, 'idNumber']}
+                rules={[{ pattern: /^\d{16}$/, message: 'ID Number must be 16 digits' }]}
+              >
+                <Input
+                  placeholder="ID Number"
+                  maxLength={16}
+                  disabled={disabledFields.includes('idNumber')}
+                />
               </Form.Item>
             </Col>
           )}
