@@ -14,7 +14,7 @@ import {
 import { useEffect, useMemo } from 'react';
 
 import SectionCard from '@/components/SectionCard';
-import SelectAirport from '@/components/Select/SelectAirport';
+import SelectTrainStation from '@/components/Select/SelectTrainStation';
 import Upload from '@/components/Upload';
 import { BOOKING_TYPE_TRAIN, TRAIN_CLASS_OPTIONS } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
@@ -114,7 +114,7 @@ function TrainForm({
                   }),
                 ]}
               >
-                <SelectAirport placeholder="From" />
+                <SelectTrainStation placeholder="From" />
               </Form.Item>
 
               <Button onClick={onSwap} icon={<SwapOutlined />} />
@@ -132,7 +132,7 @@ function TrainForm({
                   }),
                 ]}
               >
-                <SelectAirport placeholder="To" />
+                <SelectTrainStation placeholder="To" />
               </Form.Item>
             </Space.Compact>
           </Col>
@@ -140,7 +140,7 @@ function TrainForm({
             <Space.Compact block>
               <Form.Item
                 name="departureDate"
-                rules={[{ required: true }]}
+                rules={[{ required: true, message: 'Departure date required' }]}
                 style={{ flex: 1, marginBottom: 0 }}
               >
                 <DatePicker

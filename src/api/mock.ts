@@ -4,6 +4,7 @@ import type {
   FlightBookingAddOnsResponseType,
   FlightSearchOneWayResponseType,
   ResponseType,
+  TrainStationType,
 } from '@/types';
 
 export const mockFetchAirports: ResponseType<AirportType[]> = {
@@ -599,4 +600,95 @@ export const mockFetchFlightBookingAddOns: ResponseType<FlightBookingAddOnsRespo
       },
     ],
   },
+};
+
+export const mockFetchTrainStations: ResponseType<TrainStationType[]> = {
+  success: true,
+  message: 'Success',
+  data: [
+    {
+      cityName: 'JAKARTA',
+      id: 'AK',
+      name: 'AK - ANGKE - (JAKARTA)',
+      stationCode: 'AK',
+      stationName: 'ANGKE',
+    },
+    {
+      cityName: 'CIREBON',
+      id: 'CNP',
+      name: 'CNP - CIREBONPRUNJAKAN - (CIREBON)',
+      stationCode: 'CNP',
+      stationName: 'CIREBONPRUNJAKAN',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'DU',
+      name: 'DU - DURI - (JAKARTA)',
+      stationCode: 'DU',
+      stationName: 'DURI',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'GMR',
+      name: 'GMR - GAMBIR - (JAKARTA)',
+      stationCode: 'GMR',
+      stationName: 'GAMBIR',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'JAK',
+      name: 'JAK - JAKARTA KOTA - (JAKARTA)',
+      stationCode: 'JAK',
+      stationName: 'JAKARTA KOTA',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'JNG',
+      name: 'JNG - JATINEGARA - (JAKARTA)',
+      stationCode: 'JNG',
+      stationName: 'JATINEGARA',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'KBY',
+      name: 'KBY - KEBAYORAN - (JAKARTA)',
+      stationCode: 'KBY',
+      stationName: 'KEBAYORAN',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'MGB',
+      name: 'MGB - MANGGA BESAR - (JAKARTA)',
+      stationCode: 'MGB',
+      stationName: 'MANGGA BESAR',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'MRI',
+      name: 'MRI - MANGGARAI - (JAKARTA)',
+      stationCode: 'MRI',
+      stationName: 'MANGGARAI',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'PLM',
+      name: 'PLM - PALMERAH - (JAKARTA)',
+      stationCode: 'PLM',
+      stationName: 'PALMERAH',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'PSE',
+      name: 'PSE - PASAR SENEN - (JAKARTA)',
+      stationCode: 'PSE',
+      stationName: 'PASAR SENEN',
+    },
+    {
+      cityName: 'JAKARTA',
+      id: 'THB',
+      name: 'THB - TANAH ABANG - (JAKARTA)',
+      stationCode: 'THB',
+      stationName: 'TANAH ABANG',
+    },
+  ],
 };

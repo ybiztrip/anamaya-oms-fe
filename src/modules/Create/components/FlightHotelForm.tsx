@@ -185,7 +185,7 @@ function FlightHotelForm({
             <Space.Compact block>
               <Form.Item
                 name="departureDate"
-                rules={[{ required: true }]}
+                rules={[{ required: true, message: 'Departure date required' }]}
                 style={{ flex: 1, marginBottom: 0 }}
               >
                 <DatePicker

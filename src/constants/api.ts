@@ -32,6 +32,9 @@ export const HOTEL_PROPERTY_DETAIL_API = HOTEL_API + '/property-detail';
 export const HOTEL_ROOM_API = HOTEL_API + '/room';
 export const HOTEL_ROOM_RATE_API = HOTEL_API + '/room-rate';
 
+export const TRAIN_API = API_V1 + '/train';
+export const TRAIN_STATIONS_API = TRAIN_API + '/stations';
+
 export const BOOKINGS_API = API_V1 + '/bookings';
 export const BOOKINGS_DETAIL_API = BOOKINGS_API + '/:id';
 export const BOOKINGS_MY_APPROVAL_API = BOOKINGS_API + '/my-approved';

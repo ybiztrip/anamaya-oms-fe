@@ -16,3 +16,4 @@ export const MONITORING_DEPOSIT_TRANSACTIONS = 'monitoring-deposit-transactions'
 export const REFUNDS = 'refunds';
 export const REPORT_FLIGHTS = 'report-flights';
 export const REPORT_HOTELS = 'report-hotels';
+export const TRAIN_STATIONS = 'train-stations';

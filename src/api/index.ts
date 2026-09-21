@@ -36,6 +36,7 @@ import {
   REFUNDS_CANCEL_API,
   REFUNDS_PAID_API,
   ROLES_API,
+  // TRAIN_STATIONS_API,
   TRAVEL_POLICY_API,
   TRAVEL_POLICY_BY_ID_API,
   USERS_API,
@@ -96,6 +97,7 @@ import type {
   RefundPaidPayloadType,
   ResponseType,
   RoleType,
+  TrainStationType,
   TravelPolicyListPayloadType,
   TravelPolicyType,
   UserListPayloadType,
@@ -105,6 +107,8 @@ import type {
   UserUpdatePasswordPayloadType,
 } from '@/types';
 import axios from '@/utils/api';
+
+import { mockFetchTrainStations } from './mock';
 
 export async function fetchRoles(): Promise<ResponseType<RoleType[]>> {
   const res = await axios.get(ROLES_API);
@@ -252,6 +256,13 @@ export async function fetchHotelRoomRate(
 ): Promise<ResponseType<HotelRoomRateResponseType>> {
   const res = await axios.post(HOTEL_ROOM_RATE_API, params);
   return res.data;
+}
+
+export async function fetchTrainStations(): Promise<ResponseType<TrainStationType[]>> {
+  // TODO: fetch train stations from API
+  // const res = await axios.get(TRAIN_STATIONS_API);
+  // return res.data;
+  return mockFetchTrainStations;
 }
 
 export async function fetchBookings(
