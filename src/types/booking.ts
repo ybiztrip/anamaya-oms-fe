@@ -2,6 +2,7 @@ import type { UploadFile } from 'antd';
 
 import type { FlightBookingAddOnType, FlightSearchOneWayType, TripType } from './flight';
 import type { HotelPropertyType, HotelRoomRateType } from './hotel';
+import type { TrainSearchType } from './train';
 
 export type BookingTypeType = 'FLIGHT' | 'HOTEL';
 
@@ -42,10 +43,20 @@ export type BookingHotelParamsType = {
   selectedRoom?: HotelRoomRateType;
 };
 
+export type BookingTrainParamsType = {
+  name: string;
+  origin: string;
+  destination: string;
+  departureDate: string;
+  trainClass: string;
+  selectedTrain?: TrainSearchType;
+};
+
 export type BookingParamsType = {
   tripType?: TripType;
   flights?: BookingFlightParamsType[];
   hotel?: BookingHotelParamsType | null;
+  train: BookingTrainParamsType | null;
   bookerName: string;
   attachments: UploadFile[];
   paxList: PassengerGuestType[];

@@ -13,10 +13,10 @@ function PassengerGuestForm({
   type,
 }: {
   form: FormInstance;
-  type: 'flight' | 'hotel' | 'flight-hotel';
+  type: 'flight' | 'hotel' | 'flight-hotel' | 'train';
 }) {
   const paxTitle = useMemo(() => {
-    if (type === 'flight') return 'Passenger';
+    if (type === 'flight' || type === 'train') return 'Passenger';
     if (type === 'hotel') return 'Guest';
     return 'Passenger/Guest';
   }, [type]);

@@ -157,3 +157,29 @@ export function bookingParamsToFlightHotelForm(bookingParams: BookingParamsType)
     checkOutDate: hotelForm?.checkOutDate ? dayjs(hotelForm.checkOutDate) : undefined,
   };
 }
+
+export function trainFormToBookingParams(values: any): BookingParamsType {
+  const paxList = paxFormToPaxParams(values);
+  return {
+    ...values,
+    paxList,
+    train: {
+      origin: values.origin,
+      destination: values.destination,
+      departureDate: values.departureDate,
+      trainClass: values.trainClass,
+    },
+  };
+}
+
+export function bookingParamsToTrainForm(bookingParams: BookingParamsType): any {
+  const { train, paxList, ...rest } = bookingParams;
+  return {
+    ...rest,
+    origin: train?.origin,
+    destination: train?.destination,
+    departureDate: dayjs(train?.departureDate),
+    trainClass: train?.trainClass,
+    paxList: paxParamsToPaxForm(paxList),
+  };
+}

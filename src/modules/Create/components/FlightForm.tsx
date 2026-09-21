@@ -117,6 +117,14 @@ function FlightForm({
             >
               Flight + Hotel
             </Button>
+            <Button
+              variant="link"
+              size="large"
+              color="default"
+              onClick={() => onTypeChange('train')}
+            >
+              Train
+            </Button>
           </Space>
         }
       >

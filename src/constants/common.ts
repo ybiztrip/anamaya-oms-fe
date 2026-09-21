@@ -41,6 +41,28 @@ export const FLIGHT_CLASS_RANK: Record<string, number> = {
   [FLIGHT_CLASS_FIRST_CLASS]: 4,
 };
 
+export const TRAIN_CLASS_EXECUTIVE = 'EXECUTIVE';
+export const TRAIN_CLASS_BUSINESS = 'BUSINESS';
+export const TRAIN_CLASS_ECONOMY = 'ECONOMY';
+
+export const TRAIN_CLASS_LABELS: Record<string, string> = {
+  [TRAIN_CLASS_EXECUTIVE]: 'Executive',
+  [TRAIN_CLASS_BUSINESS]: 'Business',
+  [TRAIN_CLASS_ECONOMY]: 'Economy',
+};
+
+export const TRAIN_CLASS_OPTIONS = [
+  { label: TRAIN_CLASS_LABELS[TRAIN_CLASS_EXECUTIVE], value: TRAIN_CLASS_EXECUTIVE },
+  { label: TRAIN_CLASS_LABELS[TRAIN_CLASS_BUSINESS], value: TRAIN_CLASS_BUSINESS },
+  { label: TRAIN_CLASS_LABELS[TRAIN_CLASS_ECONOMY], value: TRAIN_CLASS_ECONOMY },
+];
+
+export const TRAIN_CLASS_RANK: Record<string, number> = {
+  [TRAIN_CLASS_ECONOMY]: 1,
+  [TRAIN_CLASS_BUSINESS]: 2,
+  [TRAIN_CLASS_EXECUTIVE]: 3,
+};
+
 export const AIRLINE_CODE_GARUDA = 'GA';
 
 export const AIRLINE_CODES_WITH_POLICY_LIMITS = [AIRLINE_CODE_GARUDA];
