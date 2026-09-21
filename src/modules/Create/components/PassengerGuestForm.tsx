@@ -3,22 +3,17 @@ import { Button, Card, Col, Form, type FormInstance, Input, Radio, Row, Space } 
 import { useMemo } from 'react';
 
 import SelectUser from '@/components/Select/SelectUser';
+import { BOOKING_TYPE_FLIGHT_HOTEL, BOOKING_TYPE_HOTEL } from '@/constants/common';
 import EmployeeForm, { PassengerGuestFields } from '@/modules/Employee/components/EmployeeForm';
-import type { UserType } from '@/types';
+import type { BookingTypeType, UserType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { getPhoneParts } from '@/utils/phone';
 
-function PassengerGuestForm({
-  form,
-  type,
-}: {
-  form: FormInstance;
-  type: 'flight' | 'hotel' | 'flight-hotel' | 'train';
-}) {
+function PassengerGuestForm({ form, type }: { form: FormInstance; type: BookingTypeType }) {
   const paxTitle = useMemo(() => {
-    if (type === 'flight' || type === 'train') return 'Passenger';
-    if (type === 'hotel') return 'Guest';
-    return 'Passenger/Guest';
+    if (type === BOOKING_TYPE_HOTEL) return 'Guest';
+    if (type === BOOKING_TYPE_FLIGHT_HOTEL) return 'Passenger/Guest';
+    return 'Passenger';
   }, [type]);
 
   return (

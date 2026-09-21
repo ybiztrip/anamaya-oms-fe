@@ -18,15 +18,16 @@ import { useEffect, useMemo } from 'react';
 import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
 import Upload from '@/components/Upload';
-import { FLIGHT_CLASS_OPTIONS, FLIGHT_CLASS_RANK } from '@/constants/common';
+import { BOOKING_TYPE_FLIGHT, FLIGHT_CLASS_OPTIONS, FLIGHT_CLASS_RANK } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import useTravelPolicy from '@/hooks/useTravelPolicy';
-import type { BookingParamsType, TripType } from '@/types';
+import type { BookingParamsType, BookingTypeType, TripType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { sessionStorageGet } from '@/utils/sessionStorage';
 import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
 
 import { bookingParamsToFlightForm } from '../utils/bookingFormMapper';
+import BookingTypeTabs from './BookingTypeTabs';
 
 function normFile(
   e: UploadProps['onChange'] extends (...args: any) => any
@@ -42,7 +43,7 @@ function FlightForm({
   onTypeChange,
 }: {
   form: FormInstance;
-  onTypeChange: (key: string) => void;
+  onTypeChange: (key: BookingTypeType) => void;
 }) {
   const tripType = Form.useWatch('tripType', form) as TripType | undefined;
   const depart = Form.useWatch('departureDate', form);
@@ -96,37 +97,7 @@ function FlightForm({
     <>
       <SectionCard
         className="mt-4"
-        title={
-          <Space>
-            <Button variant="link" size="large" color="primary">
-              Flight
-            </Button>
-            <Button
-              variant="link"
-              size="large"
-              color="default"
-              onClick={() => onTypeChange('hotel')}
-            >
-              Hotel
-            </Button>
-            <Button
-              variant="link"
-              size="large"
-              color="default"
-              onClick={() => onTypeChange('flight-hotel')}
-            >
-              Flight + Hotel
-            </Button>
-            <Button
-              variant="link"
-              size="large"
-              color="default"
-              onClick={() => onTypeChange('train')}
-            >
-              Train
-            </Button>
-          </Space>
-        }
+        title={<BookingTypeTabs activeType={BOOKING_TYPE_FLIGHT} onChange={onTypeChange} />}
       >
         <Form.Item name="tripType">
           <Radio.Group

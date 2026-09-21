@@ -1,6 +1,5 @@
 import { StarFilled } from '@ant-design/icons';
 import {
-  Button,
   Checkbox,
   Col,
   DatePicker,
@@ -18,14 +17,15 @@ import { useEffect, useMemo } from 'react';
 import SectionCard from '@/components/SectionCard';
 import SelectHotelGeo from '@/components/Select/SelectHotelGeo';
 import Upload from '@/components/Upload';
-import { ADULT_AGE } from '@/constants/common';
+import { ADULT_AGE, BOOKING_TYPE_HOTEL } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import useTravelPolicy from '@/hooks/useTravelPolicy';
-import type { BookingParamsType, PassengerGuestType } from '@/types';
+import type { BookingParamsType, BookingTypeType, PassengerGuestType } from '@/types';
 import { sessionStorageGet } from '@/utils/sessionStorage';
 import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
 
 import { bookingParamsToHotelForm } from '../utils/bookingFormMapper';
+import BookingTypeTabs from './BookingTypeTabs';
 
 function normFile(
   e: UploadProps['onChange'] extends (...args: any) => any
@@ -41,7 +41,7 @@ function HotelForm({
   onTypeChange,
 }: {
   form: FormInstance;
-  onTypeChange: (key: string) => void;
+  onTypeChange: (key: BookingTypeType) => void;
 }) {
   const checkInDate = Form.useWatch('checkInDate', form);
   const checkOutDate = Form.useWatch('checkOutDate', form);
@@ -89,29 +89,7 @@ function HotelForm({
     <>
       <SectionCard
         className="mt-4"
-        title={
-          <Space>
-            <Button
-              variant="link"
-              size="large"
-              color="default"
-              onClick={() => onTypeChange('flight')}
-            >
-              Flight
-            </Button>
-            <Button variant="link" size="large" color="primary">
-              Hotel
-            </Button>
-            <Button
-              variant="link"
-              size="large"
-              color="default"
-              onClick={() => onTypeChange('flight-hotel')}
-            >
-              Flight + Hotel
-            </Button>
-          </Space>
-        }
+        title={<BookingTypeTabs activeType={BOOKING_TYPE_HOTEL} onChange={onTypeChange} />}
       >
         <Row gutter={[16, 8]}>
           <Col xs={24} md={8}>

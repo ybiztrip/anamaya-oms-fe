@@ -1,16 +1,23 @@
 import { Button, Form, Row } from 'antd';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Layout from '@/components/Layout';
-import { FLIGHT_CLASS_ECONOMY, TRAIN_CLASS_ECONOMY } from '@/constants/common';
+import {
+  BOOKING_TYPE_FLIGHT,
+  BOOKING_TYPE_FLIGHT_HOTEL,
+  BOOKING_TYPE_HOTEL,
+  BOOKING_TYPE_TRAIN,
+  FLIGHT_CLASS_ECONOMY,
+  TRAIN_CLASS_ECONOMY,
+} from '@/constants/common';
 import {
   CREATE_FLIGHT_SEARCH_PATH,
   CREATE_HOTEL_SEARCH_PATH,
   CREATE_TRAIN_SEARCH_PATH,
 } from '@/constants/routePath';
 import { BOOKING_PARAMS, USER } from '@/constants/storageKey';
-import type { BookingParamsType, UserType } from '@/types';
+import type { BookingParamsType, BookingTypeType, UserType } from '@/types';
 import { localStorageGet } from '@/utils/localStorage';
 import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
 
@@ -29,18 +36,17 @@ import {
 function CreateView() {
   const navigate = useNavigate();
   const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
-  const initialType = bookingParams?.hotel
-    ? bookingParams?.flights?.length
-      ? 'flight-hotel'
-      : 'hotel'
-    : bookingParams?.train
-      ? 'train'
-      : 'flight';
+  const initialType = useMemo(() => {
+    if (bookingParams?.hotel && bookingParams?.flights?.length) return BOOKING_TYPE_FLIGHT_HOTEL;
+    if (bookingParams?.hotel) return BOOKING_TYPE_HOTEL;
+    if (bookingParams?.train) return BOOKING_TYPE_TRAIN;
+    return BOOKING_TYPE_FLIGHT;
+  }, [bookingParams]);
 
-  const [activeType, setActiveType] = useState(initialType);
+  const [activeType, setActiveType] = useState<BookingTypeType>(initialType);
   const userProfile = localStorageGet<UserType>(USER);
 
-  const handleTypeChange = (key: string) => {
+  const handleTypeChange = (key: BookingTypeType) => {
     form.resetFields();
     setActiveType(key);
   };
@@ -48,19 +54,19 @@ function CreateView() {
   const [form] = Form.useForm();
 
   const onFinish = (values: any) => {
-    if (activeType === 'flight') {
+    if (activeType === BOOKING_TYPE_FLIGHT) {
       const bookingParams = flightFormToBookingParams(values);
       sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_FLIGHT_SEARCH_PATH);
-    } else if (activeType === 'hotel') {
+    } else if (activeType === BOOKING_TYPE_HOTEL) {
       const bookingParams = hotelFormToBookingParams(values);
       sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_HOTEL_SEARCH_PATH);
-    } else if (activeType === 'flight-hotel') {
+    } else if (activeType === BOOKING_TYPE_FLIGHT_HOTEL) {
       const bookingParams = flightHotelFormToBookingParams(values);
       sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_FLIGHT_SEARCH_PATH);
-    } else if (activeType === 'train') {
+    } else if (activeType === BOOKING_TYPE_TRAIN) {
       const bookingParams = trainFormToBookingParams(values);
       sessionStorageSet<BookingParamsType>(BOOKING_PARAMS, bookingParams);
       navigate(CREATE_TRAIN_SEARCH_PATH);
@@ -83,28 +89,28 @@ function CreateView() {
         }}
         onFinish={onFinish}
       >
-        {activeType === 'flight' && (
+        {activeType === BOOKING_TYPE_FLIGHT && (
           <>
             <FlightForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerGuestForm form={form} type="flight" />
+            <PassengerGuestForm form={form} type={BOOKING_TYPE_FLIGHT} />
           </>
         )}
-        {activeType === 'hotel' && (
+        {activeType === BOOKING_TYPE_HOTEL && (
           <>
             <HotelForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerGuestForm form={form} type="hotel" />
+            <PassengerGuestForm form={form} type={BOOKING_TYPE_HOTEL} />
           </>
         )}
-        {activeType === 'flight-hotel' && (
+        {activeType === BOOKING_TYPE_FLIGHT_HOTEL && (
           <>
             <FlightHotelForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerGuestForm form={form} type="flight-hotel" />
+            <PassengerGuestForm form={form} type={BOOKING_TYPE_FLIGHT_HOTEL} />
           </>
         )}
-        {activeType === 'train' && (
+        {activeType === BOOKING_TYPE_TRAIN && (
           <>
             <TrainForm form={form} onTypeChange={handleTypeChange} />
-            <PassengerGuestForm form={form} type="train" />
+            <PassengerGuestForm form={form} type={BOOKING_TYPE_TRAIN} />
           </>
         )}
         <div className="sticky bottom-0 z-10 bg-white p-4 border-t mb-[-2rem] mx-[-2rem]">

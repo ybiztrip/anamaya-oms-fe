@@ -16,15 +16,16 @@ import { useEffect, useMemo } from 'react';
 import SectionCard from '@/components/SectionCard';
 import SelectAirport from '@/components/Select/SelectAirport';
 import Upload from '@/components/Upload';
-import { TRAIN_CLASS_OPTIONS } from '@/constants/common';
+import { BOOKING_TYPE_TRAIN, TRAIN_CLASS_OPTIONS } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import useTravelPolicy from '@/hooks/useTravelPolicy';
-import type { BookingParamsType } from '@/types';
+import type { BookingParamsType, BookingTypeType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { sessionStorageGet } from '@/utils/sessionStorage';
 import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
 
 import { bookingParamsToTrainForm } from '../utils/bookingFormMapper';
+import BookingTypeTabs from './BookingTypeTabs';
 
 function normFile(
   e: UploadProps['onChange'] extends (...args: any) => any
@@ -40,7 +41,7 @@ function TrainForm({
   onTypeChange,
 }: {
   form: FormInstance;
-  onTypeChange: (key: string) => void;
+  onTypeChange: (key: BookingTypeType) => void;
 }) {
   const watchedPaxList = Form.useWatch('paxList', form);
   const paxList = useMemo(() => watchedPaxList ?? [], [watchedPaxList]);
@@ -95,37 +96,7 @@ function TrainForm({
     <>
       <SectionCard
         className="mt-4"
-        title={
-          <Space>
-            <Button
-              variant="link"
-              size="large"
-              color="default"
-              onClick={() => onTypeChange('flight')}
-            >
-              Flight
-            </Button>
-            <Button
-              variant="link"
-              size="large"
-              color="default"
-              onClick={() => onTypeChange('hotel')}
-            >
-              Hotel
-            </Button>
-            <Button
-              variant="link"
-              size="large"
-              color="default"
-              onClick={() => onTypeChange('flight-hotel')}
-            >
-              Flight + Hotel
-            </Button>
-            <Button variant="link" size="large" color="primary">
-              Train
-            </Button>
-          </Space>
-        }
+        title={<BookingTypeTabs activeType={BOOKING_TYPE_TRAIN} onChange={onTypeChange} />}
       >
         <Row gutter={[16, 8]} align="top" wrap>
           <Col span={12}>

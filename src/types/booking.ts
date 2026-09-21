@@ -4,7 +4,7 @@ import type { FlightBookingAddOnType, FlightSearchOneWayType, TripType } from '.
 import type { HotelPropertyType, HotelRoomRateType } from './hotel';
 import type { TrainSearchType } from './train';
 
-export type BookingTypeType = 'FLIGHT' | 'HOTEL';
+export type BookingTypeType = 'FLIGHT' | 'HOTEL' | 'FLIGHT_HOTEL' | 'TRAIN';
 
 export type PassengerGuestType = {
   id: string;
