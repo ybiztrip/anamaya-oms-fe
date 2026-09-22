@@ -160,26 +160,55 @@ export function bookingParamsToFlightHotelForm(bookingParams: BookingParamsType)
 
 export function trainFormToBookingParams(values: any): BookingParamsType {
   const paxList = paxFormToPaxParams(values);
+  if (values.tripType === 'roundTrip') {
+    return {
+      ...values,
+      paxList,
+      trains: [
+        {
+          name: 'Departure',
+          origin: values.origin,
+          destination: values.destination,
+          departureDate: values.departureDate,
+          trainClass: values.trainClass,
+        },
+        {
+          name: 'Return',
+          origin: values.destination,
+          destination: values.origin,
+          departureDate: values.returnDate,
+          trainClass: values.trainClass,
+        },
+      ],
+    };
+  }
+
   return {
     ...values,
     paxList,
-    train: {
-      origin: values.origin,
-      destination: values.destination,
-      departureDate: values.departureDate,
-      trainClass: values.trainClass,
-    },
+    trains: [
+      {
+        name: 'Departure',
+        origin: values.origin,
+        destination: values.destination,
+        departureDate: values.departureDate,
+        trainClass: values.trainClass,
+      },
+    ],
   };
 }
 
 export function bookingParamsToTrainForm(bookingParams: BookingParamsType): any {
-  const { train, paxList, ...rest } = bookingParams;
+  const { trains, paxList, ...rest } = bookingParams;
   return {
     ...rest,
-    origin: train?.origin,
-    destination: train?.destination,
-    departureDate: dayjs(train?.departureDate),
-    trainClass: train?.trainClass,
+    origin: trains?.[0]?.origin,
+    destination: trains?.[0]?.destination,
+    trainClass: trains?.[0]?.trainClass,
+    departureDate: trains?.[0]?.departureDate ? dayjs(trains[0].departureDate) : undefined,
+    ...(bookingParams.tripType === 'roundTrip'
+      ? { returnDate: trains?.[1]?.departureDate ? dayjs(trains[1].departureDate) : undefined }
+      : {}),
     paxList: paxParamsToPaxForm(paxList),
   };
 }

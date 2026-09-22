@@ -5,6 +5,8 @@ import {
   DatePicker,
   Form,
   type FormInstance,
+  Input,
+  Radio,
   Row,
   Select,
   Space,
@@ -19,7 +21,7 @@ import Upload from '@/components/Upload';
 import { BOOKING_TYPE_TRAIN, TRAIN_CLASS_OPTIONS } from '@/constants/common';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
 import useTravelPolicy from '@/hooks/useTravelPolicy';
-import type { BookingParamsType, BookingTypeType } from '@/types';
+import type { BookingParamsType, BookingTypeType, TripType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { sessionStorageGet } from '@/utils/sessionStorage';
 import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
@@ -43,6 +45,8 @@ function TrainForm({
   form: FormInstance;
   onTypeChange: (key: BookingTypeType) => void;
 }) {
+  const tripType = Form.useWatch('tripType', form) as TripType | undefined;
+  const depart = Form.useWatch('departureDate', form);
   const watchedPaxList = Form.useWatch('paxList', form);
   const paxList = useMemo(() => watchedPaxList ?? [], [watchedPaxList]);
   const { travelPoliciesById } = useTravelPolicy();
@@ -98,6 +102,16 @@ function TrainForm({
         className="mt-4"
         title={<BookingTypeTabs activeType={BOOKING_TYPE_TRAIN} onChange={onTypeChange} />}
       >
+        <Form.Item name="tripType">
+          <Radio.Group
+            options={[
+              { label: 'One-way', value: 'oneWay' },
+              { label: 'Round-trip', value: 'roundTrip' },
+            ]}
+            optionType="button"
+            buttonStyle="solid"
+          />
+        </Form.Item>
         <Row gutter={[16, 8]} align="top" wrap>
           <Col span={12}>
             <Space.Compact block>
@@ -150,6 +164,49 @@ function TrainForm({
                   disabledDate={(d) => d.isBefore(dayjs(), 'day')}
                 />
               </Form.Item>
+              {tripType === 'roundTrip' && (
+                <>
+                  <Input
+                    className="site-input-split"
+                    style={{
+                      width: 30,
+                      borderInlineStart: 0,
+                      borderInlineEnd: 0,
+                      pointerEvents: 'none',
+                    }}
+                    placeholder="~"
+                    disabled
+                  />
+                  <Form.Item
+                    name="returnDate"
+                    rules={[
+                      { required: true, message: 'Return date required for round-trip' },
+                      ({ getFieldValue }) => ({
+                        validator: (_, value) => {
+                          const departureDate = getFieldValue('departureDate');
+                          if (!value || !departureDate) return Promise.resolve();
+                          if (!value.isBefore(departureDate, 'day')) return Promise.resolve();
+                          return Promise.reject(
+                            new Error('Return date can not be before departure date'),
+                          );
+                        },
+                      }),
+                    ]}
+                    style={{ flex: 1, marginBottom: 0 }}
+                  >
+                    <DatePicker
+                      style={{ width: '100%' }}
+                      placeholder="Return date"
+                      disabledDate={(d) =>
+                        depart
+                          ? d.isBefore(depart, 'day')
+                          : d.isBefore(dayjs().add(1, 'day'), 'day')
+                      }
+                      format="DD MMM YYYY"
+                    />
+                  </Form.Item>
+                </>
+              )}
             </Space.Compact>
           </Col>
         </Row>

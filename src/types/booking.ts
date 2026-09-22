@@ -56,7 +56,7 @@ export type BookingParamsType = {
   tripType?: TripType;
   flights?: BookingFlightParamsType[];
   hotel?: BookingHotelParamsType | null;
-  train: BookingTrainParamsType | null;
+  trains?: BookingTrainParamsType[];
   bookerName: string;
   attachments: UploadFile[];
   paxList: PassengerGuestType[];
