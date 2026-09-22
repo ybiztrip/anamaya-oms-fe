@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react';
 
 import { ADULT_TYPE, CHILD_TYPE } from '@/constants/common';
 import type {
+  AddOnBaggageType,
   BookingParamsType,
   BookingPriceItemType,
   FlightJourneySegmentType,
@@ -14,6 +15,18 @@ import { formatIDR } from '@/utils/formatter';
 
 import useFlightAddOns from '../hooks/useFlightAddOns';
 import FlightInfo from './FlightInfo';
+
+const formatBaggageText = (baggage: AddOnBaggageType) => {
+  const type = String(baggage?.baggageType ?? '').toUpperCase();
+  const weight = Number(baggage?.baggageWeight ?? 0);
+  const quantity = Number(baggage?.baggageQuantity ?? 0);
+
+  if (weight <= 0 && quantity <= 0) return 'No Baggage';
+  if (type === 'PIECE') {
+    return `${quantity} PIECE`;
+  }
+  return `${weight} KG`;
+};
 
 const FlightConfirm = ({
   form,
@@ -212,7 +225,7 @@ const FlightConfirm = ({
                               <Select
                                 placeholder="Baggage"
                                 options={flightAddOns?.addOns?.baggageOptions?.map((baggage) => ({
-                                  label: `${baggage.baggageWeight} ${baggage.baggageType} (${baggage.priceWithCurrency.currency} ${formatIDR(baggage.priceWithCurrency.amount)})`,
+                                  label: `${formatBaggageText(baggage)} (${baggage.priceWithCurrency.currency} ${formatIDR(baggage.priceWithCurrency.amount)})`,
                                   value: baggage.id,
                                   baggage,
                                 }))}
