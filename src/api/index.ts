@@ -36,6 +36,7 @@ import {
   REFUNDS_CANCEL_API,
   REFUNDS_PAID_API,
   ROLES_API,
+  // TRAIN_SEARCH_API,
   // TRAIN_STATIONS_API,
   TRAVEL_POLICY_API,
   TRAVEL_POLICY_BY_ID_API,
@@ -97,6 +98,8 @@ import type {
   RefundPaidPayloadType,
   ResponseType,
   RoleType,
+  TrainSearchPayloadType,
+  TrainSearchResponseType,
   TrainStationType,
   TravelPolicyListPayloadType,
   TravelPolicyType,
@@ -108,7 +111,7 @@ import type {
 } from '@/types';
 import axios from '@/utils/api';
 
-import { mockFetchTrainStations } from './mock';
+import { mockFetchTrainSearch, mockFetchTrainStations } from './mock';
 
 export async function fetchRoles(): Promise<ResponseType<RoleType[]>> {
   const res = await axios.get(ROLES_API);
@@ -263,6 +266,16 @@ export async function fetchTrainStations(): Promise<ResponseType<TrainStationTyp
   // const res = await axios.get(TRAIN_STATIONS_API);
   // return res.data;
   return mockFetchTrainStations;
+}
+
+export async function fetchTrainSearch(
+  params: TrainSearchPayloadType,
+): Promise<ResponseType<TrainSearchResponseType>> {
+  console.log(params);
+  // TODO: fetch train search from API
+  // const res = await axios.post(TRAIN_SEARCH_API, params);
+  // return res.data;
+  return mockFetchTrainSearch;
 }
 
 export async function fetchBookings(

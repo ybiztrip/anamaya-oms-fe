@@ -12,6 +12,7 @@ import {
   CREATE_HOTEL_ROOM_SEGMENT,
   CREATE_HOTEL_SEARCH_SEGMENT,
   CREATE_PATH,
+  CREATE_TRAIN_SEARCH_SEGMENT,
   HOME_PATH,
   LOGIN_PATH,
   MONITORING_CREDIT_PATH,
@@ -30,6 +31,7 @@ import CreateView from '@/modules/Create/CreateView';
 import FlightSearchView from '@/modules/Create/FlightSearchView';
 import HotelRoomView from '@/modules/Create/HotelRoomView';
 import HotelSearchView from '@/modules/Create/HotelSearchView';
+import TrainSearchView from '@/modules/Create/TrainSearchView';
 import EmployeeView from '@/modules/Employee/EmployeeView';
 import HomeView from '@/modules/Home/HomeView';
 import LoginView from '@/modules/Login/LoginView';
@@ -75,6 +77,7 @@ function App() {
         <Route path={CREATE_FLIGHT_SEARCH_SEGMENT} element={<FlightSearchView />} />
         <Route path={CREATE_HOTEL_SEARCH_SEGMENT} element={<HotelSearchView />} />
         <Route path={CREATE_HOTEL_ROOM_SEGMENT} element={<HotelRoomView />} />
+        <Route path={CREATE_TRAIN_SEARCH_SEGMENT} element={<TrainSearchView />} />
         <Route path={CREATE_BOOKING_CONFIRM_SEGMENT} element={<BookingConfirmView />} />
       </Route>
       <Route

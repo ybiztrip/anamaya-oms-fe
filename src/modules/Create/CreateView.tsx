@@ -39,7 +39,7 @@ function CreateView() {
   const initialType = useMemo(() => {
     if (bookingParams?.hotel && bookingParams?.flights?.length) return BOOKING_TYPE_FLIGHT_HOTEL;
     if (bookingParams?.hotel) return BOOKING_TYPE_HOTEL;
-    if (bookingParams?.train) return BOOKING_TYPE_TRAIN;
+    if (bookingParams?.trains) return BOOKING_TYPE_TRAIN;
     return BOOKING_TYPE_FLIGHT;
   }, [bookingParams]);
 
