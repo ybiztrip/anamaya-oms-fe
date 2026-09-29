@@ -385,7 +385,10 @@ function BookingDetailView() {
                     <Text type="secondary">Document:</Text> {pax.documentType} {pax.documentNo}
                   </div>
                   <div>
-                    <Text type="secondary">Expiry:</Text> {pax.expirationDate}
+                    <Text type="secondary">Issued Date:</Text> {pax.issuedDate}
+                  </div>
+                  <div>
+                    <Text type="secondary">Expiry Date:</Text> {pax.expirationDate}
                   </div>
                   <div>
                     <Text type="secondary">Nationality:</Text> {pax.nationality}

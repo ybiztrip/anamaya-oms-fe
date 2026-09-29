@@ -8,6 +8,7 @@ function paxFormToPaxParams(values: any): PassengerGuestType[] {
     ...pax,
     dob: dayjs(pax.dob),
     passportExpiry: dayjs(pax.passportExpiry),
+    passportIssued: pax.passportIssued ? dayjs(pax.passportIssued) : undefined,
     type: pax.dob
       ? dayjs(pax.dob).isBefore(dayjs().subtract(ADULT_AGE, 'year'))
         ? ADULT_TYPE
@@ -23,6 +24,7 @@ function paxParamsToPaxForm(paxList: PassengerGuestType[]): any {
     ...pax,
     dob: pax.dob ? dayjs(pax.dob) : undefined,
     passportExpiry: pax.passportExpiry ? dayjs(pax.passportExpiry) : undefined,
+    passportIssued: pax.passportIssued ? dayjs(pax.passportIssued) : undefined,
   }));
 }
 

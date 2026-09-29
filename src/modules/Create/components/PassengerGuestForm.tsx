@@ -67,6 +67,7 @@ function PassengerGuestForm({ form, type }: { form: FormInstance; type: BookingT
                                   idNumber: '',
                                   passportNumber: '',
                                   passportExpiry: '',
+                                  passportIssued: '',
                                 },
                               },
                             });
@@ -118,6 +119,9 @@ function PassengerGuestForm({ form, type }: { form: FormInstance; type: BookingT
                                           passportNumber: u.passportNo,
                                           passportExpiry: u.passportExpiry
                                             ? dayjs(u.passportExpiry, 'YYYY-MM-DD')
+                                            : '',
+                                          passportIssued: u.passportIssued
+                                            ? dayjs(u.passportIssued, 'YYYY-MM-DD')
                                             : '',
                                         },
                                       },

@@ -35,6 +35,7 @@ const buildPaxFromUser = (user?: UserType) => {
     idNumber: user?.identityNo ?? '',
     passportNumber: user?.passportNo ?? '',
     passportExpiry: user?.passportExpiry ? dayjs(user.passportExpiry, 'YYYY-MM-DD') : '',
+    passportIssued: user?.passportIssued ? dayjs(user.passportIssued, 'YYYY-MM-DD') : '',
   };
 };
 

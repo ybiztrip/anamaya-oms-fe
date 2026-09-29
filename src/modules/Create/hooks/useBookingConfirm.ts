@@ -123,6 +123,7 @@ export default function useBookingConfirm({
       documentType: 'PASSPORT',
       documentNo: pax.passportNumber,
       expirationDate: pax.passportExpiry,
+      issuedDate: pax.passportIssued,
     };
   };
 

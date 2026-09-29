@@ -54,6 +54,9 @@ export default function useEmployee() {
       passportExpiry: values.passportExpiry
         ? dayjs(values.passportExpiry).format('YYYY-MM-DD')
         : (existing?.passportExpiry ?? ''),
+      passportIssued: values.passportIssued
+        ? dayjs(values.passportIssued).format('YYYY-MM-DD')
+        : (existing?.passportIssued ?? ''),
       nationality: 'ID',
       positionId: 2,
       createdBy: existing ? existing.createdBy : (currentUser?.id ?? 0),

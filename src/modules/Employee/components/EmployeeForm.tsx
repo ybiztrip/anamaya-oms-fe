@@ -19,7 +19,8 @@ export type EmployeeFieldKey =
   | 'dob'
   | 'idNumber'
   | 'passportNumber'
-  | 'passportExpiry';
+  | 'passportExpiry'
+  | 'passportIssued';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const CreateEmployeeFields: EmployeeFieldKey[] = [
@@ -36,6 +37,7 @@ export const CreateEmployeeFields: EmployeeFieldKey[] = [
   'idNumber',
   'passportNumber',
   'passportExpiry',
+  'passportIssued',
 ];
 // eslint-disable-next-line react-refresh/only-export-components
 export const UpdateEmployeeFields: EmployeeFieldKey[] = [
@@ -53,6 +55,7 @@ export const UpdateEmployeeFields: EmployeeFieldKey[] = [
   'idNumber',
   'passportNumber',
   'passportExpiry',
+  'passportIssued',
 ];
 // eslint-disable-next-line react-refresh/only-export-components
 export const PassengerGuestFields: EmployeeFieldKey[] = [
@@ -66,6 +69,7 @@ export const PassengerGuestFields: EmployeeFieldKey[] = [
   'idNumber',
   'passportNumber',
   'passportExpiry',
+  'passportIssued',
 ];
 // eslint-disable-next-line react-refresh/only-export-components
 export const ProfileFields: EmployeeFieldKey[] = [
@@ -79,6 +83,7 @@ export const ProfileFields: EmployeeFieldKey[] = [
   'idNumber',
   'passportNumber',
   'passportExpiry',
+  'passportIssued',
 ];
 
 export default function EmployeeForm({
@@ -301,6 +306,17 @@ export default function EmployeeForm({
                 <DatePicker
                   style={{ width: '100%' }}
                   disabled={disabledFields.includes('passportExpiry')}
+                  format="DD MMM YYYY"
+                />
+              </Form.Item>
+            </Col>
+          )}
+          {fields.includes('passportIssued') && (
+            <Col xs={24} md={12}>
+              <Form.Item label="Issuance Date" name={[...namePrefix, 'passportIssued']}>
+                <DatePicker
+                  style={{ width: '100%' }}
+                  disabled={disabledFields.includes('passportIssued')}
                   format="DD MMM YYYY"
                 />
               </Form.Item>

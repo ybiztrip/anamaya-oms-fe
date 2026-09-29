@@ -20,6 +20,7 @@ export type PassengerGuestType = {
   idNumber: string;
   passportNumber: string;
   passportExpiry: string;
+  passportIssued: string;
   type?: string;
 };
 
@@ -116,6 +117,7 @@ export type BookingPaxType = {
   documentType: string;
   documentNo: string;
   expirationDate: string;
+  issuedDate: string;
 };
 
 export type BookingFlightPaxType = BookingPaxType & {

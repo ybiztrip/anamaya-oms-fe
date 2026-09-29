@@ -26,6 +26,7 @@ export type UserType = {
   identityNo: string;
   passportNo: string;
   passportExpiry: string;
+  passportIssued: string;
   dateOfBirth: string;
   nationality: string;
   status: number;

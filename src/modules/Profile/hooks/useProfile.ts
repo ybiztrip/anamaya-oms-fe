@@ -58,6 +58,9 @@ export default function useProfile() {
       passportExpiry: values.passportExpiry
         ? dayjs(values.passportExpiry).format('YYYY-MM-DD')
         : (currentUser?.passportExpiry ?? ''),
+      passportIssued: values.passportIssued
+        ? dayjs(values.passportIssued).format('YYYY-MM-DD')
+        : (currentUser?.passportIssued ?? ''),
       nationality: 'ID',
       positionId: 2,
       updatedBy: Number(currentUser?.id),
