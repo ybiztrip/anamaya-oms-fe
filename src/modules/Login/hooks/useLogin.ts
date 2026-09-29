@@ -35,6 +35,10 @@ const useLogin = () => {
       .post(apiURL, payload)
       .then(async (response) => {
         setIsLoading(false);
+        if (!response.data.success) {
+          message.error(response.data.message ?? DEFAULT_ERROR_MESSAGE);
+          return;
+        }
         const { token, id } = response.data.data;
         localStorageSet(ACCESS_TOKEN, token);
         const userDetail = await fetchUserDetail(id);
