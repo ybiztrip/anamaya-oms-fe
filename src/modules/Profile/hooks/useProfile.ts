@@ -25,7 +25,7 @@ export default function useProfile() {
         message.error(data.message);
         return;
       }
-      localStorageSet<UserType>(USER, data.data);
+      localStorageSet<UserType>(USER, { ...currentUser, ...data.data });
       message.success('Profile updated');
     },
     onError: (e: any) => {
