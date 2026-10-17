@@ -2,9 +2,9 @@ import { useMutation } from '@tanstack/react-query';
 import { message } from 'antd';
 import dayjs from 'dayjs';
 
-import { fetchTrainSearch } from '@/api';
-import { ADULT_TYPE, CHILD_TYPE, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
-import type { BookingParamsType, PassengerGuestType, TrainSearchPayloadType } from '@/types';
+import { fetchTrainAvailability } from '@/api';
+import { ADULT_TYPE, DEFAULT_ERROR_MESSAGE, INFANT_TYPE } from '@/constants/common';
+import type { BookingParamsType, PassengerGuestType, TrainAvailabilityPayloadType } from '@/types';
 
 export default function useTrainSearch({
   trainIndex,
@@ -15,7 +15,7 @@ export default function useTrainSearch({
 }) {
   const trainParams = bookingParams?.trains?.[trainIndex];
   const { mutateAsync, data, isPending, error, reset } = useMutation({
-    mutationFn: (payload: TrainSearchPayloadType) => fetchTrainSearch(payload),
+    mutationFn: (payload: TrainAvailabilityPayloadType) => fetchTrainAvailability(payload),
     onSuccess: (data) => {
       if (!data.success) {
         message.error(data.message);
@@ -27,32 +27,24 @@ export default function useTrainSearch({
   });
 
   const handleSearchTrains = async (values: any) => {
-    // TODO: payload train search
     let totalAdult = 0;
-    let totalChild = 0;
     let totalInfant = 0;
     bookingParams?.paxList?.forEach((pax: PassengerGuestType) => {
       if (pax?.type === ADULT_TYPE) {
         totalAdult++;
-      } else if (pax?.type === CHILD_TYPE) {
-        totalChild++;
-      } else {
+      } else if (pax?.type === INFANT_TYPE) {
         totalInfant++;
       }
     });
-    const payload: TrainSearchPayloadType = {
-      journey: {
-        depStationCode: values.origin,
-        arrStationCode: values.destination,
-        depDate: dayjs(values.departureDate).format('MM-DD-YYYY'),
-        seatClass: values?.trainClass ?? 'ECONOMY',
-        sortBy: values.sortBy ?? 'ARRIVAL_TIME',
+    const payload: TrainAvailabilityPayloadType = {
+      route: {
+        origin: values.origin,
+        destination: values.destination,
+        departDate: dayjs(values.departureDate).format('YYYY-MM-DD'),
       },
-      passengers: {
-        adult: String(totalAdult),
-        child: String(totalChild),
-        infant: String(totalInfant),
-      },
+      adult: totalAdult,
+      infant: totalInfant,
+      class: values?.trainClass ?? 0,
     };
     await mutateAsync(payload);
   };

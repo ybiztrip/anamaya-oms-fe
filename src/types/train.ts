@@ -1,50 +1,103 @@
 export type TrainStationType = {
   cityName: string;
-  id: string;
-  name: string;
   stationCode: string;
   stationName: string;
 };
 
-export type TrainSearchPayloadType = {
-  // TODO: train payload type
-  journey: {
-    depStationCode: string;
-    arrStationCode: string;
-    depDate: string;
-    seatClass: string;
-    sortBy?: string;
-  };
-  passengers: {
-    adult: string;
-    child: string;
-    infant: string;
-  };
+export type TrainChargeType = {
+  amount: number;
+  chargeCode: string;
+  chargeTypeString: string | null;
+  currencyCode: string;
+  foreignAmount: number;
+  foreignCurrencyCode: string | null;
+  chargeDetail: unknown | null;
 };
 
-export type TrainSearchType = {
-  // TODO: train search type
-  trainId: string;
-  trainNumber: string;
-  trainName: string;
-  originStationCode: string;
-  destinationStationCode: string;
-  departureDate: string;
-  departureTime: string;
+export type TrainPaxFareType = {
+  charges: TrainChargeType[];
+  paxType: string;
+};
+
+export type TrainSegmentType = {
+  active: boolean;
+  class: string;
+  classKey: string;
+  className: string;
+  fare: number;
+  paxFares: TrainPaxFareType[];
+  seat: number;
+  subClass: string;
+};
+
+export type TrainJourneyType = {
   arrivalDate: string;
   arrivalTime: string;
-  durationInMinutes: number;
-  trainClass: string;
-  subclass?: string;
-  availableSeats: number;
-  fare: {
-    amount: number;
-    currency: string;
-  };
-  summary: {
-    name: string;
-    trainClass: string;
-  };
+  carrierNumber: string;
+  departureDate: string;
+  departureTime: string;
+  destination: string;
+  duration: string;
+  journeyCode: string;
+  origin: string;
+  provider: number;
+  segments: TrainSegmentType[];
+  sequence: number;
+  trainName: string;
+  trainNumber: string | null;
 };
 
-export type TrainSearchResponseType = TrainSearchType[];
+export type TrainScheduleType = {
+  available: boolean;
+  destination: string;
+  destinationDisplay: string;
+  errorMessage: string | null;
+  journeys: TrainJourneyType[];
+  origin: string;
+  originDisplay: string;
+};
+
+export type TrainAvailabilityPayloadType = {
+  route: {
+    origin: string;
+    destination: string;
+    departDate: string;
+  };
+  adult: number;
+  infant: number;
+  class: number;
+};
+
+export type TrainAvailabilityResponseType = {
+  schedules: TrainScheduleType[];
+};
+
+// TODO: train seat
+/** -1 = aisle/gap, 0 = available, 1 = occupied */
+export type TrainSeatStatus = -1 | 0 | 1;
+
+export type TrainSeatCellType = {
+  seatId: string;
+  seatNumber: string;
+  seatStatus: TrainSeatStatus;
+  x: number;
+};
+
+  y: number;
+};
+
+export type TrainCoachType = {
+  coachName: string;
+  code: string;
+  num: number;
+  seatRows: TrainSeatCellType[][];
+};
+
+export type TrainSeatsPayloadType = {
+  journeyCode: string;
+};
+
+export type TrainSeatsResponseType = {
+  pnrID: string;
+  seatsMap: TrainCoachType[];
+};

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { CREATE_BOOKING_CONFIRM_PATH, CREATE_PATH } from '@/constants/routePath';
 import { BOOKING_PARAMS } from '@/constants/storageKey';
-import type { BookingParamsType, TrainSearchType } from '@/types';
+import type { BookingParamsType, TrainJourneyType, TrainSegmentType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import { sessionStorageGet, sessionStorageSet } from '@/utils/sessionStorage';
 
@@ -47,15 +47,21 @@ function TrainSearchView() {
   );
 
   const selectTrain = useCallback(
-    (train: TrainSearchType, trainIndex: number) => {
+    (trainJourney: TrainJourneyType, segment: TrainSegmentType, trainIndex: number) => {
+      const selectedTrain: TrainJourneyType = {
+        ...trainJourney,
+        segments: trainJourney.segments.map((s) => ({
+          ...s,
+          active: s.classKey === segment.classKey,
+        })),
+      };
       const newTrains = [...(bookingParams?.trains ?? [])];
       newTrains[trainIndex] = {
         ...newTrains[trainIndex],
-        // TODO
-        // origin: train.origin,
-        // destination: train.destination,
-        // departureDate: dayjs(train.departureDate, 'MM-DD-YYYY').format('YYYY-MM-DD'),
-        selectedTrain: train,
+        origin: trainJourney.origin,
+        destination: trainJourney.destination,
+        departureDate: dayjs(trainJourney.departureDate).format('YYYY-MM-DD'),
+        selectedTrain,
       };
       const newBookingParams = {
         ...bookingParams,

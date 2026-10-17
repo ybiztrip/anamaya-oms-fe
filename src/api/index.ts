@@ -36,8 +36,8 @@ import {
   REFUNDS_CANCEL_API,
   REFUNDS_PAID_API,
   ROLES_API,
-  // TRAIN_SEARCH_API,
-  // TRAIN_STATIONS_API,
+  TRAIN_AVAILABILITY_API,
+  TRAIN_STATIONS_API,
   TRAVEL_POLICY_API,
   TRAVEL_POLICY_BY_ID_API,
   USERS_API,
@@ -98,8 +98,10 @@ import type {
   RefundPaidPayloadType,
   ResponseType,
   RoleType,
-  TrainSearchPayloadType,
-  TrainSearchResponseType,
+  TrainAvailabilityPayloadType,
+  TrainAvailabilityResponseType,
+  TrainSeatsPayloadType,
+  TrainSeatsResponseType,
   TrainStationType,
   TravelPolicyListPayloadType,
   TravelPolicyType,
@@ -111,7 +113,7 @@ import type {
 } from '@/types';
 import axios from '@/utils/api';
 
-import { mockFetchTrainSearch, mockFetchTrainStations } from './mock';
+import { mockFetchTrainSeats } from './mock';
 
 export async function fetchRoles(): Promise<ResponseType<RoleType[]>> {
   const res = await axios.get(ROLES_API);
@@ -262,20 +264,23 @@ export async function fetchHotelRoomRate(
 }
 
 export async function fetchTrainStations(): Promise<ResponseType<TrainStationType[]>> {
-  // TODO: fetch train stations from API
-  // const res = await axios.get(TRAIN_STATIONS_API);
-  // return res.data;
-  return mockFetchTrainStations;
+  const res = await axios.get(TRAIN_STATIONS_API);
+  return res.data;
 }
 
-export async function fetchTrainSearch(
-  params: TrainSearchPayloadType,
-): Promise<ResponseType<TrainSearchResponseType>> {
-  console.log(params);
-  // TODO: fetch train search from API
-  // const res = await axios.post(TRAIN_SEARCH_API, params);
-  // return res.data;
-  return mockFetchTrainSearch;
+export async function fetchTrainAvailability(
+  params: TrainAvailabilityPayloadType,
+): Promise<ResponseType<TrainAvailabilityResponseType>> {
+  const res = await axios.post(TRAIN_AVAILABILITY_API, params);
+  return res.data;
+}
+
+export async function fetchTrainSeats(
+  params: TrainSeatsPayloadType,
+): Promise<ResponseType<TrainSeatsResponseType>> {
+  // TODO: fetch train seats from API
+  void params;
+  return mockFetchTrainSeats;
 }
 
 export async function fetchBookings(

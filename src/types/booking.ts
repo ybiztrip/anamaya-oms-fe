@@ -2,7 +2,7 @@ import type { UploadFile } from 'antd';
 
 import type { FlightBookingAddOnType, FlightSearchOneWayType, TripType } from './flight';
 import type { HotelPropertyType, HotelRoomRateType } from './hotel';
-import type { TrainSearchType } from './train';
+import type { TrainJourneyType } from './train';
 
 export type BookingTypeType = 'FLIGHT' | 'HOTEL' | 'FLIGHT_HOTEL' | 'TRAIN';
 
@@ -50,7 +50,7 @@ export type BookingTrainParamsType = {
   destination: string;
   departureDate: string;
   trainClass: string;
-  selectedTrain?: TrainSearchType;
+  selectedTrain?: TrainJourneyType;
 };
 
 export type BookingParamsType = {

@@ -10,17 +10,20 @@ import {
   CREATE_FLIGHT_SEARCH_PATH,
   CREATE_HOTEL_SEARCH_PATH,
   CREATE_PATH,
+  CREATE_TRAIN_SEARCH_PATH,
 } from '@/constants/routePath';
 import type {
   BookingPriceItemType,
   FlightSearchOneWayType,
   HotelPropertyType,
   HotelRoomRateType,
+  TrainJourneyType,
 } from '@/types';
 
 import FlightConfirm from './components/FlightConfirm';
 import HotelConfirm from './components/HotelConfirm';
 import PriceDetail from './components/PriceDetail';
+import TrainConfirm from './components/TrainConfirm';
 import useBookingConfirm from './hooks/useBookingConfirm';
 
 function BookingConfirmView() {
@@ -30,6 +33,7 @@ function BookingConfirmView() {
   const isFetchingAddOns = useIsFetching({ queryKey: [FLIGHT_ADD_ONS] }) > 0;
   const [flightPrices, setFlightPrices] = useState<Record<number, BookingPriceItemType[]>>({});
   const [hotelPrices, setHotelPrices] = useState<BookingPriceItemType[]>([]);
+  const [trainPrices, setTrainPrices] = useState<Record<number, BookingPriceItemType[]>>({});
 
   const { handleSubmitForApproval, bookingParams, isLoading } = useBookingConfirm({
     flightPrices,
@@ -41,10 +45,12 @@ function BookingConfirmView() {
       navigate(CREATE_FLIGHT_SEARCH_PATH);
     } else if (bookingParams?.hotel) {
       navigate(CREATE_HOTEL_SEARCH_PATH);
+    } else if (bookingParams?.trains?.length) {
+      navigate(CREATE_TRAIN_SEARCH_PATH);
     } else {
       navigate(CREATE_PATH);
     }
-  }, [bookingParams?.flights?.length, bookingParams?.hotel, navigate]);
+  }, [bookingParams?.flights?.length, bookingParams?.hotel, bookingParams?.trains?.length, navigate]);
 
   const handleFlightPrices = useCallback((prices: BookingPriceItemType[], flightIndex: number) => {
     setFlightPrices((prev) => ({ ...prev, [flightIndex]: prices }));
@@ -54,9 +60,17 @@ function BookingConfirmView() {
     setHotelPrices(prices);
   }, []);
 
+  const handleTrainPrices = useCallback((prices: BookingPriceItemType[], trainIndex: number) => {
+    setTrainPrices((prev) => ({ ...prev, [trainIndex]: prices }));
+  }, []);
+
   const allPrices = useMemo(() => {
-    return [...Object.values(flightPrices).flat(), ...hotelPrices];
-  }, [flightPrices, hotelPrices]);
+    return [
+      ...Object.values(flightPrices).flat(),
+      ...hotelPrices,
+      ...Object.values(trainPrices).flat(),
+    ];
+  }, [flightPrices, hotelPrices, trainPrices]);
 
   useEffect(() => {
     if (!bookingParams) {
@@ -69,6 +83,11 @@ function BookingConfirmView() {
       navigate(CREATE_FLIGHT_SEARCH_PATH);
     } else if (bookingParams?.hotel && !bookingParams?.hotel?.selectedHotel) {
       navigate(CREATE_HOTEL_SEARCH_PATH);
+    } else if (
+      bookingParams?.trains?.length &&
+      bookingParams?.trains?.every((train) => !train.selectedTrain)
+    ) {
+      navigate(CREATE_TRAIN_SEARCH_PATH);
     }
   }, [bookingParams, navigate]);
 
@@ -118,6 +137,22 @@ function BookingConfirmView() {
                     />
                   </>
                 )}
+
+                {bookingParams.trains?.map((train, index) => {
+                  return (
+                    <div key={train.name}>
+                      <div className="text-lg font-medium">{train.name}</div>
+                      <TrainConfirm
+                        form={form}
+                        index={index}
+                        train={train.selectedTrain as TrainJourneyType}
+                        bookingParams={bookingParams}
+                        onPriceListChange={handleTrainPrices}
+                      />
+                      <Divider />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </Col>

@@ -1,41 +1,53 @@
 import { Button, Card, Col, Row } from 'antd';
 
-import { TRAIN_CLASS_LABELS } from '@/constants/common';
 import useTrainStation from '@/hooks/useTrainStation';
-import type { TrainSearchType } from '@/types';
-import { formatDuration, formatIDR } from '@/utils/formatter';
+import type { TrainJourneyType, TrainSegmentType } from '@/types';
+import { formatIDR } from '@/utils/formatter';
 
 function TrainInfo({
   train,
+  segment: segmentProp,
   withTrainClass = true,
   withPrice = true,
   withSelect = true,
   onSelect,
 }: Readonly<{
-  train: TrainSearchType;
+  train: TrainJourneyType;
+  segment?: TrainSegmentType;
   withTrainClass?: boolean;
   withPrice?: boolean;
   withSelect?: boolean;
-  onSelect?: (train: TrainSearchType) => void;
+  onSelect?: (train: TrainJourneyType, segment: TrainSegmentType) => void;
 }>) {
   const { stationsByCode } = useTrainStation();
 
-  const originStation = stationsByCode[train.originStationCode];
-  const destinationStation = stationsByCode[train.destinationStationCode];
-  const trainClassLabel = TRAIN_CLASS_LABELS[train.trainClass] ?? train.trainClass;
-  const trainCode = `${train.trainNumber}${train.subclass ?? ''}`;
-  const price = Number(train.fare?.amount ?? 0);
-  const currency = train.fare?.currency ?? 'IDR';
+  const segment = segmentProp ?? train.segments?.find((s) => s.active) ?? train.segments?.[0];
+  const originStation = stationsByCode[train.origin];
+  const destinationStation = stationsByCode[train.destination];
+  const trainClassLabel = segment?.className ?? '-';
+  const trainSubClassLabel = segment?.subClass ?? '-';
+  const trainCode = train.carrierNumber ?? '';
+  const price = Number(segment?.fare ?? 0);
+  const availableSeats = Number(segment?.seat ?? 0);
+  const isSoldOut = availableSeats <= 0;
 
   return (
-    <Card key={train.trainId} size="small">
+    <Card
+      key={`${train.journeyCode}-${segment?.classKey ?? ''}`}
+      size="small"
+      className={isSoldOut ? 'text-gray-400 [&_*]:text-gray-400' : undefined}
+    >
       <Row align="middle" gutter={16} wrap={false}>
         <Col flex="220px">
           <div className="min-w-0">
             <div className="font-medium">
               {train.trainName} ({trainCode})
             </div>
-            {withTrainClass && <div className="text-sm text-gray-500">{trainClassLabel}</div>}
+            {withTrainClass && (
+              <div className="text-sm text-gray-500">
+                {trainClassLabel} ({trainSubClassLabel})
+              </div>
+            )}
           </div>
         </Col>
 
@@ -44,13 +56,12 @@ function TrainInfo({
             <div>
               <div className="text-lg font-semibold">{train.departureTime ?? '-'}</div>
               <div className="text-xs text-gray-500">
-                {train.originStationCode ?? '-'}
-                {originStation?.stationName ? ` · ${originStation.stationName}` : ''}
+                {originStation?.stationName} ({train.origin})
               </div>
             </div>
 
             <div className="text-center">
-              <div className="text-sm">{formatDuration(String(train.durationInMinutes))}</div>
+              <div className="text-sm">{train.duration ?? '-'}</div>
               <div className="border-t-4 border-gray-200 my-2" />
               <div className="text-xs text-gray-500">Direct</div>
             </div>
@@ -58,7 +69,7 @@ function TrainInfo({
             <div className="text-right">
               <div className="text-lg font-semibold">{train.arrivalTime ?? '-'}</div>
               <div className="text-xs text-gray-500">
-                {train.destinationStationCode ?? '-'}
+                {train.destination ?? '-'}
                 {destinationStation?.stationName ? ` · ${destinationStation.stationName}` : ''}
               </div>
             </div>
@@ -67,20 +78,22 @@ function TrainInfo({
 
         {withPrice && (
           <Col flex="auto" className="text-center">
-            <div className="text-lg font-semibold">
-              {currency} {formatIDR(price)}
-            </div>
-            <div className="text-xs text-gray-500 mt-1">{train.availableSeats} seats left</div>
+            <div className="text-lg font-semibold">IDR {formatIDR(price)}</div>
+            <div className="text-xs text-gray-500 mt-1">{availableSeats} seats left</div>
           </Col>
         )}
-        {withSelect && (
+        {withSelect && segment && (
           <Col
             flex="100px"
             className="text-right self-stretch sticky right-0 bg-white flex items-center justify-end"
           >
-            <Button type="primary" className="mt-2" onClick={() => onSelect?.(train)}>
-              Select
-            </Button>
+            {isSoldOut ? (
+              <span className="mt-2 font-medium px-2">Sold out</span>
+            ) : (
+              <Button type="primary" className="mt-2" onClick={() => onSelect?.(train, segment)}>
+                Select
+              </Button>
+            )}
           </Col>
         )}
       </Row>

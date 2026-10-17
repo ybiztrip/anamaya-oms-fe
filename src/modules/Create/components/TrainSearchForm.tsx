@@ -5,7 +5,7 @@ import SectionCard from '@/components/SectionCard';
 import SelectTrainStation from '@/components/Select/SelectTrainStation';
 import { TRAIN_CLASS_OPTIONS } from '@/constants/common';
 import useTravelPolicy from '@/hooks/useTravelPolicy';
-import type { BookingParamsType, TrainSearchType } from '@/types';
+import type { BookingParamsType, TrainJourneyType, TrainSegmentType } from '@/types';
 import dayjs from '@/utils/dayjs';
 import getTravelPolicyLimits from '@/utils/travelPolicyLimits';
 
@@ -20,7 +20,11 @@ function TrainSearchForm({
 }: Readonly<{
   bookingParams: BookingParamsType;
   trainIndex: number;
-  onSelectTrain: (train: TrainSearchType, trainIndex: number) => void;
+  onSelectTrain: (
+    train: TrainJourneyType,
+    segment: TrainSegmentType,
+    trainIndex: number,
+  ) => void;
   onSearchParamsChange?: (formValues: any) => void;
 }>) {
   const [form] = Form.useForm();
@@ -47,6 +51,8 @@ function TrainSearchForm({
     [bookingParams?.paxList, travelPoliciesById],
   );
 
+  const sortBy = Form.useWatch('sortBy', form) ?? 'ARRIVAL_TIME';
+
   const trainClassOptions = useMemo(() => {
     // TODO: train class options
     return TRAIN_CLASS_OPTIONS;
@@ -66,17 +72,41 @@ function TrainSearchForm({
 
   const filteredResults = useMemo(() => {
     // TODO: filtered results
-    const results = data?.data ?? [];
+    const journeys = data?.data?.schedules?.flatMap((schedule) => schedule.journeys ?? []) ?? [];
 
-    return results.filter((train: TrainSearchType) => {
-      console.log(train);
+    const items = journeys.flatMap((journey) => {
       if (policyLimits) {
         // TODO: filter by policy limits
       }
 
-      return true;
+      return (journey.segments ?? []).map((segment) => ({ journey, segment }));
     });
-  }, [data?.data, policyLimits]);
+
+    const parseMinutes = (time?: string) => {
+      if (!time) return Number.POSITIVE_INFINITY;
+      const [h, m] = time.split(':').map(Number);
+      if (Number.isNaN(h) || Number.isNaN(m)) return Number.POSITIVE_INFINITY;
+      return h * 60 + m;
+    };
+
+    const sortItems = (
+      list: { journey: TrainJourneyType; segment: TrainSegmentType }[],
+    ) =>
+      [...list].sort((a, b) => {
+        if (sortBy === 'PRICE') {
+          return Number(a.segment.fare ?? 0) - Number(b.segment.fare ?? 0);
+        }
+        if (sortBy === 'DEPARTURE_TIME') {
+          return parseMinutes(a.journey.departureTime) - parseMinutes(b.journey.departureTime);
+        }
+        return parseMinutes(a.journey.arrivalTime) - parseMinutes(b.journey.arrivalTime);
+      });
+
+    return [
+      ...sortItems(items.filter(({ segment }) => segment.active)),
+      ...sortItems(items.filter(({ segment }) => !segment.active)),
+    ];
+  }, [data?.data?.schedules, policyLimits, sortBy]);
 
   return (
     <Form
@@ -184,19 +214,6 @@ function TrainSearchForm({
                 { label: 'Earliest Arrival', value: 'ARRIVAL_TIME' },
               ]}
               style={{ width: 'fit-content' }}
-              onChange={async () => {
-                try {
-                  await form.validateFields([
-                    'origin',
-                    'destination',
-                    'departureDate',
-                    'flightClass',
-                  ]);
-                  form.submit();
-                } catch {
-                  // Don't auto-submit when required fields are incomplete.
-                }
-              }}
             />
           </Form.Item>
           <Form.Item label="Train Class" name="trainClass">
@@ -209,7 +226,7 @@ function TrainSearchForm({
                     'origin',
                     'destination',
                     'departureDate',
-                    'flightClass',
+                    'trainClass',
                   ]);
 
                   const values = form.getFieldsValue();
@@ -234,11 +251,20 @@ function TrainSearchForm({
                   <div className="text-gray-500">No trains found</div>
                 </div>
               )}
-              {filteredResults.map((r: TrainSearchType) => {
+              {filteredResults.map(({ journey, segment }) => {
                 return (
-                  <div key={r.trainId} className="overflow-x-auto">
+                  <div
+                    key={`${journey.journeyCode}-${segment.classKey}`}
+                    className="overflow-x-auto"
+                  >
                     <div style={{ minWidth: 800 }} className="mt-4 space-y-3">
-                      <TrainInfo train={r} onSelect={() => onSelectTrain(r, trainIndex)} />
+                      <TrainInfo
+                        train={journey}
+                        segment={segment}
+                        onSelect={(selectedTrain, selectedSegment) =>
+                          onSelectTrain(selectedTrain, selectedSegment, trainIndex)
+                        }
+                      />
                     </div>
                   </div>
                 );

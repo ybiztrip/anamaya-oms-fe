@@ -9,7 +9,7 @@ import {
   BOOKING_TYPE_HOTEL,
   BOOKING_TYPE_TRAIN,
   FLIGHT_CLASS_ECONOMY,
-  TRAIN_CLASS_ECONOMY,
+  TRAIN_CLASS_ALL,
 } from '@/constants/common';
 import {
   CREATE_FLIGHT_SEARCH_PATH,
@@ -82,7 +82,7 @@ function CreateView() {
           tripType: 'oneWay',
           bookerName: `${userProfile?.firstName} ${userProfile?.lastName}`,
           flightClass: FLIGHT_CLASS_ECONOMY,
-          trainClass: TRAIN_CLASS_ECONOMY,
+          trainClass: TRAIN_CLASS_ALL,
           hotelStars: ['5'],
           rooms: 1,
           passengers: [{}],

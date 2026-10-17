@@ -10,11 +10,11 @@ export default function SelectTrainStation({ ...props }: SelectTrainStationProps
 
   const options = useMemo(() => {
     const stations = data?.data ?? [];
-    return stations.map((a) => {
+    return stations.map((s) => {
       return {
-        value: a.stationCode,
-        label: a.name,
-        station: a,
+        value: s.stationCode,
+        label: `${s.stationCode} - ${s.stationName} - (${s.cityName})`,
+        station: s,
       };
     });
   }, [data]);
@@ -26,8 +26,9 @@ export default function SelectTrainStation({ ...props }: SelectTrainStationProps
       style={{ width: '100%' }}
       status={error ? 'error' : undefined}
       notFoundContent={isLoading ? 'Loading train stations…' : 'No train stations'}
-      showSearch
-      filterOption={false}
+      showSearch={{
+        optionFilterProp: ['label'],
+      }}
       {...props}
     />
   );
