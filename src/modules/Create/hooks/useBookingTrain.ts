@@ -3,20 +3,56 @@ import { message } from 'antd';
 import { useCallback } from 'react';
 
 import { submitBookingsTrain, submitBookingsTrainSeat } from '@/api';
-import { CLIENT_SOURCE, DEFAULT_ERROR_MESSAGE, DEFAULT_HOLD_MS } from '@/constants/common';
+import { CLIENT_SOURCE, DEFAULT_ERROR_MESSAGE, DEFAULT_HOLD_MS, INFANT_TYPE } from '@/constants/common';
+import { USER } from '@/constants/storageKey';
 import type {
   BookingParamsType,
+  BookingPriceItemType,
   BookingTrainPayloadType,
   BookingTrainResponseType,
+  PassengerGuestType,
   TrainJourneyType,
   TrainSeatSetPayloadType,
+  UserType,
 } from '@/types';
+import { localStorageGet } from '@/utils/localStorage';
 
 import { getBookingPaxPayload } from '../utils/bookingPaxMapper';
 
 type BookingTrainSubmitResult = BookingTrainResponseType['trains'][number];
 
-function buildTrainPayloadItem(trainJourney: TrainJourneyType) {
+function buildTrainPrices(
+  trainJourney: TrainJourneyType,
+  trainName: string,
+  paxList: PassengerGuestType[],
+): BookingPriceItemType[] {
+  const activeSegment =
+    trainJourney.segments?.find((segment) => segment.active) ?? trainJourney.segments?.[0];
+  const fareAmount = Number(activeSegment?.fare ?? 0);
+  const totalAdult = paxList.filter((pax) => pax?.type !== INFANT_TYPE).length;
+
+  if (totalAdult <= 0) return [];
+
+  return [
+    {
+      item: `Train ${trainName} (Adult) x${totalAdult}`,
+      currency: 'IDR',
+      amount: fareAmount * totalAdult,
+    },
+  ];
+}
+
+function buildTrainPayloadItem({
+  trainJourney,
+  trainName,
+  paxList,
+  booker,
+}: {
+  trainJourney: TrainJourneyType;
+  trainName: string;
+  paxList: PassengerGuestType[];
+  booker?: string;
+}) {
   const activeSegment =
     trainJourney.segments?.find((segment) => segment.active) ?? trainJourney.segments?.[0];
 
@@ -34,6 +70,11 @@ function buildTrainPayloadItem(trainJourney: TrainJourneyType) {
     seatClass: activeSegment?.className ?? '',
     provider: trainJourney.provider,
     paymentMethod: 'DEPOSIT',
+    metadata: {
+      prices: buildTrainPrices(trainJourney, trainName, paxList),
+      booker,
+      passengerNames: paxList.map((pax) => `${pax.firstName} ${pax.lastName}`),
+    },
   };
 }
 
@@ -69,7 +110,9 @@ export default function useBookingTrain() {
       bookingId: string;
       bookingParams: BookingParamsType;
     }) => {
+      const userProfile = localStorageGet<UserType>(USER);
       const trains = bookingParams.trains ?? [];
+      const paxList = bookingParams.paxList ?? [];
       const selectedTrainEntries = trains
         .map((train, index) => ({ train, index, selectedTrain: train.selectedTrain }))
         .filter(
@@ -81,7 +124,7 @@ export default function useBookingTrain() {
         throw new Error('No selected train');
       }
 
-      const paxs = bookingParams.paxList.map(getBookingPaxPayload);
+      const paxs = paxList.map(getBookingPaxPayload);
       const trainsWithIds = [...trains];
       let bookingPaxIds: number[] = [];
 
@@ -89,7 +132,12 @@ export default function useBookingTrain() {
         const trainResponse = await submitTrainMutateAsync({
           id: bookingId,
           payload: {
-            train: buildTrainPayloadItem(entry.selectedTrain),
+            train: buildTrainPayloadItem({
+              trainJourney: entry.selectedTrain,
+              trainName: entry.train.name || entry.selectedTrain.trainName || 'Train',
+              paxList,
+              booker: userProfile?.email,
+            }),
             paxs,
           },
         });

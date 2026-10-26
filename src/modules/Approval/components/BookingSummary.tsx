@@ -12,12 +12,18 @@ const { Text } = Typography;
 interface BookingSummaryProps {
   data: BookingType;
 }
+
 function BookingSummary({ data }: Readonly<BookingSummaryProps>) {
   const { airportsByCode } = useFlightAirport();
 
   const { status, approvedAt, rejectedAt } = getBookingOverallStatus(data);
 
-  const paxs = data.flights.length > 0 ? data.flights[0]?.paxs : (data.hotels[0]?.paxs ?? []);
+  const paxs =
+    data.flights?.length > 0
+      ? data.flights[0]?.paxs
+      : data.hotels?.length > 0
+        ? data.hotels[0]?.paxs
+        : (data.trains?.[0]?.paxs ?? []);
 
   return (
     <div className="w-full min-w-0">
@@ -70,6 +76,23 @@ function BookingSummary({ data }: Readonly<BookingSummaryProps>) {
                   )}
                 </Text>
                 <BookingStatusTag status={hotel.status} size="small" className="m-0 shrink-0" />
+              </div>
+            ))}
+
+            {(data.trains ?? []).map((train) => (
+              <div
+                key={train.id ?? `${train.origin}-${train.departureDatetime}`}
+                className="flex items-center justify-start gap-2"
+              >
+                <Text className="text-xs sm:text-sm leading-snug block min-w-0 truncate">
+                  {dayjs(train.departureDatetime).format('ddd, MMM DD HH:mm')}{' '}
+                  <Text strong>{train.origin}</Text> → <Text strong>{train.destination}</Text>
+                  {train.trainName && <Text type="secondary"> · {train.trainName}</Text>}
+                  {train.carrierNumber && (
+                    <Text type="secondary"> ({train.carrierNumber})</Text>
+                  )}
+                </Text>
+                <BookingStatusTag status={train.status} size="small" className="m-0 shrink-0" />
               </div>
             ))}
           </div>

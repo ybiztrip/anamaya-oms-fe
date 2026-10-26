@@ -3,8 +3,8 @@ import { Alert, Button, Card, Checkbox, Col, List, Modal, Row, Space, Spin, Typo
 import SectionCard from '@/components/SectionCard';
 import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
 import { APPROVAL_PATH } from '@/constants/routePath';
-import type { BookingApprovePayloadType, BookingType } from '@/types';
-import { getBookingOverallStatus } from '@/utils/booking';
+import type { BookingType } from '@/types';
+import { buildBookingApprovePayload, getBookingOverallStatus } from '@/utils/booking';
 
 import useBookingApprove from '../hooks/useBookingApprove';
 import useBookingNeedApproval from '../hooks/useBookingNeedApproval';
@@ -61,23 +61,10 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
     });
   };
 
-  const buildPayload = (booking: BookingType): BookingApprovePayloadType => {
-    const flightIds = (booking.flights ?? [])
-      .filter((flight) => flight.status === BOOKING_STATUS_BOOKED && flight.id)
-      .map((flight) => Number(flight.id))
-      .filter((id) => !Number.isNaN(id));
-    const hotelIds = (booking.hotels ?? [])
-      .filter((hotel) => hotel.status === BOOKING_STATUS_BOOKED && hotel.id)
-      .map((hotel) => Number(hotel.id))
-      .filter((id) => !Number.isNaN(id));
-
-    return { flightIds, hotelIds };
-  };
-
   const approve = async (bookings: BookingType[]) => {
     await Promise.all(
       bookings.map((booking) =>
-        approveBooking({ id: String(booking.id), payload: buildPayload(booking) }),
+        approveBooking({ id: String(booking.id), payload: buildBookingApprovePayload(booking) }),
       ),
     );
     setSelectedBookings((prev) => prev.filter((item) => !bookings.some((b) => b.id === item.id)));
@@ -86,7 +73,7 @@ function NeedApproval({ onChangeTab }: { onChangeTab: (key: string) => void }) {
   const reject = async (bookings: BookingType[]) => {
     await Promise.all(
       bookings.map((booking) =>
-        rejectBooking({ id: String(booking.id), payload: buildPayload(booking) }),
+        rejectBooking({ id: String(booking.id), payload: buildBookingApprovePayload(booking) }),
       ),
     );
     setSelectedBookings((prev) => prev.filter((item) => !bookings.some((b) => b.id === item.id)));

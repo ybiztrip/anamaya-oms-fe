@@ -33,13 +33,8 @@ import { APPROVAL_PATH } from '@/constants/routePath';
 import useFlightAirlines from '@/hooks/useFlightAirlines';
 import useFlightAirport from '@/hooks/useFlightAirport';
 import PriceDetail from '@/modules/Create/components/PriceDetail';
-import type {
-  BookingApprovePayloadType,
-  BookingDetailResponseType,
-  BookingType,
-  ResponseType,
-} from '@/types';
-import { getBookingOverallStatus } from '@/utils/booking';
+import type { BookingDetailResponseType, BookingType, ResponseType } from '@/types';
+import { buildBookingApprovePayload, getBookingOverallStatus } from '@/utils/booking';
 import { isPermitted } from '@/utils/permission';
 
 import useBookingApprove from './hooks/useBookingApprove';
@@ -87,28 +82,15 @@ function BookingDetailView() {
   const isApprovalPermitted = isPermitted(PERMISSIONS.APPROVAL);
   const canTakeApprovalAction = isApprovalPermitted && status === BOOKING_STATUS_BOOKED;
 
-  const buildPayload = (booking: BookingType): BookingApprovePayloadType => {
-    const flightIds = (booking.flights ?? [])
-      .filter((flight) => flight.status === BOOKING_STATUS_BOOKED && flight.id)
-      .map((flight) => Number(flight.id))
-      .filter((bookingId) => !Number.isNaN(bookingId));
-    const hotelIds = (booking.hotels ?? [])
-      .filter((hotel) => hotel.status === BOOKING_STATUS_BOOKED && hotel.id)
-      .map((hotel) => Number(hotel.id))
-      .filter((bookingId) => !Number.isNaN(bookingId));
-
-    return { flightIds, hotelIds };
-  };
-
   const approve = async () => {
     if (!data) return;
-    await approveBooking({ id: String(data.id), payload: buildPayload(data) });
+    await approveBooking({ id: String(data.id), payload: buildBookingApprovePayload(data) });
     await refetch();
   };
 
   const reject = async () => {
     if (!data) return;
-    await rejectBooking({ id: String(data.id), payload: buildPayload(data) });
+    await rejectBooking({ id: String(data.id), payload: buildBookingApprovePayload(data) });
     await refetch();
   };
 
@@ -142,13 +124,16 @@ function BookingDetailView() {
     return [
       ...(data?.flights ?? []).flatMap((flight) => flight.metadata?.prices ?? []),
       ...(data?.hotels ?? []).flatMap((hotel) => hotel.metadata?.prices ?? []),
+      ...(data?.trains ?? []).flatMap((train) => train.metadata?.prices ?? []),
     ];
-  }, [data?.flights, data?.hotels]);
+  }, [data?.flights, data?.hotels, data?.trains]);
 
   const paxs =
-    data?.flights?.length && data?.flights?.length > 0
-      ? data?.flights[0]?.paxs
-      : (data?.hotels?.[0]?.paxs ?? []);
+    data?.flights?.length && data.flights.length > 0
+      ? data.flights[0]?.paxs
+      : data?.hotels?.length && data.hotels.length > 0
+        ? data.hotels[0]?.paxs
+        : (data?.trains?.[0]?.paxs ?? []);
 
   if (!id) {
     return (
@@ -350,6 +335,44 @@ function BookingDetailView() {
                   </Col>
                   <Col>
                     <BookingStatusTag status={hotel.status} />
+                  </Col>
+                </Row>
+              </Card>
+            ))}
+            <Divider />
+          </>
+        )}
+
+        {data.trains?.length > 0 && (
+          <>
+            <Title level={5}>Trains</Title>
+            {data.trains.map((train) => (
+              <Card key={train.id} size="small">
+                <Row justify="space-between" align="top">
+                  <Col>
+                    <div>
+                      <Text strong>{train.trainName || 'Train'}</Text>
+                      {train.carrierNumber && (
+                        <Text type="secondary"> ({train.carrierNumber})</Text>
+                      )}
+                    </div>
+                    <div>
+                      <Text strong>{train.origin}</Text>
+                      {' → '}
+                      <Text strong>{train.destination}</Text>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {dayjs(train.departureDatetime).format('ddd, MMM DD HH:mm')} -{' '}
+                      {dayjs(train.arrivalDatetime).format('ddd, MMM DD HH:mm')}
+                    </div>
+                    {(train.seatClass || train.subClass) && (
+                      <div className="text-sm text-gray-500">
+                        {[train.seatClass, train.subClass].filter(Boolean).join(' · ')}
+                      </div>
+                    )}
+                  </Col>
+                  <Col>
+                    <BookingStatusTag status={train.status} />
                   </Col>
                 </Row>
               </Card>

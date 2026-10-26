@@ -172,6 +172,10 @@ export type BookingHotelType = {
 };
 
 export type BookingTrainType = {
+  id?: number | string;
+  bookingId?: number | string;
+  companyId?: number;
+  status?: string;
   classKey: string;
   journeyCode: string;
   carrierNumber: string;
@@ -186,8 +190,12 @@ export type BookingTrainType = {
   paymentMethod: string;
   metadata?: {
     prices?: BookingPriceItemType[];
+    booker?: string;
+    passengerNames?: string[];
   };
-  // TODO: Add other fields based on booking train list
+  createdAt?: string;
+  approvedAt?: string;
+  rejectedAt?: string;
 };
 
 export type BookingType = {
@@ -324,11 +332,13 @@ export type BookingAttachmentResponseType = any;
 export type BookingApprovePayloadType = {
   flightIds: number[];
   hotelIds: number[];
+  trainIds: number[];
 };
 
 export type BookingRejectPayloadType = {
   flightIds: number[];
   hotelIds: number[];
+  trainIds: number[];
 };
 
 export type BookingETicketPayloadType = {
