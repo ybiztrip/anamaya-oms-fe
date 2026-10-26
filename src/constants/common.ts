@@ -13,7 +13,7 @@ export const ROLE_APPROVER = 'APPROVER';
 export const ADULT_AGE = 12;
 export const CHILD_AGE = 2;
 export const INFANT_AGE = 0;
-// TODO: train infant age is below 3 years old
+export const TRAIN_INFANT_AGE = 3;
 export const ADULT_TYPE = 'ADULT';
 export const CHILD_TYPE = 'CHILD';
 export const INFANT_TYPE = 'INFANT';

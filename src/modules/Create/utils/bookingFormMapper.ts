@@ -1,7 +1,19 @@
 import dayjs from 'dayjs';
 
-import { ADULT_AGE, ADULT_TYPE, CHILD_AGE, CHILD_TYPE, INFANT_TYPE } from '@/constants/common';
+import {
+  ADULT_AGE,
+  ADULT_TYPE,
+  CHILD_AGE,
+  CHILD_TYPE,
+  INFANT_TYPE,
+  TRAIN_INFANT_AGE,
+} from '@/constants/common';
 import type { BookingParamsType, PassengerGuestType } from '@/types';
+
+/** Train: below 3 years = infant; otherwise adult (no child). */
+function getTrainPaxType(dob: PassengerGuestType['dob']) {
+  return dayjs(dob).isBefore(dayjs().subtract(TRAIN_INFANT_AGE, 'year')) ? ADULT_TYPE : INFANT_TYPE;
+}
 
 function paxFormToPaxParams(values: any): PassengerGuestType[] {
   return values.paxList.map((pax: any) => ({
@@ -161,7 +173,10 @@ export function bookingParamsToFlightHotelForm(bookingParams: BookingParamsType)
 }
 
 export function trainFormToBookingParams(values: any): BookingParamsType {
-  const paxList = paxFormToPaxParams(values);
+  const paxList = paxFormToPaxParams(values).map((pax) => ({
+    ...pax,
+    type: pax.dob ? getTrainPaxType(pax.dob) : ADULT_TYPE,
+  }));
   if (values.tripType === 'roundTrip') {
     return {
       ...values,
