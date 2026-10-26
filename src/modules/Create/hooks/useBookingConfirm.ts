@@ -1,38 +1,16 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { message, type UploadFile } from 'antd';
-import dayjs from 'dayjs';
+import { message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  createBookings,
-  submitBookingsAttachment,
-  submitBookingsFlight,
-  submitBookingsHotel,
-} from '@/api';
-import { CLIENT_SOURCE, DEFAULT_ERROR_MESSAGE } from '@/constants/common';
-import { FLIGHT_ADD_ONS } from '@/constants/queryKey';
 import { APPROVAL_PATH } from '@/constants/routePath';
-import { BOOKING_PARAMS, USER } from '@/constants/storageKey';
-import type {
-  BookingAttachmentPayloadType,
-  BookingCreatePayloadType,
-  BookingFlightPayloadType,
-  BookingHotelPayloadType,
-  BookingParamsType,
-  BookingPriceItemType,
-  FlightBookingAddOnsResponseType,
-  FlightBookingAddOnType,
-  PassengerGuestType,
-  ResponseType,
-  UserType,
-} from '@/types';
-import { localStorageGet } from '@/utils/localStorage';
+import { BOOKING_PARAMS } from '@/constants/storageKey';
+import type { BookingParamsType, BookingPriceItemType } from '@/types';
 import { sessionStorageGet, sessionStorageRemove } from '@/utils/sessionStorage';
 
-import {
-  buildAvailableAddOnsFlights,
-  buildPaxWithSelectedAddOnPayload,
-} from '../utils/flightAddOnMapper';
+import useBooking from './useBooking';
+import useBookingAttachment from './useBookingAttachment';
+import useBookingFlight from './useBookingFlight';
+import useBookingHotel from './useBookingHotel';
+import useBookingTrain from './useBookingTrain';
 
 export default function useBookingConfirm({
   flightPrices,
@@ -41,242 +19,62 @@ export default function useBookingConfirm({
   flightPrices?: Record<number, BookingPriceItemType[]>;
   hotelPrices?: BookingPriceItemType[];
 }) {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
-
-  const createBookingsMutation = useMutation({
-    mutationFn: (payload: BookingCreatePayloadType) => createBookings(payload),
-    onError: (e: any) => {
-      message.error(e?.response?.data?.message ?? DEFAULT_ERROR_MESSAGE);
-    },
-  });
-
-  const submitBookingsFlightMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: BookingFlightPayloadType }) =>
-      submitBookingsFlight(id, payload),
-    onError: (e: any) => {
-      message.error(e?.response?.data?.message ?? DEFAULT_ERROR_MESSAGE);
-    },
-  });
-
-  const submitBookingsHotelMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: BookingHotelPayloadType }) =>
-      submitBookingsHotel(id, payload),
-    onError: (e: any) => {
-      message.error(e?.response?.data?.message ?? DEFAULT_ERROR_MESSAGE);
-    },
-  });
-
-  const submitBookingsAttachmentMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: BookingAttachmentPayloadType }) =>
-      submitBookingsAttachment(id, payload),
-    onError: (e: any) => {
-      message.error(e?.response?.data?.message ?? DEFAULT_ERROR_MESSAGE);
-    },
-  });
+  const { createBooking, isLoading: isCreatingBooking } = useBooking();
+  const { submitFlight, isLoading: isSubmittingFlight } = useBookingFlight();
+  const { submitHotel, isLoading: isSubmittingHotel } = useBookingHotel();
+  const { submitTrainSeats, isLoading: isSubmittingTrain } = useBookingTrain();
+  const { submitAttachments, isLoading: isSubmittingAttachment } = useBookingAttachment();
 
   const bookingParams = sessionStorageGet<BookingParamsType>(BOOKING_PARAMS);
-  const { flights = [], paxList = [], tripType, hotel, attachments = [] } = bookingParams ?? {};
-
-  const createBooking = async () => {
-    const userProfile = localStorageGet<UserType>(USER);
-    let startDate = '';
-    let endDate = '';
-    if (flights?.length) {
-      startDate = flights?.[0]?.departureDate;
-      endDate = flights?.[flights?.length - 1]?.departureDate;
-    } else if (hotel) {
-      startDate = hotel?.checkInDate;
-      endDate = hotel?.checkOutDate;
-    }
-
-    const bookingPayload: BookingCreatePayloadType = {
-      startDate: startDate,
-      endDate: endDate,
-      contactEmail: userProfile?.email ?? '',
-      contactFirstName: userProfile?.firstName ?? '',
-      contactLastName: userProfile?.lastName ?? '',
-      contactTitle: userProfile?.title ?? 'MR',
-      contactNationality: 'ID',
-      contactPhoneCode: userProfile?.countryCode ?? '',
-      contactPhoneNumber: userProfile?.phoneNo ?? '',
-      contactDob: userProfile?.dateOfBirth
-        ? dayjs(userProfile.dateOfBirth).format('YYYY-MM-DD')
-        : '',
-    };
-    return await createBookingsMutation.mutateAsync(bookingPayload);
-  };
-
-  const getBookingPaxPayload = (pax: PassengerGuestType) => {
-    return {
-      firstName: pax.firstName,
-      lastName: pax.lastName,
-      title: pax.title ?? 'MR',
-      gender: pax.title === 'MR' ? 'MALE' : 'FEMALE',
-      type: pax.type ?? 'ADULT',
-      email: pax.email,
-      nationality: 'ID',
-      phoneCode: pax.phoneCode ?? '',
-      phoneNumber: `${pax.phoneCode ?? ''}${pax.phoneNumber ?? ''}`,
-      dob: pax.dob,
-      issuingCountry: 'ID',
-      documentType: 'PASSPORT',
-      documentNo: pax.passportNumber,
-      expirationDate: pax.passportExpiry,
-      issuedDate: pax.passportIssued,
-    };
-  };
-
-  const createBookingsFlight = async (bookingId: string, values: any) => {
-    const userProfile = localStorageGet<UserType>(USER);
-    const flightsPayload = flights?.map((flight, flightIndex: number) => {
-      const departure = flight.selectedFlight?.journeys?.[0]?.departureDetail;
-      const arrival = flight.selectedFlight?.journeys?.at(-1)?.arrivalDetail;
-      const allSegments = flight.selectedFlight?.journeys.flatMap((j) => j?.segments ?? []);
-      return {
-        type: tripType === 'roundTrip' ? 1 : tripType === 'oneWay' ? 2 : 3,
-        clientSource: CLIENT_SOURCE,
-        itemId: flight.selectedFlight?.flightId ?? '',
-        origin: flight.selectedFlight?.departureAirport ?? '',
-        destination: flight.selectedFlight?.arrivalAirport ?? '',
-        departureDatetime: departure?.departureDate
-          ? dayjs(
-              `${departure.departureDate}T${departure.departureTime}:00`,
-              'MM-DD-YYYY HH:mm',
-            ).format('YYYY-MM-DDTHH:mm:ss')
-          : '',
-        arrivalDatetime: arrival?.arrivalDate
-          ? dayjs(`${arrival.arrivalDate}T${arrival.arrivalTime}:00`, 'MM-DD-YYYY HH:mm').format(
-              'YYYY-MM-DDTHH:mm:ss',
-            )
-          : '',
-        // TODO: payment
-        paymentMethod: 'DEPOSIT',
-        paymentReference1: '',
-        paymentReference2: '',
-        metadata: {
-          prices: flightPrices?.[flightIndex] ?? [],
-          booker: userProfile?.email,
-          departureAirport: flight.selectedFlight?.departureAirport ?? '',
-          departureTerminal: departure?.departureTerminal ?? '',
-          arrivalAirport: flight.selectedFlight?.arrivalAirport ?? '',
-          arrivalTerminal: arrival?.arrivalTerminal ?? '',
-          airlines: allSegments?.map((segment) => segment?.marketingAirline),
-          flightCodes: allSegments?.map((segment) => segment?.flightCode),
-          passengerNames: paxList.map(
-            (pax: PassengerGuestType) => `${pax.firstName} ${pax.lastName}`,
-          ),
-          attachments: attachments?.map((attachment: UploadFile) => ({
-            name: attachment.name ?? '',
-            file: attachment.response ?? '',
-          })),
-        },
-      };
-    });
-    const paxsPayload = paxList.map((pax: PassengerGuestType, paxIndex: number) => {
-      const addOn: FlightBookingAddOnType[] = flights.flatMap((flight, flightIndex) => {
-        const selectedFlight = flight.selectedFlight;
-        if (!selectedFlight) {
-          return [];
-        }
-        const cachedFlightAddOns = queryClient.getQueryData<
-          ResponseType<FlightBookingAddOnsResponseType>
-        >([FLIGHT_ADD_ONS, selectedFlight.flightId]);
-        const templates = buildAvailableAddOnsFlights(
-          selectedFlight,
-          cachedFlightAddOns?.data?.journeysWithAvailableAddOnsOptions,
-        );
-        return templates.map((template, slotIndex) =>
-          buildPaxWithSelectedAddOnPayload(template, values, flightIndex, slotIndex, paxIndex),
-        );
-      });
-      return {
-        ...getBookingPaxPayload(pax),
-        addOn,
-      };
-    });
-    const bookingFlightPayload: BookingFlightPayloadType = {
-      flights: flightsPayload,
-      paxs: paxsPayload,
-    };
-    return await submitBookingsFlightMutation.mutateAsync({
-      id: bookingId,
-      payload: bookingFlightPayload,
-    });
-  };
-
-  const createBookingsHotel = async (bookingId: string, values: any) => {
-    const userProfile = localStorageGet<UserType>(USER);
-    const hotelPayload = {
-      clientSource: CLIENT_SOURCE,
-      itemId: hotel?.selectedHotel?.propertyId ?? '',
-      roomId: hotel?.selectedRoom?.roomId ?? '',
-      rateKey: hotel?.selectedRoom?.rateKey ?? '',
-      numRoom: hotel?.rooms ?? 1,
-      checkInDate: hotel?.checkInDate ? dayjs(hotel.checkInDate).format('YYYY-MM-DD') : '',
-      checkOutDate: hotel?.checkOutDate ? dayjs(hotel.checkOutDate).format('YYYY-MM-DD') : '',
-      partnerSellAmount: hotel?.selectedRoom?.totalRates.partnerSellAmount ?? 0,
-      partnerNettAmount: hotel?.selectedRoom?.totalRates.partnerNettAmount ?? 0,
-      currency: hotel?.selectedRoom?.totalRates.partnerCurrency ?? '',
-      specialRequest: values?.specialRequests ?? '',
-      // TODO: payment
-      paymentMethod: 'DEPOSIT',
-      paymentReference1: '',
-      paymentReference2: '',
-      metadata: {
-        prices: hotelPrices ?? [],
-        booker: userProfile?.email,
-        hotelName: hotel?.selectedHotel?.propertySummary?.name ?? '',
-        hotelAddress: hotel?.selectedHotel?.propertySummary?.address?.lines?.join(', ') ?? '',
-        hotelCity: hotel?.selectedHotel?.propertySummary?.address?.city ?? '',
-        hotelStarRating: hotel?.selectedHotel?.propertySummary?.starRating ?? '',
-        hotelRoomName: hotel?.selectedRoom?.roomName ?? '',
-        guestNames: paxList.map((pax: PassengerGuestType) => `${pax.firstName} ${pax.lastName}`),
-        attachments: attachments?.map((attachment: UploadFile) => ({
-          name: attachment.name ?? '',
-          file: attachment.response ?? '',
-        })),
-      },
-    };
-    const paxsPayload = paxList.map((pax: PassengerGuestType) => {
-      return getBookingPaxPayload(pax);
-    });
-    const bookingHotelPayload: BookingHotelPayloadType = {
-      hotel: hotelPayload,
-      paxs: paxsPayload,
-    };
-    return await submitBookingsHotelMutation.mutateAsync({
-      id: bookingId,
-      payload: bookingHotelPayload,
-    });
-  };
-
-  const createBookingsAttachment = async (bookingId: string) => {
-    const bookingAttachmentPayload: BookingAttachmentPayloadType = {
-      files: attachments?.map((attachment: UploadFile) => attachment.response ?? ''),
-    };
-    return await submitBookingsAttachmentMutation.mutateAsync({
-      id: bookingId,
-      payload: bookingAttachmentPayload,
-    });
-  };
+  const {
+    flights = [],
+    hotel,
+    trains = [],
+    attachments = [],
+    bookingId: existingBookingId,
+  } = bookingParams ?? {};
 
   const handleSubmitForApproval = async (values: any) => {
+    if (!bookingParams) return;
+
     try {
-      const createBookingsResponse = await createBooking();
-      const bookingId = createBookingsResponse?.data?.id?.toString() ?? '';
-      if (flights?.length) {
-        await createBookingsFlight(bookingId, values);
+      // Train booking is created earlier (on schedule select). Confirm only sets seats.
+      if (trains.length && existingBookingId) {
+        await submitTrainSeats({
+          bookingId: String(existingBookingId),
+          bookingParams,
+          values,
+        });
+        await submitAttachments({
+          bookingId: String(existingBookingId),
+          attachments,
+        });
+      } else {
+        const createBookingsResponse = await createBooking(bookingParams);
+        const bookingId = createBookingsResponse?.data?.id?.toString() ?? '';
+
+        if (flights.length) {
+          await submitFlight({
+            bookingId,
+            bookingParams,
+            values,
+            flightPrices,
+          });
+        }
+        if (hotel) {
+          await submitHotel({
+            bookingId,
+            bookingParams,
+            values,
+            hotelPrices,
+          });
+        }
+        await submitAttachments({ bookingId, attachments });
       }
-      if (hotel) {
-        await createBookingsHotel(bookingId, values);
-      }
-      if (attachments?.length) {
-        await createBookingsAttachment(bookingId);
-      }
+
       message.success('Booking submitted for approval');
       sessionStorageRemove(BOOKING_PARAMS);
-
       navigate(`${APPROVAL_PATH}?tab=my-request`);
     } catch (e: any) {
       console.error('e', e);
@@ -286,6 +84,11 @@ export default function useBookingConfirm({
   return {
     bookingParams,
     handleSubmitForApproval,
-    isLoading: createBookingsMutation.isPending || submitBookingsFlightMutation.isPending,
+    isLoading:
+      isCreatingBooking ||
+      isSubmittingFlight ||
+      isSubmittingHotel ||
+      isSubmittingTrain ||
+      isSubmittingAttachment,
   };
 }

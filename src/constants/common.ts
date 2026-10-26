@@ -4,6 +4,8 @@ export const CLIENT_SOURCE = 'BIZTRIP';
 
 export const DEFAULT_PAGE_SIZE = 10;
 
+export const DEFAULT_HOLD_MS = 10 * 60 * 1000;
+
 export const ROLE_COMPANY_ADMIN = 'COMPANY_ADMIN';
 export const ROLE_USER = 'USER';
 export const ROLE_APPROVER = 'APPROVER';
@@ -11,6 +13,7 @@ export const ROLE_APPROVER = 'APPROVER';
 export const ADULT_AGE = 12;
 export const CHILD_AGE = 2;
 export const INFANT_AGE = 0;
+// TODO: train infant age is below 3 years old
 export const ADULT_TYPE = 'ADULT';
 export const CHILD_TYPE = 'CHILD';
 export const INFANT_TYPE = 'INFANT';

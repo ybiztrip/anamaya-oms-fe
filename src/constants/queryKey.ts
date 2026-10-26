@@ -17,3 +17,4 @@ export const REFUNDS = 'refunds';
 export const REPORT_FLIGHTS = 'report-flights';
 export const REPORT_HOTELS = 'report-hotels';
 export const TRAIN_STATIONS = 'train-stations';
+export const TRAIN_SEATS = 'train-seats';

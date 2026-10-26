@@ -12,19 +12,24 @@ import {
   CREATE_PATH,
   CREATE_TRAIN_SEARCH_PATH,
 } from '@/constants/routePath';
+import { BOOKING_PARAMS } from '@/constants/storageKey';
 import type {
+  BookingParamsType,
   BookingPriceItemType,
   FlightSearchOneWayType,
   HotelPropertyType,
   HotelRoomRateType,
   TrainJourneyType,
 } from '@/types';
+import { sessionStorageGet } from '@/utils/sessionStorage';
 
 import FlightConfirm from './components/FlightConfirm';
 import HotelConfirm from './components/HotelConfirm';
 import PriceDetail from './components/PriceDetail';
 import TrainConfirm from './components/TrainConfirm';
+import TrainHoldCountdown from './components/TrainHoldCountdown';
 import useBookingConfirm from './hooks/useBookingConfirm';
+import useEnsureTrainBooking from './hooks/useEnsureTrainBooking';
 
 function BookingConfirmView() {
   const navigate = useNavigate();
@@ -34,11 +39,31 @@ function BookingConfirmView() {
   const [flightPrices, setFlightPrices] = useState<Record<number, BookingPriceItemType[]>>({});
   const [hotelPrices, setHotelPrices] = useState<BookingPriceItemType[]>([]);
   const [trainPrices, setTrainPrices] = useState<Record<number, BookingPriceItemType[]>>({});
+  const [bookingParams, setBookingParams] = useState<BookingParamsType | null>(() =>
+    sessionStorageGet<BookingParamsType>(BOOKING_PARAMS),
+  );
 
-  const { handleSubmitForApproval, bookingParams, isLoading } = useBookingConfirm({
+  const { handleSubmitForApproval, isLoading } = useBookingConfirm({
     flightPrices,
     hotelPrices,
   });
+
+  const handleBookingParamsChange = useCallback((next: BookingParamsType) => {
+    setBookingParams(next);
+  }, []);
+
+  const { isCreatingTrainBooking } = useEnsureTrainBooking({
+    bookingParams,
+    onBookingParamsChange: handleBookingParamsChange,
+  });
+
+  const hasTrainBooking = Boolean(bookingParams?.trains?.length);
+
+  const isTrainReady =
+    !hasTrainBooking ||
+    (Boolean(bookingParams?.bookingId) &&
+      Boolean(bookingParams?.bookingPaxIds?.length) &&
+      (bookingParams?.trains ?? []).every((train) => Boolean(train.trainId)));
 
   const handleBack = useCallback(() => {
     if (bookingParams?.flights?.length) {
@@ -75,17 +100,18 @@ function BookingConfirmView() {
   useEffect(() => {
     if (!bookingParams) {
       navigate(CREATE_PATH);
+      return;
     }
     if (
-      bookingParams?.flights?.length &&
-      bookingParams?.flights?.every((flight) => !flight.selectedFlight)
+      bookingParams.flights?.length &&
+      bookingParams.flights.every((flight) => !flight.selectedFlight)
     ) {
       navigate(CREATE_FLIGHT_SEARCH_PATH);
-    } else if (bookingParams?.hotel && !bookingParams?.hotel?.selectedHotel) {
+    } else if (bookingParams.hotel && !bookingParams.hotel.selectedHotel) {
       navigate(CREATE_HOTEL_SEARCH_PATH);
     } else if (
-      bookingParams?.trains?.length &&
-      bookingParams?.trains?.every((train) => !train.selectedTrain)
+      bookingParams.trains?.length &&
+      bookingParams.trains.every((train) => !train.selectedTrain)
     ) {
       navigate(CREATE_TRAIN_SEARCH_PATH);
     }
@@ -105,7 +131,15 @@ function BookingConfirmView() {
         >
           Back
         </Button>
-        <div className="text-lg font-bold">Booking Confirmation</div>
+        <div className="flex items-center justify-between gap-4">
+          <div className="text-lg font-bold">Booking Confirmation</div>
+          {hasTrainBooking && (
+            <TrainHoldCountdown
+              trains={bookingParams.trains}
+              isLoading={isCreatingTrainBooking}
+            />
+          )}
+        </div>
         <Row gutter={[16, 8]} className="mt-4" wrap={false}>
           <Col flex="auto">
             <div className="overflow-x-auto">
@@ -165,8 +199,8 @@ function BookingConfirmView() {
             <Button
               type="primary"
               htmlType="submit"
-              disabled={isFetchingAddOns}
-              loading={isLoading}
+              disabled={isFetchingAddOns || isCreatingTrainBooking || !isTrainReady}
+              loading={isLoading || isCreatingTrainBooking}
             >
               Submit for Approval
             </Button>

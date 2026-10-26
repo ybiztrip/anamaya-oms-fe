@@ -3,7 +3,7 @@ import { message } from 'antd';
 import dayjs from 'dayjs';
 
 import { fetchTrainAvailability } from '@/api';
-import { ADULT_TYPE, DEFAULT_ERROR_MESSAGE, INFANT_TYPE } from '@/constants/common';
+import { DEFAULT_ERROR_MESSAGE, INFANT_TYPE } from '@/constants/common';
 import type { BookingParamsType, PassengerGuestType, TrainAvailabilityPayloadType } from '@/types';
 
 export default function useTrainSearch({
@@ -30,10 +30,10 @@ export default function useTrainSearch({
     let totalAdult = 0;
     let totalInfant = 0;
     bookingParams?.paxList?.forEach((pax: PassengerGuestType) => {
-      if (pax?.type === ADULT_TYPE) {
-        totalAdult++;
-      } else if (pax?.type === INFANT_TYPE) {
+      if (pax?.type === INFANT_TYPE) {
         totalInfant++;
+      } else {
+        totalAdult++;
       }
     });
     const payload: TrainAvailabilityPayloadType = {

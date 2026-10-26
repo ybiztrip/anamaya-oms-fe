@@ -1,4 +1,4 @@
-import { Button, Card, Col, Row } from 'antd';
+import { Button, Card, Col, Row, Tag } from 'antd';
 
 import useTrainStation from '@/hooks/useTrainStation';
 import type { TrainJourneyType, TrainSegmentType } from '@/types';
@@ -79,7 +79,7 @@ function TrainInfo({
         {withPrice && (
           <Col flex="auto" className="text-center">
             <div className="text-lg font-semibold">IDR {formatIDR(price)}</div>
-            <div className="text-xs text-gray-500 mt-1">{availableSeats} seats left</div>
+            <Tag color={availableSeats > 0 ? 'green' : ''}>{availableSeats} seats left</Tag>
           </Col>
         )}
         {withSelect && segment && (

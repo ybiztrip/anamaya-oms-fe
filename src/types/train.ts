@@ -72,8 +72,6 @@ export type TrainAvailabilityResponseType = {
   schedules: TrainScheduleType[];
 };
 
-// TODO: train seat
-/** -1 = aisle/gap, 0 = available, 1 = occupied */
 export type TrainSeatStatus = -1 | 0 | 1;
 
 export type TrainSeatCellType = {
@@ -81,8 +79,6 @@ export type TrainSeatCellType = {
   seatNumber: string;
   seatStatus: TrainSeatStatus;
   x: number;
-};
-
   y: number;
 };
 
@@ -93,11 +89,17 @@ export type TrainCoachType = {
   seatRows: TrainSeatCellType[][];
 };
 
-export type TrainSeatsPayloadType = {
-  journeyCode: string;
+export type TrainSeatGetPayloadType = {
+  trainId: number;
 };
 
-export type TrainSeatsResponseType = {
-  pnrID: string;
-  seatsMap: TrainCoachType[];
+export type TrainSeatSetPayloadType = {
+  trainId: number;
+  seats: {
+    paxId: number;
+    coachName: string;
+    seatNumber: string;
+  }[];
 };
+
+export type TrainSeatResponseType = TrainCoachType[];

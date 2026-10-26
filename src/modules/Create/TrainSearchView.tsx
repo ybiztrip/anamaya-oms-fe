@@ -62,9 +62,13 @@ function TrainSearchView() {
         destination: trainJourney.destination,
         departureDate: dayjs(trainJourney.departureDate).format('YYYY-MM-DD'),
         selectedTrain,
+        trainId: undefined,
+        timeLimit: undefined,
       };
       const newBookingParams = {
         ...bookingParams,
+        bookingId: undefined,
+        bookingPaxIds: undefined,
         trains: newTrains,
       } as BookingParamsType;
       updateBookingParams(newBookingParams);

@@ -15,6 +15,9 @@ import {
   BOOKINGS_MY_APPROVAL_API,
   BOOKINGS_NEED_APPROVAL_API,
   BOOKINGS_REJECT_API,
+  BOOKINGS_TRAIN_API,
+  BOOKINGS_TRAIN_SEAT_MAP_API,
+  BOOKINGS_TRAIN_SET_SEAT_API,
   COMPANY_CONFIGS_API,
   DEPOSIT_API,
   DEPOSIT_DETAIL_API,
@@ -69,6 +72,8 @@ import type {
   BookingMyApprovalPayloadType,
   BookingNeedApprovalPayloadType,
   BookingRejectPayloadType,
+  BookingTrainPayloadType,
+  BookingTrainResponseType,
   BookingType,
   CompanyConfigsUpdatePayloadType,
   CompanyConfigType,
@@ -100,8 +105,9 @@ import type {
   RoleType,
   TrainAvailabilityPayloadType,
   TrainAvailabilityResponseType,
-  TrainSeatsPayloadType,
-  TrainSeatsResponseType,
+  TrainSeatGetPayloadType,
+  TrainSeatResponseType,
+  TrainSeatSetPayloadType,
   TrainStationType,
   TravelPolicyListPayloadType,
   TravelPolicyType,
@@ -112,8 +118,6 @@ import type {
   UserUpdatePasswordPayloadType,
 } from '@/types';
 import axios from '@/utils/api';
-
-import { mockFetchTrainSeats } from './mock';
 
 export async function fetchRoles(): Promise<ResponseType<RoleType[]>> {
   const res = await axios.get(ROLES_API);
@@ -275,14 +279,6 @@ export async function fetchTrainAvailability(
   return res.data;
 }
 
-export async function fetchTrainSeats(
-  params: TrainSeatsPayloadType,
-): Promise<ResponseType<TrainSeatsResponseType>> {
-  // TODO: fetch train seats from API
-  void params;
-  return mockFetchTrainSeats;
-}
-
 export async function fetchBookings(
   params: BookingListPayloadType,
 ): Promise<PaginationResponseType<BookingType>> {
@@ -371,6 +367,30 @@ export async function submitBookingsHotel(
   params: BookingHotelPayloadType,
 ): Promise<ResponseType<BookingHotelResponseType>> {
   const res = await axios.post(BOOKINGS_HOTEL_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function submitBookingsTrain(
+  id: string,
+  params: BookingTrainPayloadType,
+): Promise<ResponseType<BookingTrainResponseType>> {
+  const res = await axios.post(BOOKINGS_TRAIN_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function getBookingsTrainSeat(
+  id: string,
+  params: TrainSeatGetPayloadType,
+): Promise<ResponseType<TrainSeatResponseType>> {
+  const res = await axios.post(BOOKINGS_TRAIN_SEAT_MAP_API.replace(':id', id), params);
+  return res.data;
+}
+
+export async function submitBookingsTrainSeat(
+  id: string,
+  params: TrainSeatSetPayloadType,
+): Promise<ResponseType<BookingTrainResponseType>> {
+  const res = await axios.post(BOOKINGS_TRAIN_SET_SEAT_API.replace(':id', id), params);
   return res.data;
 }
 

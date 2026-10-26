@@ -1,33 +1,32 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { Button, Card, Form, type FormInstance, Input, Modal, Select, Space, Tag } from 'antd';
+import { Button, Card, Form, type FormInstance, Modal, Select, Space, Spin, Tag } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
-import { mockFetchTrainSeats } from '@/api/mock';
-import { ADULT_TYPE, CHILD_TYPE } from '@/constants/common';
+import { INFANT_TYPE } from '@/constants/common';
 import type {
   BookingParamsType,
   BookingPriceItemType,
   PassengerGuestType,
-  TrainCoachType,
   TrainJourneyType,
   TrainSeatCellType,
 } from '@/types';
 
+import useTrainSeat from '../hooks/useTrainSeat';
 import TrainInfo from './TrainInfo';
 
 const SEAT_STATUS_AVAILABLE = 0;
 const SEAT_STATUS_OCCUPIED = 1;
 const SEAT_STATUS_AISLE = -1;
 
-function formatSeatLabel(seatId: string | undefined, coaches: TrainCoachType[]) {
-  if (!seatId) return 'No seat';
-  for (const coach of coaches) {
-    for (const row of coach.seatRows) {
-      const seat = row.find((cell) => cell.seatId === seatId);
-      if (seat) return `${coach.coachName} · ${seat.seatNumber}`;
-    }
-  }
-  return seatId;
+type SelectedTrainSeat = {
+  seatId: string;
+  coachName: string;
+  seatNumber: string;
+};
+
+function formatSeatLabel(seat?: SelectedTrainSeat | null) {
+  if (!seat?.coachName || !seat?.seatNumber) return 'No seat';
+  return `${seat.coachName} · ${seat.seatNumber}`;
 }
 
 function SeatButton({
@@ -83,18 +82,24 @@ function TrainConfirm({
   onPriceListChange?: (prices: BookingPriceItemType[], trainIndex: number) => void;
 }>) {
   const [seatModalPaxIndex, setSeatModalPaxIndex] = useState<number | null>(null);
-  const [draftSeat, setDraftSeat] = useState<string | undefined>();
+  const [draftSeat, setDraftSeat] = useState<SelectedTrainSeat | undefined>();
   const [activeCoachIndex, setActiveCoachIndex] = useState(0);
 
   const activeSegment = train.segments?.find((segment) => segment.active) ?? train.segments?.[0];
-  const coaches = useMemo(() => mockFetchTrainSeats.data.seatsMap ?? [], []);
+  const trainParams = bookingParams.trains?.[index];
+  const { seatsMap: coaches, isLoading: isSeatsLoading } = useTrainSeat({
+    bookingId: bookingParams.bookingId,
+    trainId: trainParams?.trainId,
+  });
+  const isSeatSelectionReady =
+    Boolean(bookingParams.bookingId) && Boolean(trainParams?.trainId) && !isSeatsLoading;
   const seatValues = Form.useWatch(['trains', `train-${index}`, 'paxs'], form);
 
   const selectedSeatByPax = useMemo(() => {
     const map = new Map<string, number>();
     bookingParams.paxList.forEach((_, paxIndex) => {
-      const seat = seatValues?.[`pax-${paxIndex}`]?.seat as string | undefined;
-      if (seat) map.set(seat, paxIndex);
+      const seat = seatValues?.[`pax-${paxIndex}`]?.seat as SelectedTrainSeat | undefined;
+      if (seat?.seatId) map.set(seat.seatId, paxIndex);
     });
     return map;
   }, [bookingParams.paxList, seatValues]);
@@ -106,12 +111,8 @@ function TrainConfirm({
     const currency = 'IDR';
 
     let totalAdult = 0;
-    let totalChild = 0;
-    let totalInfant = 0;
     bookingParams.paxList.forEach((pax: PassengerGuestType) => {
-      if (pax?.type === ADULT_TYPE) totalAdult += 1;
-      else if (pax?.type === CHILD_TYPE) totalChild += 1;
-      else totalInfant += 1;
+      if (pax?.type !== INFANT_TYPE) totalAdult += 1;
     });
 
     if (totalAdult > 0) {
@@ -119,20 +120,6 @@ function TrainConfirm({
         item: `Train ${trainName} (Adult) x${totalAdult}`,
         currency,
         amount: fareAmount * totalAdult,
-      });
-    }
-    if (totalChild > 0) {
-      prices.push({
-        item: `Train ${trainName} (Child) x${totalChild}`,
-        currency,
-        amount: fareAmount * totalChild,
-      });
-    }
-    if (totalInfant > 0) {
-      prices.push({
-        item: `Train ${trainName} (Infant) x${totalInfant}`,
-        currency,
-        amount: fareAmount * totalInfant,
       });
     }
 
@@ -153,9 +140,9 @@ function TrainConfirm({
   };
 
   const openSeatModal = (paxIndex: number) => {
-    const currentSeat = seatValues?.[`pax-${paxIndex}`]?.seat as string | undefined;
+    const currentSeat = seatValues?.[`pax-${paxIndex}`]?.seat as SelectedTrainSeat | undefined;
     setDraftSeat(currentSeat);
-    setActiveCoachIndex(findCoachIndexBySeatId(currentSeat));
+    setActiveCoachIndex(findCoachIndexBySeatId(currentSeat?.seatId));
     setSeatModalPaxIndex(paxIndex);
   };
 
@@ -172,10 +159,14 @@ function TrainConfirm({
 
     const activeCoach = coaches[activeCoachIndex];
     const seat = activeCoach?.seatRows.flat().find((cell) => cell.seatId === seatId);
-    if (!seat || seat.seatStatus === SEAT_STATUS_AISLE) return;
+    if (!seat?.seatNumber || seat.seatStatus === SEAT_STATUS_AISLE) return;
     if (seat.seatStatus === SEAT_STATUS_OCCUPIED && takenByOther === undefined) return;
 
-    setDraftSeat(seatId);
+    setDraftSeat({
+      seatId,
+      coachName: activeCoach.coachName,
+      seatNumber: seat.seatNumber,
+    });
   };
 
   const handleSaveSeat = () => {
@@ -197,7 +188,7 @@ function TrainConfirm({
           .flat()
           .filter((cell) => cell.seatStatus === SEAT_STATUS_AVAILABLE).length;
         return {
-          label: `${coach.coachName} (${availableCount})`,
+          label: `${coach.coachName} (${availableCount} seats available)`,
           value: coachIndex,
         };
       }),
@@ -222,36 +213,41 @@ function TrainConfirm({
 
       <Card size="small">
         <div className="text-lg font-semibold mb-2">Passengers</div>
-        <Space direction="vertical" className="w-full">
-          {bookingParams.paxList.map((pax, paxIndex) => {
-            const selectedSeat = seatValues?.[`pax-${paxIndex}`]?.seat as string | undefined;
-            return (
-              <Card key={pax.id} size="small">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="text-medium font-semibold">
-                    {`${pax.firstName} ${pax.lastName}`}
-                    {pax.type ? ` (${pax.type})` : ''}
+        <Spin spinning={!isSeatSelectionReady} tip="Preparing seats…">
+          <Space direction="vertical" className="w-full">
+            {bookingParams.paxList.map((pax, paxIndex) => {
+              const selectedSeat = seatValues?.[`pax-${paxIndex}`]?.seat as
+                | SelectedTrainSeat
+                | undefined;
+              return (
+                <Card key={pax.id} size="small">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="text-medium font-semibold">
+                      {`${pax.firstName} ${pax.lastName}`}
+                      {pax.type ? ` (${pax.type})` : ''}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Form.Item
+                        name={['trains', `train-${index}`, 'paxs', `pax-${paxIndex}`, 'seat']}
+                        noStyle
+                      />
+                      <Tag color={selectedSeat ? 'blue' : 'default'} className="m-0 px-3 py-1">
+                        {formatSeatLabel(selectedSeat)}
+                      </Tag>
+                      <Button
+                        type="link"
+                        disabled={!isSeatSelectionReady}
+                        onClick={() => openSeatModal(paxIndex)}
+                      >
+                        {selectedSeat ? 'Change Seat' : 'Select Seat'}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Form.Item
-                      name={['trains', `train-${index}`, 'paxs', `pax-${paxIndex}`, 'seat']}
-                      rules={[{ required: true, message: 'Seat required' }]}
-                      className="mb-0"
-                    >
-                      <Input type="hidden" />
-                    </Form.Item>
-                    <Tag color={selectedSeat ? 'blue' : 'default'} className="m-0 px-3 py-1">
-                      {formatSeatLabel(selectedSeat, coaches)}
-                    </Tag>
-                    <Button type="link" onClick={() => openSeatModal(paxIndex)}>
-                      {selectedSeat ? 'Change Seat' : 'Select Seat'}
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </Space>
+                </Card>
+              );
+            })}
+          </Space>
+        </Spin>
       </Card>
 
       <Modal
@@ -267,16 +263,15 @@ function TrainConfirm({
             Cancel
           </Button>,
           <Button key="save" type="primary" disabled={!draftSeat} onClick={handleSaveSeat}>
-            Simpan
+            Save
           </Button>,
         ]}
       >
         <div className="text-xs text-gray-500 mb-3">
-          Selected: {formatSeatLabel(draftSeat, coaches)} · Class: {trainClassLabel}
+          Selected: {formatSeatLabel(draftSeat)} · Class: {trainClassLabel}
         </div>
 
         <div className="mb-4">
-          <div className="text-sm font-medium mb-2">Gerbong</div>
           <Select
             className="w-full"
             options={coachOptions}
@@ -316,7 +311,7 @@ function TrainConfirm({
                     <SeatButton
                       key={seat.seatId || `${activeCoach.code}-${rowIndex}-${seatIndex}`}
                       seat={seat}
-                      isSelectedByActivePax={draftSeat === seat.seatId}
+                      isSelectedByActivePax={draftSeat?.seatId === seat.seatId}
                       isSelectedByOther={
                         Boolean(seat.seatId) &&
                         takenBy !== undefined &&

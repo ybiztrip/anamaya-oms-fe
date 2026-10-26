@@ -51,6 +51,8 @@ export type BookingTrainParamsType = {
   departureDate: string;
   trainClass: string;
   selectedTrain?: TrainJourneyType;
+  trainId?: number;
+  timeLimit?: string | null;
 };
 
 export type BookingParamsType = {
@@ -58,6 +60,8 @@ export type BookingParamsType = {
   flights?: BookingFlightParamsType[];
   hotel?: BookingHotelParamsType | null;
   trains?: BookingTrainParamsType[];
+  bookingId?: number;
+  bookingPaxIds?: number[];
   bookerName: string;
   attachments: UploadFile[];
   paxList: PassengerGuestType[];
@@ -101,8 +105,8 @@ export type BookingFlightType = {
 };
 
 export type BookingPaxType = {
-  id?: string;
-  bookingId?: string;
+  id?: number;
+  bookingId?: number;
   firstName: string;
   lastName: string;
   title: string;
@@ -125,6 +129,8 @@ export type BookingFlightPaxType = BookingPaxType & {
 };
 
 export type BookingHotelPaxType = BookingPaxType;
+
+export type BookingTrainPaxType = BookingPaxType;
 
 export type BookingHotelType = {
   id?: string;
@@ -165,6 +171,25 @@ export type BookingHotelType = {
   rejectedAt?: string;
 };
 
+export type BookingTrainType = {
+  classKey: string;
+  journeyCode: string;
+  carrierNumber: string;
+  trainName: string;
+  origin: string;
+  destination: string;
+  departureDatetime: string;
+  arrivalDatetime: string;
+  subClass: string;
+  seatClass: string;
+  provider: number;
+  paymentMethod: string;
+  metadata?: {
+    prices?: BookingPriceItemType[];
+  };
+  // TODO: Add other fields based on booking train list
+};
+
 export type BookingType = {
   id: number;
   companyId: number;
@@ -188,6 +213,7 @@ export type BookingType = {
   rejectedAt?: string;
   flights: (BookingFlightType & { paxs: BookingFlightPaxType[] })[];
   hotels: (BookingHotelType & { paxs: BookingHotelPaxType[] })[];
+  trains: (BookingTrainType & { paxs: BookingTrainPaxType[] })[];
   attachments?: {
     id: number;
     companyId: number;
@@ -275,6 +301,19 @@ export type BookingHotelPayloadType = {
 };
 
 export type BookingHotelResponseType = any;
+
+export type BookingTrainPayloadType = {
+  train: BookingTrainType;
+  paxs: BookingTrainPaxType[];
+};
+
+export type BookingTrainResponseType = {
+  trains: {
+    id: number;
+    timeLimit: string | null;
+    paxs: { id: number }[];
+  }[];
+};
 
 export type BookingAttachmentPayloadType = {
   files: string[];
