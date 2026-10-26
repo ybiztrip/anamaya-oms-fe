@@ -1,4 +1,16 @@
-import { Alert, Button, Card, Checkbox, Col, List, Modal, Row, Space, Spin, Typography } from 'antd';
+import {
+  Alert,
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  List,
+  Modal,
+  Row,
+  Space,
+  Spin,
+  Typography,
+} from 'antd';
 
 import SectionCard from '@/components/SectionCard';
 import { BOOKING_STATUS_BOOKED, DEFAULT_ERROR_MESSAGE } from '@/constants/common';

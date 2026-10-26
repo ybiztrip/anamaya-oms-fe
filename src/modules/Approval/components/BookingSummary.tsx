@@ -88,9 +88,7 @@ function BookingSummary({ data }: Readonly<BookingSummaryProps>) {
                   {dayjs(train.departureDatetime).format('ddd, MMM DD HH:mm')}{' '}
                   <Text strong>{train.origin}</Text> → <Text strong>{train.destination}</Text>
                   {train.trainName && <Text type="secondary"> · {train.trainName}</Text>}
-                  {train.carrierNumber && (
-                    <Text type="secondary"> ({train.carrierNumber})</Text>
-                  )}
+                  {train.carrierNumber && <Text type="secondary"> ({train.carrierNumber})</Text>}
                 </Text>
                 <BookingStatusTag status={train.status} size="small" className="m-0 shrink-0" />
               </div>
