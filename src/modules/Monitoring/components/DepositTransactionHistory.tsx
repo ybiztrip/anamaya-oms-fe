@@ -4,15 +4,21 @@ import dayjs from 'dayjs';
 import { useMemo, useState } from 'react';
 
 import SectionCard from '@/components/SectionCard';
-import { DEPOSIT_CODE_FLIGHT, DEPOSIT_CODE_HOTEL } from '@/constants/common';
+import {
+  DEPOSIT_CODE_FLIGHT,
+  DEPOSIT_CODE_HOTEL,
+  DEPOSIT_CODE_TRAIN,
+} from '@/constants/common';
 import useDebouncedValue from '@/hooks/useDebouncedValue';
 import type { DepositCodeType } from '@/types';
 
 import useDepositTransactions from '../hooks/useDepositTransactions';
 import DepositTransactionTable from './DepositTransactionTable';
 
+type DepositTab = 'flight' | 'hotel' | 'train';
+
 function DepositTransactions() {
-  const [activeTab, setActiveTab] = useState<'flight' | 'hotel'>('flight');
+  const [activeTab, setActiveTab] = useState<DepositTab>('flight');
   const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
   const [referenceCode, setReferenceCode] = useState('');
   const [booker, setBooker] = useState('');
@@ -29,6 +35,7 @@ function DepositTransactions() {
   );
   const flightSummary = useDepositTransactions(DEPOSIT_CODE_FLIGHT as DepositCodeType);
   const hotelSummary = useDepositTransactions(DEPOSIT_CODE_HOTEL as DepositCodeType);
+  const trainSummary = useDepositTransactions(DEPOSIT_CODE_TRAIN as DepositCodeType);
   const flightTransactions = useDepositTransactions(
     DEPOSIT_CODE_FLIGHT as DepositCodeType,
     activeTab === 'flight' ? filters : undefined,
@@ -37,23 +44,36 @@ function DepositTransactions() {
     DEPOSIT_CODE_HOTEL as DepositCodeType,
     activeTab === 'hotel' ? filters : undefined,
   );
+  const trainTransactions = useDepositTransactions(
+    DEPOSIT_CODE_TRAIN as DepositCodeType,
+    activeTab === 'train' ? filters : undefined,
+  );
 
   const flightTotal =
     flightSummary.data?.totalElements ?? flightSummary.data?.data?.length ?? 0;
   const hotelTotal =
     hotelSummary.data?.totalElements ?? hotelSummary.data?.data?.length ?? 0;
+  const trainTotal =
+    trainSummary.data?.totalElements ?? trainSummary.data?.data?.length ?? 0;
 
-  const activeData = activeTab === 'flight' ? flightTransactions : hotelTransactions;
+  const activeData =
+    activeTab === 'flight'
+      ? flightTransactions
+      : activeTab === 'hotel'
+        ? hotelTransactions
+        : trainTransactions;
 
-  const handleTabChange = (tab: 'flight' | 'hotel') => {
+  const handleTabChange = (tab: DepositTab) => {
     setActiveTab(tab);
     setDateRange(null);
     setReferenceCode('');
     setBooker('');
     if (tab === 'flight') {
       flightTransactions.setPage(1);
-    } else {
+    } else if (tab === 'hotel') {
       hotelTransactions.setPage(1);
+    } else {
+      trainTransactions.setPage(1);
     }
   };
 
@@ -71,7 +91,7 @@ function DepositTransactions() {
   return (
     <SectionCard className="mt-4" title="Transaction History">
       <Row gutter={[16, 16]} className="mb-4">
-        <Col xs={24} md={12}>
+        <Col xs={24} md={8}>
           <Card
             className={`cursor-pointer ${
               activeTab === 'flight'
@@ -85,7 +105,7 @@ function DepositTransactions() {
             <div className="text-xs text-gray-400">Total transactions</div>
           </Card>
         </Col>
-        <Col xs={24} md={12}>
+        <Col xs={24} md={8}>
           <Card
             className={`cursor-pointer ${
               activeTab === 'hotel'
@@ -96,6 +116,20 @@ function DepositTransactions() {
           >
             <div className="text-sm text-gray-500">Hotel</div>
             <div className="text-2xl font-semibold">{hotelTotal}</div>
+            <div className="text-xs text-gray-400">Total transactions</div>
+          </Card>
+        </Col>
+        <Col xs={24} md={8}>
+          <Card
+            className={`cursor-pointer ${
+              activeTab === 'train'
+                ? 'border-train bg-train/10 shadow-sm'
+                : 'border-train/40 bg-transparent'
+            }`}
+            onClick={() => handleTabChange('train')}
+          >
+            <div className="text-sm text-gray-500">Train</div>
+            <div className="text-2xl font-semibold">{trainTotal}</div>
             <div className="text-xs text-gray-400">Total transactions</div>
           </Card>
         </Col>

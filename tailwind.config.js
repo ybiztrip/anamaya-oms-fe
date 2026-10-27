@@ -6,6 +6,7 @@ export default {
       colors: {
         flight: '#69A8FF',
         hotel: '#EF476F',
+        train: '#06D6A0',
       },
     },
   },

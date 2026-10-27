@@ -5,6 +5,7 @@ import {
   BOOKING_STATUS_ISSUED,
   BOOKING_TYPE_FLIGHT,
   BOOKING_TYPE_HOTEL,
+  BOOKING_TYPE_TRAIN,
   DEFAULT_ERROR_MESSAGE,
 } from '@/constants/common';
 import useETicket from '@/hooks/useETicket';
@@ -81,6 +82,9 @@ function DepositTransactionTable({
               : {}),
             ...(record.bookingType === BOOKING_TYPE_HOTEL
               ? { bookingHotelId: Number(record.bookingHotels?.[0]?.id) }
+              : {}),
+            ...(record.bookingType === BOOKING_TYPE_TRAIN
+              ? { bookingTrainId: Number(record.bookingTrains?.[0]?.id) }
               : {}),
             requestedAmount: record.amount,
             remarks: 'Request Refund',
@@ -163,7 +167,9 @@ function DepositTransactionTable({
               const bookings =
                 record.bookingType === BOOKING_TYPE_FLIGHT
                   ? record.bookingFlights
-                  : record.bookingHotels;
+                  : record.bookingType === BOOKING_TYPE_HOTEL
+                    ? record.bookingHotels
+                    : record.bookingTrains;
 
               const isHasETicket =
                 bookings &&

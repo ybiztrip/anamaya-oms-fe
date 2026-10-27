@@ -4,6 +4,7 @@ export type RefundCreatePayloadType = {
   bookingType: BookingTypeType;
   bookingFlightId?: number;
   bookingHotelId?: number;
+  bookingTrainId?: number;
   requestedAmount: number;
   remarks: string;
 };

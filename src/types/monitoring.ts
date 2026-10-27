@@ -1,6 +1,11 @@
-import type { BookingFlightType, BookingHotelType, BookingTypeType } from './booking';
+import type {
+  BookingFlightType,
+  BookingHotelType,
+  BookingTrainType,
+  BookingTypeType,
+} from './booking';
 
-export type DepositCodeType = 'WALLET_FLIGHT' | 'WALLET_HOTEL';
+export type DepositCodeType = 'WALLET_FLIGHT' | 'WALLET_HOTEL' | 'WALLET_TRAIN';
 
 export type DepositBalanceType = {
   id: number;
@@ -54,6 +59,7 @@ export type DepositMonitoringType = {
   createdAt: string;
   bookingFlights?: BookingFlightType[];
   bookingHotels?: BookingHotelType[];
+  bookingTrains?: BookingTrainType[];
 };
 
 export type DepositMonitoringPayloadType = {

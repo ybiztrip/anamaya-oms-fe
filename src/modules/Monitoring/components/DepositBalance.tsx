@@ -3,18 +3,29 @@ import { Button, Table } from 'antd';
 import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 import SectionCard from '@/components/SectionCard';
-import { DEFAULT_ERROR_MESSAGE, DEPOSIT_CODE_FLIGHT } from '@/constants/common';
+import {
+  DEFAULT_ERROR_MESSAGE,
+  DEPOSIT_CODE_FLIGHT,
+  DEPOSIT_CODE_HOTEL,
+  DEPOSIT_CODE_TRAIN,
+} from '@/constants/common';
 import { formatIDR } from '@/utils/formatter';
 
 import useDepositBalance from '../hooks/useDepositBalance';
+
+const DEPOSIT_PRODUCT_LABEL: Record<string, string> = {
+  [DEPOSIT_CODE_FLIGHT]: 'Flight',
+  [DEPOSIT_CODE_HOTEL]: 'Hotel',
+  [DEPOSIT_CODE_TRAIN]: 'Train',
+};
 
 function DepositBalance() {
   const { data, isLoading, error, refreshDepositBalance } = useDepositBalance();
 
   const list = data?.data ?? [];
-  const chartColors = ['#69A8FF', '#EF476F'];
+  const chartColors = ['#69A8FF', '#EF476F', '#06D6A0'];
   const chartData = list.map((item, index) => ({
-    name: item.code === DEPOSIT_CODE_FLIGHT ? 'Flight' : 'Hotel',
+    name: DEPOSIT_PRODUCT_LABEL[item.code] ?? item.code,
     value: item.balance ?? 0,
     fill: chartColors[index % chartColors.length],
   }));
@@ -63,9 +74,7 @@ function DepositBalance() {
             title: 'Product',
             dataIndex: 'code',
             key: 'code',
-            render: (code: string) => (
-              <span>{code === DEPOSIT_CODE_FLIGHT ? 'Flight' : 'Hotel'}</span>
-            ),
+            render: (code: string) => <span>{DEPOSIT_PRODUCT_LABEL[code] ?? code}</span>,
           },
           {
             title: 'Balance',

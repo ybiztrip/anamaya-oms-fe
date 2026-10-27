@@ -188,6 +188,7 @@ export type BookingTrainType = {
   seatClass: string;
   provider: number;
   paymentMethod: string;
+  refundId?: number | null;
   metadata?: {
     prices?: BookingPriceItemType[];
     booker?: string;
